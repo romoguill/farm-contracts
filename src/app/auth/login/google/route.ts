@@ -7,7 +7,7 @@ export async function GET(): Promise<NextResponse> {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
   const url = await google.createAuthorizationURL(state, codeVerifier, {
-    scopes: ['userinfo.email', 'userinfo.profile'],
+    scopes: ['email', 'profile'],
   });
 
   cookies().set('google_oauth_state', state, {
@@ -24,5 +24,7 @@ export async function GET(): Promise<NextResponse> {
     maxAge: 60 * 10,
   });
 
-  return NextResponse.redirect(url);
+  console.log(url);
+
+  return NextResponse.json({ url });
 }

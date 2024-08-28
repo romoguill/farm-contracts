@@ -1,5 +1,11 @@
+import OAuthGoogleButton from '../_components/oauth-google-button';
+
 function LoginPage() {
-  return <div>LoginPage</div>;
+  return (
+    <div>
+      <OAuthGoogleButton />
+    </div>
+  );
 }
 
 export default LoginPage;
