@@ -7,6 +7,7 @@ export const user = pgTable('user', {
   email: text('email').notNull(),
   passwordHashed: text('passwordHashed'),
   role: text('role').$type<'admin' | 'customer'>(),
+  googleId: text('google_id'),
   createdAt: timestamp('created_at'),
   updatedAt: timestamp('updated_at'),
 });

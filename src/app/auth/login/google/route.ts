@@ -24,7 +24,5 @@ export async function GET(): Promise<NextResponse> {
     maxAge: 60 * 10,
   });
 
-  console.log(url);
-
   return NextResponse.json({ url });
 }
