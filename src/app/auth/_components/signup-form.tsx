@@ -9,15 +9,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { SignUpCredentials } from '@/lib/validation';
-import { useForm } from 'react-hook-form';
+import { SignUpCredentials, signUpCredentialsSchema } from '@/lib/validation';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import PasswordInput from './password-input';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { Button } from '@/components/ui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpWithCredentials } from '../actions';
 
 export default function SignUpForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<SignUpCredentials>({
+    resolver: zodResolver(signUpCredentialsSchema),
     defaultValues: {
       email: '',
       name: '',
@@ -26,9 +31,15 @@ export default function SignUpForm() {
     },
   });
 
+  const onSubmit: SubmitHandler<SignUpCredentials> = (data) => {
+    startTransition(async () => {
+      await signUpWithCredentials(data);
+    });
+  };
+
   return (
     <Form {...form}>
-      <form>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name='name'
@@ -90,6 +101,7 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
+        <Button type='submit'>Sign Up</Button>
       </form>
     </Form>
   );
