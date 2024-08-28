@@ -4,7 +4,7 @@ export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name'),
   username: text('username'),
-  email: text('email').notNull(),
+  email: text('email').notNull().unique(),
   passwordHashed: text('passwordHashed'),
   role: text('role').$type<'admin' | 'customer'>(),
   googleId: text('google_id'),

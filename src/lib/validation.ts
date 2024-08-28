@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const credentialsSchema = z
+// ========= AUTH =========
+export const signUpCredentialsSchema = z
   .object({
     email: z.string().email('Must be a valid email'),
     name: z.string().min(1, 'Name is required'),
@@ -12,4 +13,11 @@ export const credentialsSchema = z
     path: ['passwordConfirm'],
   });
 
-export type Credentials = z.infer<typeof credentialsSchema>;
+export type SignUpCredentials = z.infer<typeof signUpCredentialsSchema>;
+
+export const loginCredentialsSchema = z.object({
+  email: z.string().email('Must be a valid email'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
