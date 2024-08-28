@@ -1,11 +1,11 @@
 version: '3.9'
 services:
   postgres:
-    container_name: container-pg
+    container_name: farm-contracts-pg
     image: postgres
     hostname: ${POSTGRES_HOST}
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

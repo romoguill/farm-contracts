@@ -19,6 +19,7 @@ export const lucia = new Lucia(adapter, {
     return {
       googleId: attributes.google_id,
       username: attributes.username,
+      email: attributes.email,
     };
   },
 });
@@ -33,7 +34,16 @@ declare module 'lucia' {
 interface DatabaseUserAttributes {
   google_id: number;
   username: string;
+  email: string;
 }
+
+// HASHING OPTIONS
+export const HASHING_OPTIONS = {
+  memoryCost: 19456,
+  timeCost: 2,
+  outputLen: 32,
+  parallelism: 1,
+};
 
 // OAUTH
 export const google = new Google(
