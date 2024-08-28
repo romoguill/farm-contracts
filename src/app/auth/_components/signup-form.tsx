@@ -16,6 +16,8 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpWithCredentials } from '../actions';
+import LoadingButton from '@/components/loading-button';
+import SubmitError from '@/components/forms/submit-error';
 
 export default function SignUpForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -33,13 +35,16 @@ export default function SignUpForm() {
 
   const onSubmit: SubmitHandler<SignUpCredentials> = (data) => {
     startTransition(async () => {
-      await signUpWithCredentials(data);
+      const { error } = await signUpWithCredentials(data);
+      if (error) {
+        form.setError('root', { message: error });
+      }
     });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
         <FormField
           control={form.control}
           name='name'
@@ -101,7 +106,10 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type='submit'>Sign Up</Button>
+        {form.formState.errors.root?.message && (
+          <SubmitError message={form.formState.errors.root.message} />
+        )}
+        <LoadingButton isLoading={isPending}>Sign Up</LoadingButton>
       </form>
     </Form>
   );
