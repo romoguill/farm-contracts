@@ -65,7 +65,7 @@ export async function signUpWithCredentials(payload: SignUpCredentials) {
       sessionCookie.attributes
     );
 
-    return { error: null };
+    return redirect('/auth/email-verification');
   } catch (error) {
     console.error(error);
     return { error: 'Something went wrong when creating user' };
