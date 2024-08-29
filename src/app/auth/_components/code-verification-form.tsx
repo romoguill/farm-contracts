@@ -7,22 +7,25 @@ import { ArrowRight } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { emailVerification } from '../email-verification/actions';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 function CodeVerificationForm() {
   const [code, setCode] = useState('');
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
+  const router = useRouter();
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
       const { error } = await emailVerification(code);
       if (error) {
-        toast({
-          variant: 'destructive',
-          description: error,
-        });
+        toast.error(error);
       }
+
+      toast.success('Email verified. Welcome!!!');
+
+      return router.push('/dashboard');
     });
   };
 

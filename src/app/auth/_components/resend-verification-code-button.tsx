@@ -1,28 +1,18 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
 import { resendVerificationEmail } from '../actions';
+import { toast } from 'sonner';
 
 function ResendVerificationCodeButton() {
-  const { toast } = useToast();
-  const router = useRouter();
-
   const handleClick = async () => {
     const { error } = await resendVerificationEmail();
 
     if (!error) {
-      toast({
-        description: 'Email verified. Welcome!!!',
-      });
-      return router.push('/dashboard');
+      toast.success('Done. Please check you inbox');
     }
 
-    toast({
-      variant: 'destructive',
-      description: error,
-    });
+    toast.error(error);
   };
 
   return (

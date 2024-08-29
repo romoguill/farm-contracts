@@ -18,7 +18,7 @@ export async function emailVerification(code: string) {
 
   // Validate code sent and the one stored in DB
   const storedCode = await db.query.emailVerificationCode.findFirst({
-    where: eq(userTable.id, user.id),
+    where: eq(emailVerificationCode.userId, user.id),
   });
 
   if (!storedCode) {

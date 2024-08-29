@@ -90,12 +90,12 @@ export async function signUpWithCredentials(payload: SignUpCredentials) {
       sessionCookie.value,
       sessionCookie.attributes
     );
+
+    return { error: null };
   } catch (error) {
     console.error(error);
     return { error: 'Something went wrong when creating user' };
   }
-
-  return redirect('/auth/email-verification');
 }
 
 export async function loginWithCredentials(payload: LoginCredentials) {

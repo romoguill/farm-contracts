@@ -25,7 +25,7 @@ export const session = pgTable('session', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at', {
     withTimezone: true,
     mode: 'date',
@@ -37,7 +37,7 @@ export const emailVerificationCode = pgTable('email_verification_code', {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   code: text('code').notNull(),
-  userId: text('userId').references(() => user.id),
+  userId: text('userId').references(() => user.id, { onDelete: 'cascade' }),
   email: text('email').notNull(),
   expiresAt: timestamp('expires_at').notNull(),
 });

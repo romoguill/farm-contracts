@@ -13,15 +13,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { SignUpCredentials, signUpCredentialsSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { signUpWithCredentials } from '../actions';
 import PasswordInput from './password-input';
-import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function SignUpForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPending, startTransition] = useTransition();
+
   const router = useRouter();
 
   const form = useForm<SignUpCredentials>({
@@ -38,6 +40,7 @@ export default function SignUpForm() {
     startTransition(async () => {
       const { error } = await signUpWithCredentials(data);
       if (!error) {
+        toast.success('Please check your email inbox');
         return router.replace('/dashboard');
       }
 
