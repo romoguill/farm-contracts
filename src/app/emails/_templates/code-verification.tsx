@@ -7,10 +7,10 @@ function CodeVerification({ name, code }: CodeVerificationProps) {
   return (
     <div>
       <p>
-        {name}, thank you for signing up to the app. Please use the code below
-        to complete the process
+        Welcome, <span style={{ textTransform: 'capitalize' }}>{name}</span>!
       </p>
-      <p className='font-bold text-2xl'>{code}</p>
+      <p>To complete the registration process use the code below</p>
+      <p style={{ fontWeight: 'bold', fontSize: '18px' }}>{code}</p>
     </div>
   );
 }
