@@ -45,43 +45,47 @@ export default function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} type='email' />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  {...field}
-                  isVisible={isPasswordVisible}
-                  onChangeVisibility={setIsPasswordVisible}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className='space-y-3'>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type='email' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    isVisible={isPasswordVisible}
+                    onChangeVisibility={setIsPasswordVisible}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {form.formState.errors.root?.message && (
-          <SubmitError message={form.formState.errors.root.message} />
-        )}
+          {form.formState.errors.root?.message && (
+            <SubmitError message={form.formState.errors.root.message} />
+          )}
+        </div>
 
-        <LoadingButton isLoading={isPending}>Sign Up</LoadingButton>
+        <LoadingButton isLoading={isPending} className='w-full mt-6'>
+          Sign Up
+        </LoadingButton>
       </form>
     </Form>
   );

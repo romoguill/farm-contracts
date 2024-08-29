@@ -10,6 +10,7 @@ function ResendVerificationCodeButton() {
 
     if (!error) {
       toast.success('Done. Please check you inbox');
+      return;
     }
 
     toast.error(error);

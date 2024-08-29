@@ -41,7 +41,7 @@ export default function SignUpForm() {
       const { error } = await signUpWithCredentials(data);
       if (!error) {
         toast.success('Please check your email inbox');
-        return router.replace('/dashboard');
+        return router.replace('/auth/email-verification');
       }
 
       form.setError('root', { message: error });
@@ -50,72 +50,78 @@ export default function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
-        <FormField
-          control={form.control}
-          name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className='space-y-3'>
+          <FormField
+            control={form.control}
+            name='name'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type='email' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    isVisible={isPasswordVisible}
+                    onChangeVisibility={setIsPasswordVisible}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='passwordConfirm'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    isVisible={isPasswordVisible}
+                    onChangeVisibility={setIsPasswordVisible}
+                    confirmation
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {form.formState.errors.root?.message && (
+            <SubmitError message={form.formState.errors.root.message} />
           )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} type='email' />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  {...field}
-                  isVisible={isPasswordVisible}
-                  onChangeVisibility={setIsPasswordVisible}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='passwordConfirm'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  {...field}
-                  isVisible={isPasswordVisible}
-                  onChangeVisibility={setIsPasswordVisible}
-                  confirmation
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {form.formState.errors.root?.message && (
-          <SubmitError message={form.formState.errors.root.message} />
-        )}
-        <LoadingButton isLoading={isPending}>Sign Up</LoadingButton>
+        </div>
+
+        <LoadingButton isLoading={isPending} className='w-full mt-6'>
+          Sign Up
+        </LoadingButton>
       </form>
     </Form>
   );
