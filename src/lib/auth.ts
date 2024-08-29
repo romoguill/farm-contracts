@@ -20,9 +20,10 @@ export const lucia = new Lucia(adapter, {
   },
   getUserAttributes(attributes) {
     return {
-      googleId: attributes.google_id,
-      username: attributes.username,
       email: attributes.email,
+      name: attributes.name,
+      username: attributes.username,
+      googleId: attributes.google_id,
     };
   },
 });
@@ -38,6 +39,7 @@ interface DatabaseUserAttributes {
   google_id: number;
   username: string;
   email: string;
+  name: string;
 }
 
 // HASHING OPTIONS

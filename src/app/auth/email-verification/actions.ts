@@ -17,14 +17,9 @@ export async function emailVerification(code: string) {
   }
 
   // Validate code sent and the one stored in DB
-  const [storedCode] = await db
-    .delete(emailVerificationCode)
-    .where(eq(emailVerificationCode.userId, user.id))
-    .returning({
-      code: emailVerificationCode.code,
-      expiresAt: emailVerificationCode.expiresAt,
-      email: emailVerificationCode.email,
-    });
+  const storedCode = await db.query.emailVerificationCode.findFirst({
+    where: eq(userTable.id, user.id),
+  });
 
   if (!storedCode) {
     return { error: 'User has no code associated' };
@@ -55,6 +50,10 @@ export async function emailVerification(code: string) {
     sessionCookie.value,
     sessionCookie.attributes
   );
+
+  await db
+    .delete(emailVerificationCode)
+    .where(eq(emailVerificationCode.userId, user.id));
 
   return redirect('/dashboard');
 }

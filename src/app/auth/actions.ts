@@ -22,6 +22,34 @@ import { redirect } from 'next/navigation';
 import { sendEmail } from '../emails/actions';
 import CodeVerification from '../emails/_templates/code-verification';
 
+export async function sendVerificationEmail(
+  userId: string,
+  name: string,
+  email: string
+) {
+  const verificationCode = await generateEmailVerificationCode(userId, email);
+  const { error } = await sendEmail(
+    process.env.DOMAIN_SENDER!,
+    [email],
+    'Verification Code',
+    CodeVerification({ name, code: verificationCode })
+  );
+
+  return { error: error?.message ?? null };
+}
+
+export async function resendVerificationEmail() {
+  const { user } = await validateRequest();
+
+  if (!user) {
+    return { error: 'Invalid credentials' };
+  }
+
+  const { error } = await sendVerificationEmail(user.id, user.name, user.email);
+
+  return { error };
+}
+
 export async function signUpWithCredentials(payload: SignUpCredentials) {
   const { email, name, password } = signUpCredentialsSchema.parse(payload);
 
@@ -44,16 +72,14 @@ export async function signUpWithCredentials(payload: SignUpCredentials) {
       passwordHashed,
     });
 
-    const verificationCode = await generateEmailVerificationCode(userId, email);
-    const { error: emailError } = await sendEmail(
-      process.env.DOMAIN_SENDER!,
-      [email],
-      'Verification Code',
-      CodeVerification({ name, code: verificationCode })
+    const { error: emailError } = await sendVerificationEmail(
+      userId,
+      name,
+      email
     );
 
     if (emailError) {
-      console.error(emailError.message);
+      console.error(emailError);
       return { error: 'There was a problem sending verification code' };
     }
 
@@ -64,12 +90,12 @@ export async function signUpWithCredentials(payload: SignUpCredentials) {
       sessionCookie.value,
       sessionCookie.attributes
     );
-
-    return redirect('/auth/email-verification');
   } catch (error) {
     console.error(error);
     return { error: 'Something went wrong when creating user' };
   }
+
+  return redirect('/auth/email-verification');
 }
 
 export async function loginWithCredentials(payload: LoginCredentials) {
