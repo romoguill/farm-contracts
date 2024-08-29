@@ -1,4 +1,5 @@
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { pgTable, serial, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -24,7 +25,9 @@ export const session = pgTable('session', {
 });
 
 export const emailVerificationCode = pgTable('email_verification_code', {
-  id: text('id').primaryKey(),
+  id: uuid('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   code: text('code'),
   userId: text('userId').references(() => user.id),
   email: text('email'),

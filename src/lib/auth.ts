@@ -1,10 +1,13 @@
 import { Lucia, Session, User } from 'lucia';
 import { db } from './dbClient';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { session, user } from '@/db/schema';
+import { emailVerificationCode, session, user } from '@/db/schema';
 import { Google } from 'arctic';
 import { cache } from 'react';
 import { cookies } from 'next/headers';
+import { eq } from 'drizzle-orm';
+import { TimeSpan, createDate } from 'oslo';
+import { generateRandomString, alphabet } from 'oslo/crypto';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, session, user);
 
@@ -93,4 +96,19 @@ export const validateRequest = cache(
 export async function generateEmailVerificationCode(
   userId: string,
   email: string
-): Promise<string> {}
+): Promise<string> {
+  // Delete previous generated codes, only one valid per user
+  await db
+    .delete(emailVerificationCode)
+    .where(eq(emailVerificationCode.userId, userId));
+
+  const code = generateRandomString(8, alphabet('0-9'));
+  await db.insert(emailVerificationCode).values({
+    userId,
+    email,
+    code,
+    expiresAt: createDate(new TimeSpan(15, 'm')),
+  });
+
+  return code;
+}
