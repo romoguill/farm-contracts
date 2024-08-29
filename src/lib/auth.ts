@@ -52,6 +52,7 @@ export const google = new Google(
   process.env.GOOGLE_REDIRECT_URL!
 );
 
+// AUTH GUARD FOR SERVER STUFF
 export const validateRequest = cache(
   async (): Promise<
     { user: User; session: Session } | { user: null; session: null }
@@ -87,3 +88,9 @@ export const validateRequest = cache(
     return result;
   }
 );
+
+// EMAIL CODE GENERATOR
+export async function generateEmailVerificationCode(
+  userId: string,
+  email: string
+): Promise<string> {}

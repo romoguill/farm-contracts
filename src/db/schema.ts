@@ -22,3 +22,11 @@ export const session = pgTable('session', {
     mode: 'date',
   }).notNull(),
 });
+
+export const emailVerificationCode = pgTable('email_verification_code', {
+  id: text('id').primaryKey(),
+  code: text('code'),
+  userId: text('userId').references(() => user.id),
+  email: text('email'),
+  expiresAt: timestamp('expires_at'),
+});
