@@ -11,32 +11,30 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { SignUpCredentials, signUpCredentialsSchema } from '@/lib/validation';
+import { LoginCredentials, loginCredentialsSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { signUpWithCredentials } from '../actions';
+import { loginWithCredentials } from '../actions';
 import PasswordInput from './password-input';
-import { useRouter } from 'next/navigation';
 
-export default function SignUpForm() {
+export default function LoginForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const form = useForm<SignUpCredentials>({
-    resolver: zodResolver(signUpCredentialsSchema),
+  const form = useForm<LoginCredentials>({
+    resolver: zodResolver(loginCredentialsSchema),
     defaultValues: {
       email: '',
-      name: '',
       password: '',
-      passwordConfirm: '',
     },
   });
 
-  const onSubmit: SubmitHandler<SignUpCredentials> = (data) => {
+  const onSubmit: SubmitHandler<LoginCredentials> = (data) => {
     startTransition(async () => {
-      const { error } = await signUpWithCredentials(data);
+      const { error } = await loginWithCredentials(data);
       if (!error) {
         return router.replace('/dashboard');
       }
@@ -48,19 +46,6 @@ export default function SignUpForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
-        <FormField
-          control={form.control}
-          name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name='email'
@@ -91,27 +76,11 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='passwordConfirm'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  {...field}
-                  isVisible={isPasswordVisible}
-                  onChangeVisibility={setIsPasswordVisible}
-                  confirmation
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         {form.formState.errors.root?.message && (
           <SubmitError message={form.formState.errors.root.message} />
         )}
+
         <LoadingButton isLoading={isPending}>Sign Up</LoadingButton>
       </form>
     </Form>
