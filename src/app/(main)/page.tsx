@@ -8,8 +8,6 @@ async function MainPage() {
     <div>
       MainPage
       <p>User: {user?.username}</p>
-      <LogoutButton />
-      <LoadingButton isLoading={false}>Save</LoadingButton>
     </div>
   );
 }
