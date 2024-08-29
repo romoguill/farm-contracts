@@ -1,7 +1,12 @@
 'use server';
 
 import { user } from '@/db/schema';
-import { HASHING_OPTIONS, lucia, validateRequest } from '@/lib/auth';
+import {
+  generateEmailVerificationCode,
+  HASHING_OPTIONS,
+  lucia,
+  validateRequest,
+} from '@/lib/auth';
 import { db } from '@/lib/dbClient';
 import {
   LoginCredentials,
@@ -14,6 +19,8 @@ import { eq } from 'drizzle-orm';
 import { generateIdFromEntropySize } from 'lucia';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { sendEmail } from '../emails/actions';
+import CodeVerification from '../emails/_templates/code-verification';
 
 export async function signUpWithCredentials(payload: SignUpCredentials) {
   const { email, name, password } = signUpCredentialsSchema.parse(payload);
@@ -36,6 +43,19 @@ export async function signUpWithCredentials(payload: SignUpCredentials) {
       name,
       passwordHashed,
     });
+
+    const verificationCode = await generateEmailVerificationCode(userId, email);
+    const { error: emailError } = await sendEmail(
+      process.env.DOMAIN_SENDER!,
+      [email],
+      'Verification Code',
+      CodeVerification({ name, code: verificationCode })
+    );
+
+    if (emailError) {
+      console.error(emailError.message);
+      return { error: 'There was a problem sending verification code' };
+    }
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
