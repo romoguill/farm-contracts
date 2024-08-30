@@ -55,8 +55,12 @@ export const contract = pgTable('contract', {
   startDate: timestamp('start_date').notNull(),
   endDate: timestamp('end_date').notNull(),
   soyKgs: smallint('soy_kgs').notNull(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-  parcelId: uuid('parcel_id').references(() => parcel.id),
+  userId: text('user_id')
+    .references(() => user.id, { onDelete: 'cascade' })
+    .notNull(),
+  parcelId: uuid('parcel_id')
+    .references(() => parcel.id)
+    .notNull(),
 });
 
 export const parcel = pgTable(
@@ -66,7 +70,9 @@ export const parcel = pgTable(
       .primaryKey()
       .default(sql`gen_random_uuid()`),
     label: char('label', { length: 2 }).unique(),
-    userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .references(() => user.id, { onDelete: 'cascade' })
+      .notNull(),
     coordinates: doublePrecision('coordinates').array(2).array().notNull(),
     area: decimal('area').notNull(),
   },
