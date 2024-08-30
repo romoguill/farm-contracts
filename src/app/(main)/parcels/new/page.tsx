@@ -1,8 +1,8 @@
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import CreateContractForm from '../../_components/forms/create-contract-form';
+import CreateParcelForm from '../../_components/forms/create-parcel-form';
 
-async function NewContractPage() {
+async function NewParcelsPage() {
   const { session } = await validateRequest();
 
   if (!session) {
@@ -11,9 +11,8 @@ async function NewContractPage() {
 
   return (
     <div>
-      NewContractPage
-      <CreateContractForm />
+      <CreateParcelForm />
     </div>
   );
 }
-export default NewContractPage;
+export default NewParcelsPage;

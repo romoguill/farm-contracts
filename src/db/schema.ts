@@ -1,12 +1,11 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   char,
   decimal,
   doublePrecision,
-  numeric,
   pgTable,
-  serial,
+  primaryKey,
   smallint,
   text,
   timestamp,
@@ -26,6 +25,11 @@ export const user = pgTable('user', {
   createdAt: timestamp('created_at'),
   updatedAt: timestamp('updated_at'),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+  contracts: many(contract),
+  parcels: many(parcel),
+}));
 
 export const session = pgTable('session', {
   id: text('id').primaryKey(),
@@ -63,6 +67,14 @@ export const contract = pgTable('contract', {
     .notNull(),
 });
 
+export const contractRelations = relations(contract, ({ one, many }) => ({
+  owner: one(user, {
+    fields: [contract.userId],
+    references: [user.id],
+  }),
+  contractToParcel: many(contractToParcel),
+}));
+
 export const parcel = pgTable(
   'parcel',
   {
@@ -78,5 +90,42 @@ export const parcel = pgTable(
   },
   (t) => ({
     unq: unique().on(t.label, t.userId),
+  })
+);
+
+export const parcelRelations = relations(parcel, ({ one, many }) => ({
+  owner: one(user, {
+    fields: [parcel.userId],
+    references: [user.id],
+  }),
+  contractToParcel: many(contractToParcel),
+}));
+
+export const contractToParcel = pgTable(
+  'contract_to_parcel',
+  {
+    contractId: uuid('contract_id')
+      .notNull()
+      .references(() => contract.id),
+    parcelId: uuid('parcel_id')
+      .notNull()
+      .references(() => parcel.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.contractId, t.parcelId] }),
+  })
+);
+
+export const contractToParcelRelations = relations(
+  contractToParcel,
+  ({ one }) => ({
+    contract: one(contract, {
+      fields: [contractToParcel.contractId],
+      references: [contract.id],
+    }),
+    parcel: one(parcel, {
+      fields: [contractToParcel.parcelId],
+      references: [parcel.id],
+    }),
   })
 );

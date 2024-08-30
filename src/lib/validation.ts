@@ -31,7 +31,6 @@ export const createContractSchema = z.object({
     .positive('Kilograms of soy must be greater than 1')
     .gt(0, 'Kilograms of soy must be greater than 1'),
   parcelId: z.array(z.string()).nonempty(),
-  userId: z.string(),
 });
 
 export type CreateContract = z.infer<typeof createContractSchema>;
@@ -40,6 +39,10 @@ export type CreateContract = z.infer<typeof createContractSchema>;
 export const createParcelSchema = z.object({
   label: z.string().length(2),
   coordinates: z.array(z.array(z.number()).length(2)),
-  area: z.number().positive().gt(0),
-  userId: z.string(),
+  area: z.coerce
+    .number({ message: 'Must be a positive number' })
+    .positive()
+    .gt(0),
 });
+
+export type CreateParcel = z.infer<typeof createParcelSchema>;
