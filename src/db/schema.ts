@@ -1,10 +1,16 @@
 import { sql } from 'drizzle-orm';
 import {
   boolean,
+  char,
+  decimal,
+  doublePrecision,
+  numeric,
   pgTable,
   serial,
+  smallint,
   text,
   timestamp,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 
@@ -41,3 +47,30 @@ export const emailVerificationCode = pgTable('email_verification_code', {
   email: text('email').notNull(),
   expiresAt: timestamp('expires_at').notNull(),
 });
+
+export const contract = pgTable('contract', {
+  id: uuid('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date').notNull(),
+  soyKgs: smallint('soy_kgs').notNull(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  parcelId: uuid('parcel_id').references(() => parcel.id),
+});
+
+export const parcel = pgTable(
+  'parcel',
+  {
+    id: uuid('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    label: char('label', { length: 2 }).unique(),
+    userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+    coordinates: doublePrecision('coordinates').array(2).array().notNull(),
+    area: decimal('area').notNull(),
+  },
+  (t) => ({
+    unq: unique().on(t.label, t.userId),
+  })
+);
