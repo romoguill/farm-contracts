@@ -1,16 +1,9 @@
 'use client';
 
 import { Parcel } from '@/db/schema';
-import ParcelShape from './parcel-shape';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useMouse } from '@/hooks/useMouse';
 import CursorTooltip from './cursor-tooltip';
+import ParcelShape from './parcel-shape';
 
 interface ParcelViewerProps {
   parcels: Parcel[];
@@ -18,8 +11,7 @@ interface ParcelViewerProps {
 }
 
 function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
-  const [focusedParcel, setFocusedParcel] = useState<string | null>(null);
-  const position = useMouse();
+  const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
 
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
   // First reduce gets the highest x coordinate from each parcel and the second one gets the highest among all parcels
@@ -47,23 +39,16 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
           parcel={parcel}
           viewerWidth={viewerWidth}
           maxXCoordinate={maxXCoordinate}
-          onShapeFocused={(id) => setFocusedParcel(id)}
-          focused={focusedParcel === parcel.id}
+          onShapeFocused={(parcel) => setFocusedParcel(parcel)}
+          focused={focusedParcel?.id === parcel.id ?? null}
         />
       ))}
-      <TooltipProvider delayDuration={0}>
-        <Tooltip open={true}>
-          <TooltipTrigger asChild>
-            <CursorTooltip />
-          </TooltipTrigger>
-          <TooltipContent className='w-30 h-30 bg-black' sideOffset={20}>
-            <p className='text-white'>
-              {/* {parcels.find((parcel) => parcel.id === focusedParcel)?.label} */}
-              asdasd
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+
+      {focusedParcel && (
+        <CursorTooltip
+          data={{ area: focusedParcel.area, label: focusedParcel.label }}
+        />
+      )}
     </div>
   );
 }
