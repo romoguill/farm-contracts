@@ -85,8 +85,9 @@ export const parcel = pgTable(
     userId: text('user_id')
       .references(() => user.id, { onDelete: 'cascade' })
       .notNull(),
-    coordinates: doublePrecision('coordinates').array(2).array().notNull(),
+    coordinates: doublePrecision('coordinates').array().array().notNull(),
     area: decimal('area').notNull(),
+    color: char('color', { length: 3 }).array().notNull(),
   },
   (t) => ({
     unq: unique().on(t.label, t.userId),
