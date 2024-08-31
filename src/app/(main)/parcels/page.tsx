@@ -13,7 +13,7 @@ async function ParcelsPage() {
   const parcels = await getParcels();
 
   return (
-    <div>
+    <div className='w-full h-full'>
       <ParcelViewer parcels={parcels} viewerWidth={400} />
     </div>
   );

@@ -1,14 +1,23 @@
 'use client';
 
 import { Parcel } from '@/db/schema';
+import { cn } from '@/lib/utils';
 
 interface ParcelShape {
   parcel: Parcel;
   viewerWidth: number;
   maxXCoordinate: number;
+  onShapeFocused: (id: string | null) => void;
+  focused: boolean;
 }
 
-function ParcelShape({ parcel, viewerWidth, maxXCoordinate }: ParcelShape) {
+function ParcelShape({
+  parcel,
+  viewerWidth,
+  maxXCoordinate,
+  onShapeFocused,
+  focused,
+}: ParcelShape) {
   const calculateParcelPolygon = (coordinates: Parcel['coordinates']) => {
     const flatCoordinates = coordinates.flat();
 
@@ -25,15 +34,24 @@ function ParcelShape({ parcel, viewerWidth, maxXCoordinate }: ParcelShape) {
   };
 
   return (
-    <div
-      className={`absolute bg-red-500`}
-      style={{
-        backgroundColor: `rgb(${parcel.color[0]},${parcel.color[1]},${parcel.color[2]})`,
-        clipPath: calculateParcelPolygon(parcel.coordinates),
-        height: `${viewerWidth}px`,
-        width: `${viewerWidth}px`,
-      }}
-    ></div>
+    <>
+      <div
+        className={cn(
+          `absolute left-1/2 -translate-x-1/2 bg-red-500 border-black`,
+          {
+            'opacity-80': !focused,
+          }
+        )}
+        style={{
+          backgroundColor: `rgb(${parcel.color[0]},${parcel.color[1]},${parcel.color[2]})`,
+          clipPath: calculateParcelPolygon(parcel.coordinates),
+          height: `${viewerWidth}px`,
+          width: `${viewerWidth}px`,
+        }}
+        onMouseEnter={() => onShapeFocused(parcel.id)}
+        onMouseLeave={() => onShapeFocused(null)}
+      ></div>
+    </>
   );
 }
 export default ParcelShape;
