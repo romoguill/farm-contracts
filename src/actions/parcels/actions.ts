@@ -1,11 +1,11 @@
 'use server';
 
-import { parcel } from '@/db/schema';
+import { Parcel, parcel } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
 import { eq } from 'drizzle-orm';
 
-export async function getParcels() {
+export async function getParcels(): Promise<Parcel[]> {
   const { user } = await validateRequest();
   if (!user) {
     throw new Error('Invalid credentials');

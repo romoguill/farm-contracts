@@ -94,6 +94,8 @@ export const parcel = pgTable(
   })
 );
 
+export type Parcel = typeof parcel.$inferSelect;
+
 export const parcelRelations = relations(parcel, ({ one, many }) => ({
   owner: one(user, {
     fields: [parcel.userId],
