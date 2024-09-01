@@ -3,7 +3,7 @@
 import { Parcel, parcel } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 export async function getParcels(): Promise<Parcel[]> {
   const { user } = await validateRequest();
@@ -13,6 +13,7 @@ export async function getParcels(): Promise<Parcel[]> {
 
   const parcels = await db.query.parcel.findMany({
     where: eq(parcel.userId, user.id),
+    orderBy: [asc(parcel.label)],
   });
 
   return parcels;

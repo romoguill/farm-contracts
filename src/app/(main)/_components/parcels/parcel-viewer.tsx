@@ -16,7 +16,6 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
   // First reduce gets the highest x coordinate from each parcel and the second one gets the highest among all parcels
   const calculateMaxXCoordinate = useCallback((parcels: Parcel[]) => {
-    console.log('calclulation run');
     return parcels.reduce((prev1, curr1) => {
       const maxPerParcel = curr1.coordinates.reduce((prev2, curr2) => {
         return prev2 < curr2[0] ? curr2[0] : prev2;

@@ -21,7 +21,6 @@ function ParcelShape({
 }: ParcelShape) {
   const calculateParcelPolygon = useCallback(
     (coordinates: Parcel['coordinates']) => {
-      console.log('calcultion 2');
       const flatCoordinates = coordinates.flat();
 
       let polygonArray = [];

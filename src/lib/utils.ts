@@ -12,3 +12,7 @@ export function formatDateFromCalendar(date: Date) {
 
   return `${year}-${month}-${day}`;
 }
+
+export function getRgbString(rgb: string[], a: string = '1') {
+  return `rgba(${rgb.join(',')},${a})`;
+}
