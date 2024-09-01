@@ -1,8 +1,7 @@
-import { validateRequest } from '@/lib/auth';
-import ParcelViewer from '../_components/parcels/parcel-viewer';
-import { redirect } from 'next/navigation';
 import { getParcels } from '@/actions/parcels/actions';
-import ParcelList from '../_components/parcels/parcel-list';
+import { validateRequest } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import ParcelViewer from '../_components/parcels/parcel-viewer';
 
 async function ParcelsPage() {
   const { session } = await validateRequest();
@@ -15,7 +14,6 @@ async function ParcelsPage() {
 
   return (
     <div className='w-full h-full'>
-      <ParcelList parcels={parcels} />
       <ParcelViewer parcels={parcels} viewerWidth={623} />
     </div>
   );

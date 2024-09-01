@@ -4,6 +4,7 @@ import { Parcel } from '@/db/schema';
 import { useCallback, useMemo, useState } from 'react';
 import CursorTooltip from './cursor-tooltip';
 import ParcelShape from './parcel-shape';
+import ParcelList from './parcel-list';
 
 interface ParcelViewerProps {
   parcels: Parcel[];
@@ -12,6 +13,7 @@ interface ParcelViewerProps {
 
 function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
   const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
+  const [graphFocused, setGraphFocused] = useState(false);
 
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
   // First reduce gets the highest x coordinate from each parcel and the second one gets the highest among all parcels
@@ -32,18 +34,29 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
 
   return (
     <div className='relative w-full h-full mx-auto'>
-      {parcels.map((parcel) => (
-        <ParcelShape
-          key={parcel.label}
-          parcel={parcel}
-          viewerWidth={viewerWidth}
-          maxXCoordinate={maxXCoordinate}
-          onShapeFocused={(parcel) => setFocusedParcel(parcel)}
-          focused={focusedParcel?.id === parcel.id ?? null}
-        />
-      ))}
+      <ParcelList
+        parcels={parcels}
+        onFocus={(parcel) => setFocusedParcel(parcel)}
+      />
+      <div
+        onMouseOver={() => setGraphFocused(true)}
+        onMouseLeave={() => setGraphFocused(false)}
+      >
+        {parcels.map((parcel) => (
+          <ParcelShape
+            key={parcel.label}
+            parcel={parcel}
+            viewerWidth={viewerWidth}
+            maxXCoordinate={maxXCoordinate}
+            onShapeFocused={(parcel) => {
+              setFocusedParcel(parcel);
+            }}
+            focused={focusedParcel?.id === parcel.id ?? null}
+          />
+        ))}
+      </div>
 
-      {focusedParcel && (
+      {graphFocused && focusedParcel && (
         <CursorTooltip
           data={{ area: focusedParcel.area, label: focusedParcel.label }}
         />
