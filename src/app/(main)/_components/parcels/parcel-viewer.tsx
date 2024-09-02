@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import CursorTooltip from './cursor-tooltip';
 import ParcelShape from './parcel-shape';
 import ParcelList from './parcel-list';
+import ParcelStats from './parcel-stats';
 
 interface ParcelViewerProps {
   parcels: Parcel[];
@@ -13,6 +14,7 @@ interface ParcelViewerProps {
 
 function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
   const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
+  const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
 
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
@@ -33,27 +35,37 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
   );
 
   return (
-    <div className='relative w-full h-full mx-auto'>
-      <ParcelList
-        parcels={parcels}
-        onFocus={(parcel) => setFocusedParcel(parcel)}
-      />
-      <div
-        onMouseOver={() => setGraphFocused(true)}
-        onMouseLeave={() => setGraphFocused(false)}
-      >
-        {parcels.map((parcel) => (
-          <ParcelShape
-            key={parcel.label}
-            parcel={parcel}
-            viewerWidth={viewerWidth}
-            maxXCoordinate={maxXCoordinate}
-            onShapeFocused={(parcel) => {
-              setFocusedParcel(parcel);
-            }}
-            focused={focusedParcel?.id === parcel.id ?? null}
-          />
-        ))}
+    <div className='relative w-full h-full mx-auto grid grid-cols-2'>
+      <div>
+        <ParcelList
+          parcels={parcels}
+          onFocus={(parcel) => setFocusedParcel(parcel)}
+          selectedParcel={selectedParcel}
+          onSelect={(parcel) => setSelectedParcel(parcel)}
+        />
+
+        <div
+          className='flex max-w-[1200px]'
+          onMouseOver={() => setGraphFocused(true)}
+          onMouseLeave={() => setGraphFocused(false)}
+        >
+          {parcels.map((parcel) => (
+            <ParcelShape
+              key={parcel.label}
+              parcel={parcel}
+              viewerWidth={viewerWidth}
+              maxXCoordinate={maxXCoordinate}
+              onShapeFocused={(parcel) => {
+                setFocusedParcel(parcel);
+              }}
+              focused={focusedParcel?.id === parcel.id ?? null}
+              onShapeSelected={(parcel) => setSelectedParcel(parcel)}
+              selected={selectedParcel?.id === parcel.id ?? null}
+            />
+          ))}
+        </div>
+
+        {focusedParcel && <ParcelStats parcel={focusedParcel} />}
       </div>
 
       {graphFocused && focusedParcel && (

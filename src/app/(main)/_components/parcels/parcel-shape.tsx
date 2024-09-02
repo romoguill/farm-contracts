@@ -8,8 +8,10 @@ interface ParcelShape {
   parcel: Parcel;
   viewerWidth: number;
   maxXCoordinate: number;
-  onShapeFocused: (id: Parcel | null) => void;
+  onShapeFocused: (parcel: Parcel | null) => void;
   focused: boolean;
+  onShapeSelected: (parcel: Parcel | null) => void;
+  selected: boolean;
 }
 
 function ParcelShape({
@@ -18,6 +20,8 @@ function ParcelShape({
   maxXCoordinate,
   onShapeFocused,
   focused,
+  onShapeSelected,
+  selected,
 }: ParcelShape) {
   const calculateParcelPolygon = useCallback(
     (coordinates: Parcel['coordinates']) => {
@@ -46,12 +50,9 @@ function ParcelShape({
   return (
     <>
       <div
-        className={cn(
-          `absolute left-1/2 -translate-x-1/2 bg-red-500 border-black`,
-          {
-            'opacity-80': !focused,
-          }
-        )}
+        className={cn(`absolute left-0  bg-red-500 border-black`, {
+          'opacity-80': !focused && !selected,
+        })}
         style={{
           backgroundColor: `rgb(${parcel.color[0]},${parcel.color[1]},${parcel.color[2]})`,
           clipPath: clipPath,
@@ -60,7 +61,10 @@ function ParcelShape({
         }}
         onMouseEnter={() => onShapeFocused(parcel)}
         onMouseLeave={() => onShapeFocused(null)}
-      ></div>
+        onClick={() =>
+          selected ? onShapeSelected(null) : onShapeSelected(parcel)
+        }
+      />
     </>
   );
 }
