@@ -19,7 +19,7 @@ function ParcelLegend({ parcels, onFocus }: ParcelLegendProps) {
           onMouseLeave={() => onFocus(null)}
         >
           <span
-            className={cn('rounded-sm h-5 w-5 flex-shrink-0')}
+            className={cn('rounded-sm h-5 w-5 flex-shrink-0 opacity-80')}
             style={{ backgroundColor: getRgbString(parcel.color) }}
           />
           <span className='text-sm font-bold text-muted-foreground flex-shrink-0'>
