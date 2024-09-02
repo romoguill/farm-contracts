@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate"
+    "migrate": "drizzle-kit migrate",
+    "seed:dev": "node ./src/db/seed/seed.parcel.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
