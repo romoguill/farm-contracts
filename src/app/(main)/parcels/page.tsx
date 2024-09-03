@@ -15,7 +15,7 @@ async function ParcelsPage() {
 
   return (
     <div className='w-full h-full flex'>
-      <ParcelViewer parcels={parcels} viewerWidth={623} />
+      <ParcelViewer parcels={parcels} viewerWidth={'md'} />
     </div>
   );
 }

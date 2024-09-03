@@ -6,7 +6,7 @@ interface ParcelStatsProps {
 
 function ParcelStats({ parcel }: ParcelStatsProps) {
   return (
-    <article className='border border-slate-300 shadow-md rounded-2xl p-3 w-[350px] absolute top-0 left-2/3'>
+    <article className='border mt-5 border-slate-300 shadow-md rounded-2xl p-3 w-[350px] col-start-2 justify-self-end'>
       <h3 className='text-lg'>{`Parcel ${parcel.label} Summary`}</h3>
       <ul>
         <li className='flex justify-between'>

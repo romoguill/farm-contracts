@@ -50,9 +50,12 @@ function ParcelShape({
   return (
     <>
       <div
-        className={cn(`absolute left-0  bg-red-500 border-black`, {
-          'opacity-80': !focused && !selected,
-        })}
+        className={cn(
+          `absolute left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0  bg-red-500 border-black`,
+          {
+            'opacity-80': !focused && !selected,
+          }
+        )}
         style={{
           backgroundColor: `rgb(${parcel.color[0]},${parcel.color[1]},${parcel.color[2]})`,
           clipPath: clipPath,
