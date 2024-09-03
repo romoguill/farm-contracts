@@ -2,6 +2,8 @@ import resolveConfig from 'tailwindcss/resolveConfig';
 import customConfig from '../../tailwind.config';
 import { useEffect, useState } from 'react';
 
+export type TwScreen = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
 export function useCurrentBreakpoint() {
   const twConfig = resolveConfig(customConfig);
   const { screens: breakpoints } = twConfig.theme;
@@ -20,14 +22,14 @@ export function useCurrentBreakpoint() {
 
   const getTailwindCurrentBreakpoint = () => {
     if (!currentScreenWidth) return;
-    let twScreen = '';
+    let twScreen: TwScreen = '2xl';
     let breakpoint = 0;
     Object.entries(breakpoints).forEach(([key, value]) => {
       const twBreakPointParsed = Number(value.replace('px', ''));
       if (twBreakPointParsed >= currentScreenWidth) {
         if (breakpoint === 0 || breakpoint > twBreakPointParsed) {
           breakpoint = twBreakPointParsed;
-          twScreen = key;
+          twScreen = key as TwScreen;
         }
       }
     });

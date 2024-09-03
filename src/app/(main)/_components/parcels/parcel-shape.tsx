@@ -29,7 +29,6 @@ function ParcelShape({
 
       let polygonArray = [];
       for (let i = 0; i < flatCoordinates.length; i += 2) {
-        console.log(flatCoordinates[i] / maxXCoordinate);
         polygonArray.push(
           `${(flatCoordinates[i] / maxXCoordinate) * 100}% ${
             (flatCoordinates[i + 1] / maxXCoordinate) * 100

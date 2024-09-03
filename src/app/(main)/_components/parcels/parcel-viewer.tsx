@@ -7,27 +7,25 @@ import ParcelShape from './parcel-shape';
 import ParcelList from './parcel-list';
 import ParcelStats from './parcel-stats';
 import { cn } from '@/lib/utils';
-import { useCurrentBreakpoint } from '@/hooks/useCurrentBreakpoint';
-
-type ViewerWidth = 'sm' | 'md' | 'lg';
+import { TwScreen, useCurrentBreakpoint } from '@/hooks/useCurrentBreakpoint';
 
 interface ParcelViewerProps {
   parcels: Parcel[];
-  viewerWidth: ViewerWidth;
 }
 
-const VIEWER_WIDTH_PX: Record<ViewerWidth, number> = {
+const VIEWER_WIDTH_PX: Record<TwScreen, number> = {
   sm: 300,
-  md: 650,
-  lg: 800,
+  md: 600,
+  lg: 700,
+  xl: 850,
+  '2xl': 850,
 };
 
-function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
+function ParcelViewer({ parcels }: ParcelViewerProps) {
   const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
   const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
-  const tw = useCurrentBreakpoint();
-  console.log(tw);
+  const { currentScreenWidth, tw } = useCurrentBreakpoint();
 
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
   // First reduce gets the highest x coordinate from each parcel and the second one gets the highest among all parcels
@@ -64,7 +62,7 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
 
   // Get the height in px that will keep and aspect ratio of 1:1. Used for styling flex containers correctly
   const viewerHeight =
-    (maxYCoordinate * VIEWER_WIDTH_PX[viewerWidth]) / maxXCoordinate;
+    (maxYCoordinate * VIEWER_WIDTH_PX[tw?.twScreen ?? 'sm']) / maxXCoordinate;
 
   return (
     <div
@@ -90,7 +88,7 @@ function ParcelViewer({ parcels, viewerWidth }: ParcelViewerProps) {
             <ParcelShape
               key={parcel.label}
               parcel={parcel}
-              viewerWidth={VIEWER_WIDTH_PX[viewerWidth]}
+              viewerWidth={VIEWER_WIDTH_PX[tw?.twScreen ?? 'sm']}
               maxXCoordinate={maxXCoordinate}
               onShapeFocused={(parcel) => {
                 setFocusedParcel(parcel);
