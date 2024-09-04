@@ -1,5 +1,7 @@
 'use client';
 
+import { getParcels } from '@/actions/parcels/actions';
+import CustomLoader from '@/components/custom-loader';
 import SubmitError from '@/components/forms/submit-error';
 import LoadingButton from '@/components/loading-button';
 import { Button } from '@/components/ui/button';
@@ -21,27 +23,49 @@ import {
 import { cn, formatDateFromCalendar } from '@/lib/utils';
 import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import SelectParcelsInput from './select-parcels-input';
 
-export default function CreateContractForm() {
+interface CreateContractFormProps {}
+
+export default function CreateContractForm({}: CreateContractFormProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPending, startTransition] = useTransition();
-
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
     defaultValues: {
       startDate: new Date(),
       endDate: new Date(),
       soyKgs: 0,
-      userId: '',
       parcelId: [],
     },
   });
+  const {
+    data: parcels,
+    isPending: isPendingParcels,
+    isError: isErrorParcels,
+  } = useQuery({
+    queryKey: ['parcels'],
+    queryFn: () => getParcels(),
+  });
+
+  if (isPendingParcels) {
+    return <CustomLoader size='lg' />;
+  }
+
+  if (isErrorParcels) {
+    return (
+      <p>Oops! There was an error setting up the from. Try again later.</p>
+    );
+  }
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
-    startTransition(async () => {});
+    startTransition(async () => {
+      console.log(data);
+    });
   };
 
   return (
@@ -134,7 +158,24 @@ export default function CreateContractForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
-                <Input {...field} type='number' />
+                <Input {...field} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='parcelId'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
+                <SelectParcelsInput
+                  onChange={field.onChange}
+                  values={field.value}
+                  parcels={parcels}
+                />
+                <FormMessage />
               </FormItem>
             )}
           />

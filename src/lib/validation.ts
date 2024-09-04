@@ -26,8 +26,8 @@ export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
 export const createContractSchema = z.object({
   startDate: z.date(),
   endDate: z.date(),
-  soyKgs: z
-    .number()
+  soyKgs: z.coerce
+    .number({ message: 'Must be a positive number' })
     .positive('Kilograms of soy must be greater than 1')
     .gt(0, 'Kilograms of soy must be greater than 1'),
   parcelId: z.array(z.string()).nonempty(),
