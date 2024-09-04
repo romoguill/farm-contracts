@@ -4,6 +4,7 @@ import { getParcels } from '@/actions/parcels/actions';
 import CustomLoader from '@/components/custom-loader';
 import { Button } from '@/components/ui/button';
 import { Parcel } from '@/db/schema';
+import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 
 // Pass all props except render that is handled inside this custom component
@@ -21,13 +22,34 @@ function SelectParcelsInput({
   values,
   parcels,
 }: SelectParcelsInputProps) {
+  const handleParcelSelect = (parcel: Parcel) => {
+    if (values.includes(parcel.id)) {
+      onChange(values.filter((values) => values !== parcel.id));
+    } else {
+      onChange([...values, parcel.id]);
+    }
+  };
+
   return (
     <div>
       <div className='flex gap-2'>
         {parcels.map((parcel) => (
-          <span key={parcel.label} className='bg-slate-500 p-2 rounded-xl'>
+          <Button
+            type='button'
+            size='icon'
+            variant='outline'
+            key={parcel.label}
+            className={cn(
+              'border-2 border-green-600 hover:border-green-500 transition-colors',
+              {
+                'bg-green-600 hover:border-green-500 hover:bg-green-600':
+                  values.includes(parcel.id),
+              }
+            )}
+            onClick={() => handleParcelSelect(parcel)}
+          >
             {parcel.label}
-          </span>
+          </Button>
         ))}
       </div>
     </div>
