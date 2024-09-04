@@ -50,7 +50,7 @@ function ParcelShape({
     <>
       <div
         className={cn(
-          `absolute left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0  bg-red-500 border-black`,
+          `absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0  bg-red-500 border-black`,
           {
             'opacity-80': !focused && !selected,
           }

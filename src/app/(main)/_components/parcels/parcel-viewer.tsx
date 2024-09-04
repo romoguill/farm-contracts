@@ -16,9 +16,9 @@ interface ParcelViewerProps {
 const VIEWER_WIDTH_PX: Record<TwScreen, number> = {
   sm: 300,
   md: 600,
-  lg: 700,
-  xl: 850,
-  '2xl': 850,
+  lg: 600,
+  xl: 820,
+  '2xl': 820,
 };
 
 function ParcelViewer({ parcels }: ParcelViewerProps) {
@@ -67,7 +67,7 @@ function ParcelViewer({ parcels }: ParcelViewerProps) {
   return (
     <div
       className={cn(
-        'relative w-full h-full mx-auto flex! flex-col items-center gap-10'
+        'relative w-full h-full mx-auto flex flex-col items-center gap-10 lg:grid lg:grid-cols-[600px,_1fr] xl:grid-cols-[800px,_1fr] lg:items-start'
       )}
     >
       <div>

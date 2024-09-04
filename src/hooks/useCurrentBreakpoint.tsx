@@ -20,14 +20,16 @@ export function useCurrentBreakpoint() {
     return () => window.removeEventListener('resize', listener);
   }, []);
 
-  const getTailwindCurrentBreakpoint = () => {
+  const getTailwindCurrentBreakpoint = ():
+    | { twScreen: TwScreen; breakpoint: number }
+    | undefined => {
     if (!currentScreenWidth) return;
-    let twScreen: TwScreen = '2xl';
+    let twScreen: TwScreen = 'sm';
     let breakpoint = 0;
     Object.entries(breakpoints).forEach(([key, value]) => {
       const twBreakPointParsed = Number(value.replace('px', ''));
-      if (twBreakPointParsed >= currentScreenWidth) {
-        if (breakpoint === 0 || breakpoint > twBreakPointParsed) {
+      if (twBreakPointParsed <= currentScreenWidth) {
+        if (breakpoint === 0 || breakpoint < twBreakPointParsed) {
           breakpoint = twBreakPointParsed;
           twScreen = key as TwScreen;
         }
