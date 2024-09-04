@@ -1,6 +1,6 @@
 'use client';
 
-import { getParcels } from '@/actions/parcels/actions';
+import { getParcels } from '@/actions/parcels.actions';
 import CustomLoader from '@/components/custom-loader';
 import SubmitError from '@/components/forms/submit-error';
 import LoadingButton from '@/components/loading-button';
@@ -28,6 +28,8 @@ import { CalendarIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import SelectParcelsInput from './select-parcels-input';
+import { createContract } from '@/actions/contracts.actions';
+import { toast } from 'sonner';
 
 interface CreateContractFormProps {}
 
@@ -40,7 +42,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       startDate: new Date(),
       endDate: new Date(),
       soyKgs: 0,
-      parcelId: [],
+      parcelIds: [],
     },
   });
   const {
@@ -64,7 +66,12 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     startTransition(async () => {
-      console.log(data);
+      const { error } = await createContract(data);
+      if (!error) {
+        toast.success('Contract created');
+      } else {
+        toast.error('Error creating contract');
+      }
     });
   };
 
@@ -166,7 +173,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
           <FormField
             control={form.control}
-            name='parcelId'
+            name='parcelIds'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
@@ -186,7 +193,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
         </div>
 
         <LoadingButton isLoading={isPending} className='w-full mt-6'>
-          Sign Up
+          Create
         </LoadingButton>
       </form>
     </Form>

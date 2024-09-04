@@ -1,6 +1,6 @@
 'use client';
 
-import { getParcels } from '@/actions/parcels/actions';
+import { getParcels } from '@/actions/parcels.actions';
 import CustomLoader from '@/components/custom-loader';
 import { Button } from '@/components/ui/button';
 import { Parcel } from '@/db/schema';
@@ -40,9 +40,9 @@ function SelectParcelsInput({
             variant='outline'
             key={parcel.label}
             className={cn(
-              'border-2 border-green-600 hover:border-green-500 transition-colors',
+              'border-2 border-green-600 hover:border-green-400 transition-colors',
               {
-                'bg-green-600 hover:border-green-500 hover:bg-green-600':
+                'bg-green-600 hover:border-green-400 hover:bg-green-600':
                   values.includes(parcel.id),
               }
             )}

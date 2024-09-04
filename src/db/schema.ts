@@ -62,9 +62,6 @@ export const contract = pgTable('contract', {
   userId: text('user_id')
     .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),
-  parcelId: uuid('parcel_id')
-    .references(() => parcel.id)
-    .notNull(),
 });
 
 export const contractRelations = relations(contract, ({ one, many }) => ({
