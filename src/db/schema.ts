@@ -140,7 +140,7 @@ export const uploadedFile = pgTable(
       .default(sql`gen_random_uuid()`),
     s3Id: text('s3_id').notNull(),
     name: text('name').notNull(),
-    contractId: uuid('id')
+    contractId: uuid('contract_id')
       .notNull()
       .references(() => contract.id),
   }

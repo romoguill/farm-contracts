@@ -31,8 +31,8 @@ export const createContractSchema = z.object({
     .number({ message: 'Must be a positive number' })
     .positive('Kilograms of soy must be greater than 1')
     .gt(0, 'Kilograms of soy must be greater than 1'),
-  file: z.string(),
   parcelIds: z.array(z.string()).nonempty('At least 1 parcel is required'),
+  fileIds: z.array(z.string()).min(1, 'At least 1 file is required'),
 });
 
 export type CreateContract = z.infer<typeof createContractSchema>;

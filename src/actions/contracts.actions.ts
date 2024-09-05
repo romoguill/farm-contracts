@@ -1,6 +1,6 @@
 'use server';
 
-import { contract, contractToParcel } from '@/db/schema';
+import { contract, contractToParcel, uploadedFile } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
 import { contractPDFSchema, CreateContract } from '@/lib/validation';
@@ -43,6 +43,12 @@ export async function createContract(data: CreateContract) {
           contractId: insertedContract.id,
         }))
       );
+
+      await tx.insert(uploadedFile).values({
+        contractId: insertedContract.id,
+        name: 'a',
+        s3Id: data.fileIds[0],
+      });
     });
   } catch (error) {
     console.error(error);
@@ -103,6 +109,8 @@ export async function uploadContractPdf(formData: FormData) {
     const command = new PutObjectCommand(params);
     // Upload pdf file
     await s3.send(command);
+
+    return { fileIds: [uploadId], error: null };
   } catch (error) {
     console.error(error);
     if (error instanceof ZodError) {

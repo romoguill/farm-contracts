@@ -45,7 +45,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       endDate: new Date(),
       soyKgs: 0,
       parcelIds: [],
-      file: '',
+      fileIds: [],
     },
   });
   const {
@@ -66,7 +66,13 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       setFileUpload(file);
       setFileUrl(url);
       formData.append('pdfUpload', file);
-      await uploadContractPdf(formData);
+      const { error, fileIds } = await uploadContractPdf(formData);
+      if (error !== null) {
+        toast.error('Failed to upload file');
+        return;
+      }
+
+      form.setValue('fileIds', fileIds);
     }
   };
 
@@ -82,12 +88,12 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     startTransition(async () => {
-      // const { error } = await createContract(data);
-      // if (!error) {
-      //   toast.success('Contract created');
-      // } else {
-      //   toast.error('Error creating contract');
-      // }
+      const { error } = await createContract(data);
+      if (!error) {
+        toast.success('Contract created');
+      } else {
+        toast.error('Error creating contract');
+      }
       console.log(data);
       console.log(fileUpload);
     });
@@ -209,7 +215,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
           <FormField
             control={form.control}
-            name='file'
+            name='fileIds'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>File</FormLabel>
