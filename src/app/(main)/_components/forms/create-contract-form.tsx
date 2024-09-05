@@ -24,7 +24,7 @@ import { cn, formatDateFromCalendar } from '@/lib/utils';
 import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, File, FileIcon, FileTextIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import SelectParcelsInput from './select-parcels-input';
@@ -35,6 +35,8 @@ interface CreateContractFormProps {}
 
 export default function CreateContractForm({}: CreateContractFormProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [fileUpload, setFileUpload] = useState<File | undefined>(undefined);
+  const [fileUrl, setFileUrl] = useState<string | undefined>('');
   const [isPending, startTransition] = useTransition();
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
@@ -43,6 +45,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       endDate: new Date(),
       soyKgs: 0,
       parcelIds: [],
+      file: '',
     },
   });
   const {
@@ -53,6 +56,16 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     queryKey: ['parcels'],
     queryFn: () => getParcels(),
   });
+
+  const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setFileUpload(file);
+      setFileUrl(url);
+    }
+  };
 
   if (isPendingParcels) {
     return <CustomLoader size='lg' />;
@@ -66,14 +79,18 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     startTransition(async () => {
-      const { error } = await createContract(data);
-      if (!error) {
-        toast.success('Contract created');
-      } else {
-        toast.error('Error creating contract');
-      }
+      // const { error } = await createContract(data);
+      // if (!error) {
+      //   toast.success('Contract created');
+      // } else {
+      //   toast.error('Error creating contract');
+      // }
+      console.log(data);
+      console.log(fileUpload);
     });
   };
+
+  console.log(fileUpload);
 
   return (
     <Form {...form}>
@@ -186,6 +203,39 @@ export default function CreateContractForm({}: CreateContractFormProps) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name='file'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>File</FormLabel>
+                <input
+                  type='file'
+                  accept='.pdf'
+                  onChange={(e) => handleUploadChange(e)}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div>
+            {window.navigator.pdfViewerEnabled ? (
+              <object type='application/pdf' data={fileUrl}>
+                <embed
+                  src={fileUrl}
+                  width={800}
+                  height={800}
+                  type='application/pdf'
+                />
+              </object>
+            ) : (
+              <div className='flex gap-2 items-center'>
+                <FileTextIcon />
+                <span>{fileUpload?.name}</span>
+              </div>
+            )}
+          </div>
 
           {form.formState.errors.root?.message && (
             <SubmitError message={form.formState.errors.root.message} />
