@@ -89,18 +89,18 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     startTransition(async () => {
-      const { error } = await createContract(data);
-      if (!error) {
-        toast.success('Contract created');
-      } else {
-        toast.error('Error creating contract');
-      }
-      console.log(data);
+      // const { error } = await createContract(data);
+      // if (!error) {
+      //   toast.success('Contract created');
+      // } else {
+      //   toast.error('Error creating contract');
+      // }
+      console.log({ data });
       console.log(fileUpload);
     });
   };
 
-  console.log(fileUpload);
+  console.log(form.getValues());
 
   return (
     <Form {...form}>
@@ -225,7 +225,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                   accept='.pdf'
                   onChange={(e) => handleUploadChange(e)}
                 /> */}
-                <ContractUploader onChange={handleUploadChange} />
+                <ContractUploader onChange={field.onChange} />
                 <FormMessage />
               </FormItem>
             )}
