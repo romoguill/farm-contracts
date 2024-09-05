@@ -70,6 +70,7 @@ export const contractRelations = relations(contract, ({ one, many }) => ({
     references: [user.id],
   }),
   contractToParcel: many(contractToParcel),
+  files: many(uploadedFile),
 }));
 
 export const parcel = pgTable(
@@ -129,3 +130,25 @@ export const contractToParcelRelations = relations(
     }),
   })
 );
+
+export const uploadedFile = pgTable(
+  'uploaded_file',
+
+  {
+    id: uuid('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    s3Id: text('s3_id').notNull(),
+    name: text('name').notNull(),
+    contractId: uuid('id')
+      .notNull()
+      .references(() => contract.id),
+  }
+);
+
+export const uploadedFileRelations = relations(uploadedFile, ({ one }) => ({
+  contract: one(contract, {
+    fields: [uploadedFile.contractId],
+    references: [contract.id],
+  }),
+}));
