@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export const MAX_CONTRACT_PDF_SIZE = 1500 * 1000; // 1.5 MB
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

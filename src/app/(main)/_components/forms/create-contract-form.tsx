@@ -28,7 +28,7 @@ import { CalendarIcon, File, FileIcon, FileTextIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import SelectParcelsInput from './select-parcels-input';
-import { createContract } from '@/actions/contracts.actions';
+import { createContract, uploadContractPdf } from '@/actions/contracts.actions';
 import { toast } from 'sonner';
 
 interface CreateContractFormProps {}
@@ -57,13 +57,16 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     queryFn: () => getParcels(),
   });
 
-  const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const formData = new FormData();
 
     if (file) {
       const url = URL.createObjectURL(file);
       setFileUpload(file);
       setFileUrl(url);
+      formData.append('pdfUpload', file);
+      await uploadContractPdf(formData);
     }
   };
 

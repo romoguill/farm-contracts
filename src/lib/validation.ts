@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_CONTRACT_PDF_SIZE } from './utils';
 
 // ========= AUTH =========
 export const signUpCredentialsSchema = z
@@ -35,6 +36,14 @@ export const createContractSchema = z.object({
 });
 
 export type CreateContract = z.infer<typeof createContractSchema>;
+
+export const contractPDFSchema = z
+  .instanceof(File)
+  .refine((file) => file.size <= MAX_CONTRACT_PDF_SIZE, 'Max pdf size is 1.5MB')
+  .refine(
+    (file) => file.type === 'application/pdf',
+    'Only pdf files are supported'
+  );
 
 // ========= PARCEL =========
 export const createParcelSchema = z.object({
