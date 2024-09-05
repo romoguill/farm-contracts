@@ -68,9 +68,13 @@ export async function getContracts() {
   const contracts = await db.query.contract.findMany({
     where: eq(contract.userId, user.id),
     with: {
-      contractToParcel: true,
+      files: true,
     },
   });
+
+  contracts.forEach((contract) =>
+    getContractPdfUrls(contract.files.map((file) => file.s3Id))
+  );
 
   // await getContractPdfUrls(contracts.map(contract => contract.))
 

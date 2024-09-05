@@ -142,7 +142,7 @@ export const uploadedFile = pgTable(
     name: text('name').notNull(),
     contractId: uuid('contract_id')
       .notNull()
-      .references(() => contract.id),
+      .references(() => contract.id, { onDelete: 'cascade' }),
   }
 );
 

@@ -30,6 +30,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import SelectParcelsInput from './select-parcels-input';
 import { createContract, uploadContractPdf } from '@/actions/contracts.actions';
 import { toast } from 'sonner';
+import ContractUploader from './contract-uploader';
 
 interface CreateContractFormProps {}
 
@@ -219,11 +220,12 @@ export default function CreateContractForm({}: CreateContractFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>File</FormLabel>
-                <input
+                {/* <input
                   type='file'
                   accept='.pdf'
                   onChange={(e) => handleUploadChange(e)}
-                />
+                /> */}
+                <ContractUploader onChange={handleUploadChange} />
                 <FormMessage />
               </FormItem>
             )}
