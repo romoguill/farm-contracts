@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import PDFsPreview from './pdfs-preview';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ContractUploaderProps {
   files: File[];
@@ -13,7 +14,18 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // At least chrome doesn't handle correctly the input accept prop. Handle it here
+  const isValidFileType = (files: File[]) => {
+    console.log(files);
+    return files.every((file) => file.type === 'application/pdf');
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isValidFileType(Array.from(e.target.files ?? []))) {
+      toast.error('Files must be PDFs');
+      return;
+    }
+
     onChange(Array.from(e.target.files ?? []));
   };
 
@@ -29,8 +41,13 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const droppedFiles = Array.from(e.dataTransfer.files);
+    if (!isValidFileType(droppedFiles)) {
+      toast.error('Files must be PDFs');
+      setIsDragging(false);
+      return;
+    }
+
     onChange([...files, ...droppedFiles]);
-    setIsDragging(false);
   };
 
   return (
