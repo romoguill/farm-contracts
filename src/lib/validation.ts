@@ -23,6 +23,19 @@ export const loginCredentialsSchema = z.object({
 
 export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
 
+// ========= FILES =========
+export const contractPDFSchema = z
+  .array(z.instanceof(File))
+  .min(1, 'At least must upload 1 contract file')
+  .refine(
+    (files) => files.every((file) => file.size <= MAX_CONTRACT_PDF_SIZE),
+    'Files must be smaller than 1.5MG'
+  )
+  .refine(
+    (files) => files.every((file) => file.type === 'application/pdf'),
+    'Files must be smaller than 1.5MG'
+  );
+
 // ========= CONTACTS =========
 export const createContractSchema = z.object({
   startDate: z.date(),
@@ -32,28 +45,10 @@ export const createContractSchema = z.object({
     .positive('Kilograms of soy must be greater than 1')
     .gt(0, 'Kilograms of soy must be greater than 1'),
   parcelIds: z.array(z.string()).nonempty('At least 1 parcel is required'),
-  files: z
-    .array(z.instanceof(File))
-    .min(1, 'At least must upload 1 contract file')
-    .refine(
-      (files) => files.every((file) => file.size <= MAX_CONTRACT_PDF_SIZE),
-      'Files must be smaller than 1.5MG'
-    )
-    .refine(
-      (files) => files.every((file) => file.type === 'application/pdf'),
-      'Files must be smaller than 1.5MG'
-    ),
+  files: contractPDFSchema,
 });
 
 export type CreateContract = z.infer<typeof createContractSchema>;
-
-export const contractPDFSchema = z
-  .instanceof(File)
-  .refine((file) => file.size <= MAX_CONTRACT_PDF_SIZE, 'Max pdf size is 1.5MB')
-  .refine(
-    (file) => file.type === 'application/pdf',
-    'Only pdf files are supported'
-  );
 
 // ========= PARCEL =========
 export const createParcelSchema = z.object({

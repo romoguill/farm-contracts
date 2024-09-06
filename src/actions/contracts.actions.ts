@@ -5,20 +5,26 @@ import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
 import { contractPDFSchema, CreateContract } from '@/lib/validation';
 import {
-  S3Client,
-  PutObjectCommand,
-  S3ClientConfig,
   GetObjectCommand,
   GetObjectCommandInput,
+  PutObjectCommand,
   PutObjectCommandInput,
+  S3Client,
+  S3ClientConfig,
 } from '@aws-sdk/client-s3';
-import { ZodError } from 'zod';
-import crypto from 'node:crypto';
-import { eq } from 'drizzle-orm';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { eq } from 'drizzle-orm';
+import crypto from 'node:crypto';
+import { ZodError } from 'zod';
 
 // GET ALL
-export async function createContract(data: CreateContract) {
+export async function createContract({
+  data,
+  filesSerialized,
+}: {
+  data: Omit<CreateContract, 'files'>;
+  filesSerialized: FormData;
+}) {
   const { user } = await validateRequest();
 
   if (!user) {
@@ -44,11 +50,23 @@ export async function createContract(data: CreateContract) {
         }))
       );
 
-      await tx.insert(uploadedFile).values({
-        contractId: insertedContract.id,
-        name: 'a',
-        s3Id: data.fileIds[0],
-      });
+      const { error: fileUploadError, files } = await uploadContractPdf(
+        filesSerialized
+      );
+
+      // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
+      if (fileUploadError !== null) {
+        tx.rollback();
+        throw Error("Failed to upload. Contract couldn't be created");
+      }
+
+      await tx.insert(uploadedFile).values(
+        files.map((file) => ({
+          contractId: insertedContract.id,
+          name: file.fileName,
+          s3Id: file.s3Id,
+        }))
+      );
     });
   } catch (error) {
     console.error(error);
@@ -93,28 +111,41 @@ const s3Config: S3ClientConfig = {
 const s3 = new S3Client(s3Config);
 
 export async function uploadContractPdf(formData: FormData) {
-  const file = formData.get('pdfUpload');
+  const files = formData.get('files');
 
   try {
     // Validate file (size and type)
-    const parsedFile = contractPDFSchema.parse(file);
+    const parsedFiles = contractPDFSchema.parse(files);
 
-    const uploadId = crypto.randomBytes(32).toString('hex');
-    // Get contents of the file in a node buffer
-    const fileBuffer = Buffer.from(await parsedFile.arrayBuffer());
+    let s3Ids: string[] = [];
+    const uploadPromises = parsedFiles.map(async (file) => {
+      const uploadId = crypto.randomBytes(32).toString('hex');
+      s3Ids.push(uploadId);
+      // Get contents of the file in a node buffer
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // Setup S3 command for uploading object
-    const params: PutObjectCommandInput = {
-      Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: uploadId,
-      Body: fileBuffer,
-      ContentType: 'application/pdf',
+      // Setup S3 command for uploading object
+      const params: PutObjectCommandInput = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: uploadId,
+        Body: fileBuffer,
+        ContentType: 'application/pdf',
+      };
+
+      const command = new PutObjectCommand(params);
+      // Upload pdf file
+      return s3.send(command);
+    });
+
+    const responses = await Promise.all(uploadPromises);
+
+    return {
+      files: parsedFiles.map((file, i) => ({
+        fileName: file.name,
+        s3Id: s3Ids[i],
+      })),
+      error: null,
     };
-    const command = new PutObjectCommand(params);
-    // Upload pdf file
-    await s3.send(command);
-
-    return { fileIds: [uploadId], error: null };
   } catch (error) {
     console.error(error);
     if (error instanceof ZodError) {

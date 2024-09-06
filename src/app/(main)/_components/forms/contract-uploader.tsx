@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import PDFsPreview from './pdfs-preview';
 import { cn } from '@/lib/utils';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+import PDFsPreview from './pdfs-preview';
 
 interface ContractUploaderProps {
   files: File[];
@@ -48,6 +48,7 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
     }
 
     onChange([...files, ...droppedFiles]);
+    setIsDragging(false);
   };
 
   return (

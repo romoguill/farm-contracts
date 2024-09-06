@@ -86,14 +86,18 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     startTransition(async () => {
+      // This part I'm not so sure if it's the best thing to do
+      // I could convert all data to FormData but it's simpler to just serialize the files
+
+      const formData = new FormData();
+      data.files.forEach((file) => formData.append('files', file));
+
       // const { error } = await createContract(data);
       // if (!error) {
       //   toast.success('Contract created');
       // } else {
       //   toast.error('Error creating contract');
       // }
-      console.log({ data });
-      console.log(fileUpload);
     });
   };
 

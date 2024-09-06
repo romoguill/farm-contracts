@@ -18,3 +18,36 @@ export function formatDateFromCalendar(date: Date) {
 export function getRgbString(rgb: string[], a: string = '1') {
   return `rgba(${rgb.join(',')},${a})`;
 }
+
+function createFormData(
+  obj: Record<string, any>,
+  form?: FormData,
+  namespace?: string
+): FormData {
+  const formData = form || new FormData();
+
+  for (let property in obj) {
+    if (obj.hasOwnProperty(property)) {
+      const formKey = namespace ? `${namespace}[${property}]` : property;
+
+      if (obj[property] instanceof File) {
+        formData.append(formKey, obj[property]);
+      } else if (Array.isArray(obj[property])) {
+        obj[property].forEach((element, index) => {
+          const arrayKey = `${formKey}[${index}]`;
+          if (element instanceof File) {
+            formData.append(arrayKey, element);
+          } else {
+            createFormData({ [arrayKey]: element }, formData);
+          }
+        });
+      } else if (typeof obj[property] === 'object' && obj[property] !== null) {
+        createFormData(obj[property], formData, formKey);
+      } else {
+        formData.append(formKey, obj[property]);
+      }
+    }
+  }
+
+  return formData;
+}
