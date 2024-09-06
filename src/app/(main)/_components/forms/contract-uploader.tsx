@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import PDFsPreview from './pdfs-preview';
+import { cn } from '@/lib/utils';
 
 interface ContractUploaderProps {
   files: File[];
@@ -10,22 +11,49 @@ interface ContractUploaderProps {
 
 function ContractUploader({ onChange, files }: ContractUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(Array.from(e.target.files ?? []));
   };
 
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    onChange([...files, ...droppedFiles]);
+    setIsDragging(false);
+  };
+
   return (
     <>
-      <div className='w-full h-20 border-2 border-dashed border-input flex flex-col items-center justify-center'>
+      <div
+        className={cn(
+          'w-full h-28 border-2 border-dashed border-input flex flex-col items-center justify-center',
+          {
+            'border-4 border-blue-500': isDragging,
+          }
+        )}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         <input
           ref={inputRef}
           type='file'
-          accept='.pdf'
+          accept='application/pdf'
           className='hidden'
           aria-label='Choose PDFs files'
-          onChange={handleInputChange}
           multiple
+          onChange={handleInputChange}
         />
         <p>
           Drag PDF files or{' '}
