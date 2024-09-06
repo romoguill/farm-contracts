@@ -1,33 +1,63 @@
+import { Button } from '@/components/ui/button';
+import { FileTextIcon, X } from 'lucide-react';
 import { useMemo } from 'react';
+
+interface FileParsed {
+  id: string;
+  url: string;
+  file: File;
+}
 
 interface PDFsPreviewProps {
   files: File[];
+  onRemove: (files: File[]) => void;
 }
 
-function PDFsPreview({ files }: PDFsPreviewProps) {
+function PDFsPreview({ files, onRemove }: PDFsPreviewProps) {
   console.log(files);
-  const fileHandler = useMemo(() => {
+  const filesParsed: FileParsed[] = useMemo(() => {
     return files.map((file) => ({
+      file,
+      id: crypto.randomUUID(),
       url: URL.createObjectURL(file),
-      name: file.name,
     }));
   }, [files]);
 
-  console.log(window.navigator.pdfViewerEnabled);
-  console.log(fileHandler);
+  const handleOnRemoveClick = (file: FileParsed) => {
+    onRemove(
+      filesParsed.filter((fp) => fp.id !== file.id).map((fp) => fp.file)
+    );
+  };
 
   if (window.navigator.pdfViewerEnabled) {
     return (
-      <div className='grid grid-cols-4'>
-        {fileHandler.map((file) => (
-          <object key={file.name} type='application/pdf' data={file.url}>
-            <embed
-              src={file.url}
-              width={800}
-              height={800}
-              type='application/pdf'
-            />
-          </object>
+      <div className='flex flex-col md:grid md:grid-cols-2 gap-3'>
+        {filesParsed.map((fileP) => (
+          <ul key={fileP.id}>
+            <li>
+              <div className='flex items-center gap-2'>
+                <FileTextIcon size={24} className='flex-shrink-0' />
+                <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
+                  {fileP.file.name}
+                </h5>
+                <Button
+                  className='ml-auto text-red-500'
+                  variant='link'
+                  onClick={() => handleOnRemoveClick(fileP)}
+                >
+                  <X size={16} />
+                  Remove
+                </Button>
+              </div>
+              <object
+                className='w-full'
+                type='application/pdf'
+                data={fileP.url}
+              >
+                {/* <embed src={file.url} type='application/pdf' /> */}
+              </object>
+            </li>
+          </ul>
         ))}
       </div>
     );

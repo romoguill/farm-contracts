@@ -5,12 +5,16 @@ import PDFsPreview from './pdfs-preview';
 
 interface ContractUploaderProps {
   files: File[];
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (files: File[]) => void;
 }
 
 function ContractUploader({ onChange, files }: ContractUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [values, setValues] = useState<File[] | null>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Array.from(e.target.files ?? []));
+  };
+
   return (
     <>
       <div className='w-full h-20 border-2 border-dashed border-input flex flex-col items-center justify-center'>
@@ -20,7 +24,7 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
           accept='.pdf'
           className='hidden'
           aria-label='Choose PDFs files'
-          onChange={onChange}
+          onChange={handleInputChange}
           multiple
         />
         <p>
@@ -36,7 +40,7 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
           Max 3 files, 1.5MB each.
         </span>
       </div>
-      {files && <PDFsPreview files={files} />}
+      {files && <PDFsPreview files={files} onRemove={onChange} />}
     </>
   );
 }

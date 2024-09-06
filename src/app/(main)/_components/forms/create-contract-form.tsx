@@ -220,33 +220,13 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                 <FormControl>
                   <ContractUploader
                     files={field.value}
-                    onChange={(e) =>
-                      e.target.files &&
-                      field.onChange(Array.from(e.target.files))
-                    }
+                    onChange={(files: File[]) => field.onChange(files)}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div>
-            {window.navigator.pdfViewerEnabled ? (
-              <object type='application/pdf' data={fileUrl}>
-                <embed
-                  src={fileUrl}
-                  width={800}
-                  height={800}
-                  type='application/pdf'
-                />
-              </object>
-            ) : (
-              <div className='flex gap-2 items-center'>
-                <FileTextIcon />
-                <span>{fileUpload?.name}</span>
-              </div>
-            )}
-          </div>
 
           {form.formState.errors.root?.message && (
             <SubmitError message={form.formState.errors.root.message} />
