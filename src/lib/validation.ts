@@ -32,7 +32,7 @@ export const createContractSchema = z.object({
     .positive('Kilograms of soy must be greater than 1')
     .gt(0, 'Kilograms of soy must be greater than 1'),
   parcelIds: z.array(z.string()).nonempty('At least 1 parcel is required'),
-  fileIds: z
+  files: z
     .array(z.instanceof(File))
     .min(1, 'At least must upload 1 contract file')
     .refine(

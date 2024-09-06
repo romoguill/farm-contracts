@@ -24,18 +24,15 @@ import { cn, formatDateFromCalendar } from '@/lib/utils';
 import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarIcon, File, FileIcon, FileTextIcon } from 'lucide-react';
+import { CalendarIcon, FileTextIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import SelectParcelsInput from './select-parcels-input';
-import { createContract, uploadContractPdf } from '@/actions/contracts.actions';
-import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
+import SelectParcelsInput from './select-parcels-input';
 
 interface CreateContractFormProps {}
 
 export default function CreateContractForm({}: CreateContractFormProps) {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [fileUpload, setFileUpload] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState<string | undefined>('');
   const [isPending, startTransition] = useTransition();
@@ -46,7 +43,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       endDate: new Date(),
       soyKgs: 0,
       parcelIds: [],
-      fileIds: [],
+      files: [],
     },
   });
   const {
@@ -58,24 +55,24 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     queryFn: () => getParcels(),
   });
 
-  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const formData = new FormData();
+  // const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   const formData = new FormData();
 
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setFileUpload(file);
-      setFileUrl(url);
-      formData.append('pdfUpload', file);
-      const { error, fileIds } = await uploadContractPdf(formData);
-      if (error !== null) {
-        toast.error('Failed to upload file');
-        return;
-      }
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     setFileUpload(file);
+  //     setFileUrl(url);
+  //     formData.append('pdfUpload', file);
+  //     const { error, fileIds } = await uploadContractPdf(formData);
+  //     if (error !== null) {
+  //       toast.error('Failed to upload file');
+  //       return;
+  //     }
 
-      form.setValue('fileIds', fileIds);
-    }
-  };
+  //     form.setValue('fileIds', fileIds);
+  //   }
+  // };
 
   if (isPendingParcels) {
     return <CustomLoader size='lg' />;
@@ -216,16 +213,19 @@ export default function CreateContractForm({}: CreateContractFormProps) {
 
           <FormField
             control={form.control}
-            name='fileIds'
+            name='files'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>File</FormLabel>
-                {/* <input
-                  type='file'
-                  accept='.pdf'
-                  onChange={(e) => handleUploadChange(e)}
-                /> */}
-                <ContractUploader onChange={field.onChange} />
+                <FormControl>
+                  <ContractUploader
+                    files={field.value}
+                    onChange={(e) =>
+                      e.target.files &&
+                      field.onChange(Array.from(e.target.files))
+                    }
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

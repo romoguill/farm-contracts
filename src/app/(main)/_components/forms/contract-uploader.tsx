@@ -1,14 +1,16 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import PDFsPreview from './pdfs-preview';
 
 interface ContractUploaderProps {
+  files: File[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-function ContractUploader({ onChange }: ContractUploaderProps) {
+function ContractUploader({ onChange, files }: ContractUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const [values, setValues] = useState<File[] | null>(null);
   return (
     <>
       <div className='w-full h-20 border-2 border-dashed border-input flex flex-col items-center justify-center'>
@@ -34,7 +36,7 @@ function ContractUploader({ onChange }: ContractUploaderProps) {
           Max 3 files, 1.5MB each.
         </span>
       </div>
-      <div className='grid grid-cols-4'></div>
+      {files && <PDFsPreview files={files} />}
     </>
   );
 }
