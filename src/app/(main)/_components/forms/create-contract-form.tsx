@@ -29,6 +29,8 @@ import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
+import { createContract } from '@/actions/contracts.actions';
+import { toast } from 'sonner';
 
 interface CreateContractFormProps {}
 
@@ -88,20 +90,21 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     startTransition(async () => {
       // This part I'm not so sure if it's the best thing to do
       // I could convert all data to FormData but it's simpler to just serialize the files
-
+      const { files, ...rest } = data;
       const formData = new FormData();
-      data.files.forEach((file) => formData.append('files', file));
+      files.forEach((file) => formData.append('files', file));
 
-      // const { error } = await createContract(data);
-      // if (!error) {
-      //   toast.success('Contract created');
-      // } else {
-      //   toast.error('Error creating contract');
-      // }
+      const { error } = await createContract({
+        data: rest,
+        filesSerialized: formData,
+      });
+      if (!error) {
+        toast.success('Contract created');
+      } else {
+        toast.error('Error creating contract');
+      }
     });
   };
-
-  console.log(form.getValues());
 
   return (
     <Form {...form}>

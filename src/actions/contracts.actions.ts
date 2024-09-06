@@ -32,42 +32,49 @@ export async function createContract({
   }
 
   try {
-    await db.transaction(async (tx) => {
-      const [insertedContract] = await db
-        .insert(contract)
-        .values({
-          startDate: data.startDate,
-          endDate: data.endDate,
-          soyKgs: data.soyKgs,
-          userId: user.id,
-        })
-        .returning();
+    await db.transaction(
+      async (tx) => {
+        const [insertedContract] = await tx
+          .insert(contract)
+          .values({
+            startDate: data.startDate,
+            endDate: data.endDate,
+            soyKgs: data.soyKgs,
+            userId: user.id,
+          })
+          .returning();
 
-      await tx.insert(contractToParcel).values(
-        data.parcelIds.map((parcelId) => ({
-          parcelId: parcelId,
-          contractId: insertedContract.id,
-        }))
-      );
+        await tx.insert(contractToParcel).values(
+          data.parcelIds.map((parcelId) => ({
+            parcelId: parcelId,
+            contractId: insertedContract.id,
+          }))
+        );
 
-      const { error: fileUploadError, files } = await uploadContractPdf(
-        filesSerialized
-      );
+        const { error: fileUploadError, files } = await uploadContractPdf(
+          filesSerialized
+        );
 
-      // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
-      if (fileUploadError !== null) {
-        tx.rollback();
-        throw Error("Failed to upload. Contract couldn't be created");
+        // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
+        if (fileUploadError !== null) {
+          tx.rollback();
+          return;
+        }
+
+        await tx.insert(uploadedFile).values(
+          files.map((file) => ({
+            contractId: insertedContract.id,
+            name: file.fileName,
+            s3Id: file.s3Id,
+          }))
+        );
+      },
+      {
+        isolationLevel: 'read committed',
+        accessMode: 'read write',
+        deferrable: true,
       }
-
-      await tx.insert(uploadedFile).values(
-        files.map((file) => ({
-          contractId: insertedContract.id,
-          name: file.fileName,
-          s3Id: file.s3Id,
-        }))
-      );
-    });
+    );
   } catch (error) {
     console.error(error);
     return { error: 'Error creating contract' };
@@ -111,7 +118,8 @@ const s3Config: S3ClientConfig = {
 const s3 = new S3Client(s3Config);
 
 export async function uploadContractPdf(formData: FormData) {
-  const files = formData.get('files');
+  const files = formData.getAll('files');
+  console.log(files);
 
   try {
     // Validate file (size and type)
@@ -137,7 +145,7 @@ export async function uploadContractPdf(formData: FormData) {
       return s3.send(command);
     });
 
-    const responses = await Promise.all(uploadPromises);
+    await Promise.all(uploadPromises);
 
     return {
       files: parsedFiles.map((file, i) => ({
