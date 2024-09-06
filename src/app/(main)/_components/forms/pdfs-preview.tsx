@@ -14,7 +14,6 @@ interface PDFsPreviewProps {
 }
 
 function PDFsPreview({ files, onRemove }: PDFsPreviewProps) {
-  console.log(files);
   const filesParsed: FileParsed[] = useMemo(() => {
     return files.map((file) => ({
       file,
@@ -62,5 +61,30 @@ function PDFsPreview({ files, onRemove }: PDFsPreviewProps) {
       </div>
     );
   }
+
+  return (
+    <div>
+      {filesParsed.map((fileP) => (
+        <ul key={fileP.id}>
+          <li>
+            <div className='flex items-center gap-2'>
+              <FileTextIcon size={24} className='flex-shrink-0' />
+              <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
+                {fileP.file.name}
+              </h5>
+              <Button
+                className='ml-auto text-red-500'
+                variant='link'
+                onClick={() => handleOnRemoveClick(fileP)}
+              >
+                <X size={16} />
+                Remove
+              </Button>
+            </div>
+          </li>
+        </ul>
+      ))}
+    </div>
+  );
 }
 export default PDFsPreview;

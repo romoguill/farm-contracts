@@ -200,7 +200,12 @@ export default function CreateContractForm({}: CreateContractFormProps) {
             name='parcelIds'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
+                <FormLabel>
+                  Parcels
+                  <span className='ml-1 text-muted-foreground'>
+                    ({field.value.length} selected)
+                  </span>
+                </FormLabel>
                 <SelectParcelsInput
                   onChange={field.onChange}
                   values={field.value}
@@ -216,7 +221,12 @@ export default function CreateContractForm({}: CreateContractFormProps) {
             name='files'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>File</FormLabel>
+                <FormLabel>
+                  Files
+                  <span className='ml-1 text-muted-foreground'>
+                    ({field.value.length} selected)
+                  </span>
+                </FormLabel>
                 <FormControl>
                   <ContractUploader
                     files={field.value}
