@@ -1,6 +1,7 @@
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import CreateContractForm from '../../_components/forms/create-contract-form';
+import MainContainer from '@/components/main-container';
 
 async function NewContractPage() {
   const { session } = await validateRequest();
@@ -10,9 +11,9 @@ async function NewContractPage() {
   }
 
   return (
-    <div className='w-full h-full'>
+    <MainContainer>
       <CreateContractForm />
-    </div>
+    </MainContainer>
   );
 }
 export default NewContractPage;

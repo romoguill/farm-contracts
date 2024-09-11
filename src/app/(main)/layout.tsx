@@ -5,7 +5,7 @@ function AppLayout({ children }: PropsWithChildren) {
   return (
     <>
       <Navbar />
-      <main className='container h-full'>{children}</main>
+      <div className='h-screen'>{children}</div>
     </>
   );
 }

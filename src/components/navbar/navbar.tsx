@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 function Navbar() {
   return (
-    <header className='bg-green-600 p-3 sticky flex flex-nowrap items-center justify-between'>
+    <header className='bg-green-600 h-[62px] md:h-[80px] p-3 sticky flex flex-nowrap items-center justify-between'>
       <Image
         src={'/contract.png'}
         width={40}
