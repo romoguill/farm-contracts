@@ -1,8 +1,9 @@
-import { getParcels } from '@/actions/parcels/actions';
+import { getParcels } from '@/actions/parcels.actions';
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import ParcelViewer from '../_components/parcels/parcel-viewer';
 import ParcelStats from '../_components/parcels/parcel-stats';
+import MainContainer from '@/components/main-container';
 
 async function ParcelsPage() {
   const { session } = await validateRequest();
@@ -14,9 +15,9 @@ async function ParcelsPage() {
   const parcels = await getParcels();
 
   return (
-    <div className='w-full h-full flex'>
+    <MainContainer>
       <ParcelViewer parcels={parcels} />
-    </div>
+    </MainContainer>
   );
 }
 export default ParcelsPage;

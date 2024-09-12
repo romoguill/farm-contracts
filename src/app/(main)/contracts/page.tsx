@@ -1,8 +1,19 @@
 import { getContracts } from '@/actions/contracts.actions';
+import MainTitle from '@/components/main-title';
+import { validateRequest } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 async function ContractsPage() {
-  const { data, error } = await getContracts();
+  const { session } = await validateRequest();
 
-  return <div>{JSON.stringify(data)}</div>;
+  if (!session) {
+    return redirect('/auth/login');
+  }
+
+  return (
+    <div>
+      <MainTitle>Contracts</MainTitle>
+    </div>
+  );
 }
 export default ContractsPage;

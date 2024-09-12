@@ -27,18 +27,27 @@ function ParcelShape({
     (coordinates: Parcel['coordinates']) => {
       const flatCoordinates = coordinates.flat();
 
-      let polygonArray = [];
+      let innerPolygonArray: string[] = [];
+      let outerPolygonArray: string[] = [];
       for (let i = 0; i < flatCoordinates.length; i += 2) {
-        polygonArray.push(
+        outerPolygonArray.push(
+          `${(flatCoordinates[i] / maxXCoordinate) * 100}% ${
+            (flatCoordinates[i + 1] / maxXCoordinate) * 100
+          }%`
+        );
+        innerPolygonArray.push(
           `${(flatCoordinates[i] / maxXCoordinate) * 100}% ${
             (flatCoordinates[i + 1] / maxXCoordinate) * 100
           }%`
         );
       }
 
-      return `polygon(${polygonArray.join(', ')})`;
+      return {
+        outerPolygon: `polygon(${outerPolygonArray.join(', ')})`,
+        innerPolygon: `polygon(${innerPolygonArray.join(', ')})`,
+      };
     },
-    [maxXCoordinate]
+    [maxXCoordinate, viewerWidth]
   );
 
   const clipPath = useMemo(
@@ -50,14 +59,14 @@ function ParcelShape({
     <>
       <div
         className={cn(
-          `absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0  bg-red-500 border-black`,
+          `absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0`,
           {
             'opacity-80': !focused && !selected,
           }
         )}
         style={{
           backgroundColor: `rgb(${parcel.color[0]},${parcel.color[1]},${parcel.color[2]})`,
-          clipPath: clipPath,
+          clipPath: clipPath.outerPolygon,
           height: `${viewerWidth}px`,
           width: `${viewerWidth}px`,
         }}
@@ -66,7 +75,19 @@ function ParcelShape({
         onClick={() =>
           selected ? onShapeSelected(null) : onShapeSelected(parcel)
         }
-      />
+      >
+        {/* <div
+          className={cn(`absolute top-[2px] left-[4px]`, {
+            'opacity-80': !focused && !selected,
+          })}
+          style={{
+            backgroundColor: `rgb(255,255,255)`,
+            clipPath: clipPath.innerPolygon,
+            height: `${viewerWidth - 30}px`,
+            width: `${viewerWidth - 30}px`,
+          }}
+        /> */}
+      </div>
     </>
   );
 }
