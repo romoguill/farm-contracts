@@ -1,12 +1,27 @@
 import { Contract } from '@/db/schema';
-import { createContext } from 'react';
+import { createContext, PropsWithChildren, useContext } from 'react';
 
 type ContextType = {
-  contracts: Contract;
+  contracts: Contract[];
 };
 
-const contractsContext = createContext(null);
+const ContractsContext = createContext<ContextType | null>(null);
 
-export function ContractsProvider() {
-  return <div></div>;
+export function ContractsProvider({ children }: PropsWithChildren) {
+  const contracts: Contract[] = [];
+
+  return (
+    <ContractsContext.Provider value={{ contracts }}>
+      {children}
+    </ContractsContext.Provider>
+  );
+}
+
+export function useContractsContext() {
+  const context = useContext(ContractsContext);
+
+  if (!context)
+    throw new Error('This hook must be inside ContractsProvider component');
+
+  return context;
 }
