@@ -1,4 +1,10 @@
-import { relations, sql } from 'drizzle-orm';
+import {
+  BuildQueryResult,
+  ExtractTablesWithRelations,
+  relations,
+  sql,
+} from 'drizzle-orm';
+import { BuildAliasTable } from 'drizzle-orm/mysql-core';
 import {
   boolean,
   char,
@@ -63,6 +69,8 @@ export const contract = pgTable('contract', {
     .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),
 });
+
+export type Contract = typeof contract.$inferSelect;
 
 export const contractRelations = relations(contract, ({ one, many }) => ({
   owner: one(user, {
