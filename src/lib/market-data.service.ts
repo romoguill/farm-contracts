@@ -53,7 +53,10 @@ const soyResponseSchema = z.object({
 });
 
 export async function getMarketDataSoyPrice(accessToken: string) {
-  const response = await fetch(MATBA_API_SOY_PRICE, { method: 'GET' });
+  const response = await fetch(MATBA_API_SOY_PRICE, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 
   if (response.ok) {
     const data = await response.json();
@@ -66,6 +69,6 @@ export async function getMarketDataSoyPrice(accessToken: string) {
 
     return soyData;
   } else {
-    throw new Error(`API error: ${await response.json()}`);
+    throw new Error(`API error: ${JSON.stringify(await response.json())}`);
   }
 }

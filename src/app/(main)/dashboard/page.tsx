@@ -9,6 +9,8 @@ async function DashboardPage() {
     return redirect('/auth/login');
   }
 
+  // const data = await fetch('http://localhost:3000/crons/market-data');
+
   return (
     <div>
       DashboardPage
