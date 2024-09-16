@@ -43,3 +43,29 @@ export async function loginMatba() {
     throw new Error(`Error during login to API`);
   }
 }
+
+const soyResponseSchema = z.object({
+  indexValue: z.number(),
+  maturity: z.number(),
+  mdEntryDateTime: z.string(),
+  unixTimestamp: z.number(),
+  name: z.string(),
+});
+
+export async function getMarketDataSoyPrice(accessToken: string) {
+  const response = await fetch(MATBA_API_SOY_PRICE, { method: 'GET' });
+
+  if (response.ok) {
+    const data = await response.json();
+
+    const { data: soyData, error } = soyResponseSchema.safeParse(data);
+
+    if (error) {
+      throw new Error(`API response corrupted. Response: ${soyData}`);
+    }
+
+    return soyData;
+  } else {
+    throw new Error(`API error: ${await response.json()}`);
+  }
+}
