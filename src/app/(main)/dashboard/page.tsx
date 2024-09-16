@@ -1,5 +1,5 @@
 import LogoutButton from '@/app/auth/_components/logout-button';
-import { lucia, validateRequest } from '@/lib/auth';
+import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 async function DashboardPage() {
