@@ -178,3 +178,29 @@ export async function getContractPdfUrls(fileIds: string[]) {
     }
   } catch (error) {}
 }
+
+// Getter with all relations, used for dashboard viewer
+export async function getContractsForDashboard() {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const contracts = await db.query.contract.findMany({
+      where: eq(contract.userId, user.id),
+      with: {
+        contractToParcel: {
+          with: {
+            parcel: true,
+          },
+        },
+      },
+    });
+
+    return contracts;
+  } catch (error) {
+    throw error;
+  }
+}

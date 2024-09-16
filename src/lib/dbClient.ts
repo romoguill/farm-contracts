@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Client, Pool } from 'pg';
 import * as schema from '../db/schema';
-import { ExtractTablesWithRelations } from 'drizzle-orm';
+import { BuildQueryResult, ExtractTablesWithRelations } from 'drizzle-orm';
 
 // or
 const pool = new Pool({
@@ -15,13 +15,14 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 
-type TablesWithRealtions = ExtractTablesWithRelations<typeof schema>;
+// --- Drizzle, to my knowledge, doesn't have a clean way as Prisma to infer types of a query with relations. This could be a way to do it until implemented.
+// type TablesWithRealtions = ExtractTablesWithRelations<typeof schema>;
 
-type a = Parameters<(typeof db)['query']['contract']['findFirst']>[0];
-type b = NonNullable<a>;
+// type a = Parameters<(typeof db)['query']['contract']['findFirst']>[0];
+// type b = NonNullable<a>;
 
-export type ContractView = BuildQueryResult<
-  TablesWithRealtions,
-  TablesWithRealtions['contract'],
-  { parcel: true }
->;
+// export type ContractView = BuildQueryResult<
+//   TablesWithRealtions,
+//   TablesWithRealtions['contract'],
+//   { parcel: true }
+// >;
