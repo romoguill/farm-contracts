@@ -174,7 +174,7 @@ export const marketData = pgTable(
       .primaryKey()
       .default(sql`gen_random_uuid()`),
     date: timestamp('date').defaultNow().unique().notNull(),
-    price: numeric('price').notNull(),
+    price: doublePrecision('price').notNull(),
   },
   (table) => ({
     dateIdx: index('date_idx').on(table.date),

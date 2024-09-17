@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const data = await getMarketDataSoyPrice(accessToken);
 
     await db.insert(marketData).values({
-      price: 'asd',
+      price: data.indexValue,
     });
 
     return NextResponse.json('ok', { status: 200 });
