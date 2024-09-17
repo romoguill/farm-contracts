@@ -1,3 +1,4 @@
+import { getSoyCurrentMarketData } from '@/actions/market.actions';
 import LogoutButton from '@/app/auth/_components/logout-button';
 import { marketData } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
@@ -13,7 +14,6 @@ async function DashboardPage() {
   }
 
   // const data = await fetch('http://localhost:3000/crons/market-data');
-  // const price = await db.query.marketData.findFirst();
 
   return (
     <div>
