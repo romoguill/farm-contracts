@@ -1,3 +1,5 @@
+import { marketData } from '@/db/schema';
+import { db } from '@/lib/dbClient';
 import { getMarketDataSoyPrice, loginMatba } from '@/lib/market-data.service';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -6,7 +8,11 @@ export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const { access: accessToken } = await loginMatba();
 
-    const marketData = await getMarketDataSoyPrice(accessToken);
+    const data = await getMarketDataSoyPrice(accessToken);
+
+    await db.insert(marketData).values({
+      price: 'asd',
+    });
 
     return NextResponse.json('ok', { status: 200 });
   } catch (error) {

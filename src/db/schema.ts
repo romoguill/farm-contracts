@@ -11,6 +11,7 @@ import {
   decimal,
   doublePrecision,
   index,
+  numeric,
   pgTable,
   primaryKey,
   smallint,
@@ -172,8 +173,8 @@ export const marketData = pgTable(
     id: uuid('id')
       .primaryKey()
       .default(sql`gen_random_uuid()`),
-    date: timestamp('date').defaultNow().unique(),
-    price: decimal('price').notNull(),
+    date: timestamp('date').defaultNow().unique().notNull(),
+    price: numeric('price').notNull(),
   },
   (table) => ({
     dateIdx: index('date_idx').on(table.date),
