@@ -1,3 +1,5 @@
+'use server';
+
 import { marketData } from '@/db/schema';
 import { db } from '@/lib/dbClient';
 import { and, between, gt, lte } from 'drizzle-orm';
