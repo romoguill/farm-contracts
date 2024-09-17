@@ -10,6 +10,7 @@ import {
   char,
   decimal,
   doublePrecision,
+  index,
   pgTable,
   primaryKey,
   smallint,
@@ -19,6 +20,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
+// --------- USER REALTED ---------
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name'),
@@ -58,6 +60,7 @@ export const emailVerificationCode = pgTable('email_verification_code', {
   expiresAt: timestamp('expires_at').notNull(),
 });
 
+// --------- CONTRACTS AND PARCELS ---------
 export const contract = pgTable('contract', {
   id: uuid('id')
     .primaryKey()
@@ -139,6 +142,7 @@ export const contractToParcelRelations = relations(
   })
 );
 
+// --------- PDF UPLOAD ---------
 export const uploadedFile = pgTable(
   'uploaded_file',
 
@@ -160,3 +164,18 @@ export const uploadedFileRelations = relations(uploadedFile, ({ one }) => ({
     references: [contract.id],
   }),
 }));
+
+// --------- MARKET DATA ---------
+export const marketData = pgTable(
+  'market_data',
+  {
+    id: uuid('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    date: timestamp('date').defaultNow().unique(),
+    price: decimal('price').notNull(),
+  },
+  (table) => ({
+    dateIdx: index('date_idx').on(table.date),
+  })
+);

@@ -8,13 +8,16 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     const marketData = await getMarketDataSoyPrice(accessToken);
 
-    return NextResponse.json({ data: marketData });
+    return NextResponse.json('ok', { status: 200 });
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message });
     } else {
-      return NextResponse.json({ error: 'Something went wrong with API' });
+      return NextResponse.json(
+        { error: 'Something went wrong with API' },
+        { status: 500 }
+      );
     }
   }
 }
