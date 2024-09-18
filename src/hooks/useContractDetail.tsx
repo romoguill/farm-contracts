@@ -4,7 +4,7 @@ import { formatDateFromCalendar } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-export async function useContractDetail(contractId: string) {
+export function useContractDetail(contractId: string) {
   const {
     data: contract,
     isPending: isPendingContracts,
@@ -80,6 +80,7 @@ export async function useContractDetail(contractId: string) {
     data: {
       id: contract.id,
       startDate: contract.startDate,
+      endDate: contract.endDate,
       soyKgs: contract.soyKgs,
       parcels: contract.contractToParcel.map((item) => ({ ...item.parcel })),
       totalValue,
