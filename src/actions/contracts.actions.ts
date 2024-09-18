@@ -13,7 +13,7 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -190,6 +190,31 @@ export async function getContractsForDashboard() {
 
     const contracts = await db.query.contract.findMany({
       where: eq(contract.userId, user.id),
+      with: {
+        contractToParcel: {
+          with: {
+            parcel: true,
+          },
+        },
+      },
+    });
+
+    return contracts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getContractForDashboard(contractId: string) {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const contracts = await db.query.contract.findFirst({
+      where: and(eq(contract.userId, user.id), eq(contract.id, contractId)),
       with: {
         contractToParcel: {
           with: {

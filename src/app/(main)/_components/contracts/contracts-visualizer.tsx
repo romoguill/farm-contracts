@@ -40,12 +40,30 @@ function ContractsVisualizer() {
       // Get the proportional pay per day based on the contract month
       return {
         id: contract.id,
-        totalValue: soyPrice
+        value: soyPrice
           ? contractDurationInDays * ((soyPrice.price * contract.soyKgs) / 365)
           : 0,
       };
     });
   }, [soyPrice, contracts]);
+
+  const remainingValue = useMemo(() => {
+    if (!contracts) return [];
+
+    return contracts.map((contract) => {
+      // Days of contract: miliseconds difference to days
+      const contractDurationInDays = Math.floor(
+        (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+      // Get the proportional pay per day based on the contract month
+      return {
+        id: contract.id,
+        value: soyPrice
+          ? contractDurationInDays * ((soyPrice.price * contract.soyKgs) / 365)
+          : 0,
+      };
+    });
+  }, []);
 
   if (isPendingContracts || isPendingPrice) {
     return <CustomLoader />;
@@ -65,10 +83,11 @@ function ContractsVisualizer() {
               <span>Soy kgs: {contract.soyKgs}</span>
               <span>
                 Total value (today):{' '}
-                {
-                  totalValue.find((value) => value.id === contract.id)
-                    ?.totalValue
-                }
+                {totalValue.find((item) => item.id === contract.id)?.value}
+              </span>
+              <span>
+                Remainung value (today):{' '}
+                {remainingValue.find((item) => item.id === contract.id)?.value}
               </span>
             </div>
           </li>
