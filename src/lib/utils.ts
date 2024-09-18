@@ -15,6 +15,15 @@ export function formatDateFromCalendar(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+export function formatCurrency(value: number) {
+  const formatter = Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  return formatter.format(value);
+}
+
 export function getRgbString(rgb: string[], a: string = '1') {
   return `rgba(${rgb.join(',')},${a})`;
 }

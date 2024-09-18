@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useContractDetail } from '@/hooks/useContractDetail';
-import { formatDateFromCalendar } from '@/lib/utils';
+import { cn, formatCurrency, formatDateFromCalendar } from '@/lib/utils';
 
 interface ContractCardProps {
   contractId: string;
@@ -13,6 +13,8 @@ function ContractCard({ contractId }: ContractCardProps) {
 
   if (isError || isPending || !contract) return null;
 
+  const isFinished = contract.endDate < new Date(Date.now());
+
   return (
     <Card>
       <CardHeader>
@@ -21,28 +23,42 @@ function ContractCard({ contractId }: ContractCardProps) {
       <CardContent>
         <ul>
           <li className='flex gap-4'>
+            Status:
+            <span
+              className={cn('ml-auto text-green-500 font-semibold', {
+                'text-blue-500': isFinished,
+              })}
+            >
+              {isFinished ? 'Finished' : 'Ongoing'}
+            </span>
+          </li>
+          <li className='flex gap-4'>
             Start date:
-            <span className='ml-auto'>
+            <span className='ml-auto font-semibold'>
               {formatDateFromCalendar(contract.startDate)}
             </span>
           </li>
           <li className='flex gap-4'>
             End date:
-            <span className='ml-auto'>
+            <span className='ml-auto font-semibold'>
               {formatDateFromCalendar(contract.endDate)}
             </span>
           </li>
           <li className='flex gap-4'>
             Soy kgs/(hxm):
-            <span className='ml-auto'>{contract.soyKgs}</span>
+            <span className='ml-auto font-semibold'>{contract.soyKgs}</span>
           </li>
           <li className='flex gap-4'>
             Total value:
-            <span className='ml-auto'>{contract.totalValue}</span>
+            <span className='ml-auto font-semibold'>
+              {formatCurrency(contract.totalValue || 0)}
+            </span>
           </li>
           <li className='flex gap-4'>
             Remaining value:
-            <span className='ml-auto'>{contract.remainingValue}</span>
+            <span className='ml-auto font-semibold'>
+              {formatCurrency(contract.remainingValue || 0)}
+            </span>
           </li>
         </ul>
       </CardContent>

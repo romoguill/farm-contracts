@@ -41,8 +41,11 @@ export function useContractDetail(contractId: string) {
     if (!contract || !marketData) return;
 
     // Days of contract: miliseconds difference to days
-    const contractDurationInDays = Math.floor(
-      (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    const contractDurationInDays = Math.max(
+      Math.floor(
+        (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      ),
+      0
     );
     // Get the proportional pay per day based on the contract month
     return marketData
