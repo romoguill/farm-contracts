@@ -15,16 +15,16 @@ export async function useContractDetail(contractId: string) {
   });
 
   const {
-    data: soyPrice,
-    isPending: isPendingPrice,
-    isError: isErrorPrice,
+    data: marketData,
+    isPending: isPendingMarket,
+    isError: isErrorMarket,
   } = useQuery({
-    queryKey: ['soyPrice', formatDateFromCalendar(new Date(Date.now()))],
+    queryKey: ['marketData', formatDateFromCalendar(new Date(Date.now()))],
     queryFn: () => getSoyCurrentMarketData(new Date(Date.now())),
   });
 
   const totalValue = useMemo(() => {
-    if (!contract) return [];
+    if (!contract || !marketData) return;
 
     // Days of contract: miliseconds difference to days
     const contractDurationInDays = Math.floor(
@@ -32,33 +32,58 @@ export async function useContractDetail(contractId: string) {
         (1000 * 60 * 60 * 24)
     );
     // Get the proportional pay per day based on the contract month
-    return {
-      id: contract.id,
-      value: soyPrice
-        ? contractDurationInDays * ((soyPrice.price * contract.soyKgs) / 365)
-        : 0,
-    };
-  }, [soyPrice, contracts]);
+    return marketData
+      ? contractDurationInDays * ((marketData.price * contract.soyKgs) / 365)
+      : 0;
+  }, [marketData, contract]);
 
   const remainingValue = useMemo(() => {
-    if (!contracts) return [];
+    if (!contract || !marketData) return;
 
-    return contracts.map((contract) => {
-      // Days of contract: miliseconds difference to days
-      const contractDurationInDays = Math.floor(
-        (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-      );
-      // Get the proportional pay per day based on the contract month
-      return {
-        id: contract.id,
-        value: soyPrice
-          ? contractDurationInDays * ((soyPrice.price * contract.soyKgs) / 365)
-          : 0,
-      };
-    });
-  }, [contracts, soyPrice]);
+    // Days of contract: miliseconds difference to days
+    const contractDurationInDays = Math.floor(
+      (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+    // Get the proportional pay per day based on the contract month
+    return marketData
+      ? contractDurationInDays * ((marketData.price * contract.soyKgs) / 365)
+      : 0;
+  }, [contract, marketData]);
+
+  if (isPendingContracts || isPendingMarket) {
+    return {
+      isPending: true,
+      isError: false,
+      data: undefined,
+    };
+  }
+
+  if (isErrorContracts || isErrorMarket) {
+    return {
+      isPending: false,
+      isError: true,
+      data: undefined,
+    };
+  }
+
+  if (!contract) {
+    return {
+      isPending: false,
+      isError: false,
+      data: undefined,
+    };
+  }
 
   return {
-    id: contract,
+    isPending: false,
+    isError: false,
+    data: {
+      id: contract.id,
+      startDate: contract.startDate,
+      soyKgs: contract.soyKgs,
+      parcels: contract.contractToParcel.map((item) => ({ ...item.parcel })),
+      totalValue,
+      remainingValue,
+    },
   };
 }
