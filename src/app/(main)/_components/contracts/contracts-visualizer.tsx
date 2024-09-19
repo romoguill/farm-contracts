@@ -6,8 +6,10 @@ import CustomLoader from '@/components/custom-loader';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import ContractCard from './contract-card';
+import { useSearchParams } from 'next/navigation';
 
 function ContractsVisualizer() {
+  const filters = useSearchParams();
   const {
     data: contracts,
     isPending,
@@ -16,6 +18,13 @@ function ContractsVisualizer() {
     queryKey: ['contracts'],
     queryFn: () => getContractsForDashboard(),
   });
+
+  const dataFiltered = useMemo(() => {
+    if (!contracts) return [];
+    const status = filters.get('status');
+
+    return contracts.filter((contract) => contract.status === status);
+  }, [contracts, filters]);
 
   if (isPending) {
     return <CustomLoader />;
@@ -32,7 +41,7 @@ function ContractsVisualizer() {
   return (
     <div>
       <ul>
-        {contracts.map((contract) => (
+        {dataFiltered.map((contract) => (
           <ContractCard key={contract.id} contractId={contract.id} />
         ))}
       </ul>

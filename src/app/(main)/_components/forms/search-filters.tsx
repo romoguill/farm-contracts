@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import {
   contractStatusSchema,
-  SearchFilters,
+  SearchFilters as ISearchFilters,
   searchFiltersSchema,
 } from '@/lib/validation';
 import { usePathname, useRouter } from 'next/navigation';
@@ -26,13 +26,13 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 function SearchFilters() {
   const router = useRouter();
   const pathname = usePathname();
-  const form = useForm<SearchFilters>({
+  const form = useForm<ISearchFilters>({
     defaultValues: {
       status: 'ALL',
     },
   });
 
-  const onSubmit: SubmitHandler<SearchFilters> = (data) => {
+  const onSubmit: SubmitHandler<ISearchFilters> = (data) => {
     const url = new URL(window.location.href);
     console.log(url);
     const query = new URLSearchParams(data);
