@@ -1,13 +1,20 @@
 'use client';
 
-import { Form } from '@/components/ui/form';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { searchFiltersSchema } from '@/lib/validation';
 import SearchFilters from '../forms/search-filters';
 
-function ContractsFilter() {
+interface ContractsFilterProps {
+  searchParams?: {
+    [key: string]: string | string[] | undefined;
+  };
+}
+
+function ContractsFilter({ searchParams }: ContractsFilterProps) {
+  const initialFilters = searchFiltersSchema.parse(searchParams);
+
   return (
     <div className='rounded-xl border border-slate-800 h-64'>
-      <SearchFilters />
+      <SearchFilters initialFilters={initialFilters} />
     </div>
   );
 }

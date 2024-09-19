@@ -5,7 +5,13 @@ import { redirect } from 'next/navigation';
 import ContractsFilter from '../_components/contracts/contracts-filter';
 import ContractsVisualizer from '../_components/contracts/contracts-visualizer';
 
-async function ContractsPage() {
+interface ContractsPageProps {
+  searchParams?: {
+    [key: string]: string | string[] | undefined;
+  };
+}
+
+async function ContractsPage({ searchParams }: ContractsPageProps) {
   const { session } = await validateRequest();
 
   if (!session) {
@@ -15,7 +21,7 @@ async function ContractsPage() {
   return (
     <MainContainer>
       <MainTitle>Contracts</MainTitle>
-      <ContractsFilter />
+      <ContractsFilter searchParams={searchParams} />
       <ContractsVisualizer />
     </MainContainer>
   );

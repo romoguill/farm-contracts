@@ -21,9 +21,16 @@ function ContractsVisualizer() {
 
   const dataFiltered = useMemo(() => {
     if (!contracts) return [];
-    const status = filters.get('status');
+    const filterStatus = filters.get('status');
 
-    return contracts.filter((contract) => contract.status === status);
+    return contracts.filter((contract) => {
+      if (filterStatus === 'ALL') return true;
+
+      const status =
+        contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED';
+
+      return status === filterStatus;
+    });
   }, [contracts, filters]);
 
   if (isPending) {

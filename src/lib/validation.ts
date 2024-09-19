@@ -64,8 +64,10 @@ export type CreateParcel = z.infer<typeof createParcelSchema>;
 
 export const contractStatusSchema = z.enum(['ONGOING', 'FINISHED', 'ALL']);
 
+export type ContractStatus = z.infer<typeof contractStatusSchema>;
+
 export const searchFiltersSchema = z.object({
-  status: contractStatusSchema,
+  status: contractStatusSchema.catch('ALL'),
 });
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;
