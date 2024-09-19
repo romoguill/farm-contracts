@@ -68,6 +68,7 @@ export type ContractStatus = z.infer<typeof contractStatusSchema>;
 
 export const searchFiltersSchema = z.object({
   status: contractStatusSchema.catch('ALL'),
+  year: z.coerce.string().catch(String(new Date(Date.now()).getFullYear())),
 });
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;

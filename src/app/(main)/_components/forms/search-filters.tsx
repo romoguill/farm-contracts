@@ -27,6 +27,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 interface SearchFiltersrProps {
   initialFilters?: {
     status: ContractStatus;
+    year: string;
   };
 }
 
