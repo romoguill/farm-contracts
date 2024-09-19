@@ -24,7 +24,7 @@ function ContractsVisualizer() {
     const filterStatus = filters.get('status');
 
     return contracts.filter((contract) => {
-      if (filterStatus === 'ALL') return true;
+      if (filterStatus === 'ALL' || filterStatus === null) return true;
 
       const status =
         contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED';
