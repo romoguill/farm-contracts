@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import ContractCard from './contract-card';
 import { useSearchParams } from 'next/navigation';
-import { SearchFilters } from '@/lib/validation';
+import { SearchFilters, searchFiltersSchema } from '@/lib/validation';
 
 // ------ FILTERING UTILS ------
 // Utils for filtering and cleaner code
@@ -66,10 +66,18 @@ function ContractsVisualizer() {
 
   const dataFiltered = useMemo(() => {
     if (!contracts) return [];
-    const filterStatus = filters.get('status');
-    const filterYear = filters.get('year');
+    const filtersObj = Object.fromEntries(filters);
+    const { error, data: filtersParsed } =
+      searchFiltersSchema.safeParse(filtersObj);
 
-    return c;
+    // If url query is invalid, just return all contracts
+    if (error) return contracts;
+
+    return applyFilters<ContractDashboard>(
+      contracts,
+      [filterByStatus, filterByYear],
+      filtersParsed
+    );
   }, [contracts, filters]);
 
   if (isPending) {
