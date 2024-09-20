@@ -7,7 +7,52 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import ContractCard from './contract-card';
 import { useSearchParams } from 'next/navigation';
+import { SearchFilters } from '@/lib/validation';
 
+// ------ FILTERING UTILS ------
+// Utils for filtering and cleaner code
+type ContractDashboard = Awaited<
+  ReturnType<typeof getContractsForDashboard>
+>[number];
+type FilterFunction<T> = (items: T[], filter: SearchFilters) => T[];
+
+const filterByStatus: FilterFunction<ContractDashboard> = (
+  contracts,
+  filter
+) => {
+  return contracts.filter((contract) => {
+    if (filter.status === 'ALL' || filter.status === null) return true;
+
+    const status =
+      contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED';
+
+    return status === filter.status;
+  });
+};
+
+const filterByYear: FilterFunction<ContractDashboard> = (contracts, filter) => {
+  return contracts.filter((contract) => {
+    if (filter.year === 'ALL' || filter.year === null) return true;
+
+    return (
+      String(contract.startDate.getFullYear()) <= filter.year &&
+      String(contract.endDate.getFullYear()) >= filter.year
+    );
+  });
+};
+
+const applyFilters = <T,>(
+  items: T[],
+  filtersCbs: FilterFunction<T>[],
+  filter: SearchFilters
+): T[] => {
+  return filtersCbs.reduce(
+    (filteredItems, filterCb) => filterCb(filteredItems, filter),
+    items
+  );
+};
+
+// ------ COMPONENT ------
 function ContractsVisualizer() {
   const filters = useSearchParams();
   const {
@@ -22,15 +67,9 @@ function ContractsVisualizer() {
   const dataFiltered = useMemo(() => {
     if (!contracts) return [];
     const filterStatus = filters.get('status');
+    const filterYear = filters.get('year');
 
-    return contracts.filter((contract) => {
-      if (filterStatus === 'ALL' || filterStatus === null) return true;
-
-      const status =
-        contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED';
-
-      return status === filterStatus;
-    });
+    return c;
   }, [contracts, filters]);
 
   if (isPending) {
