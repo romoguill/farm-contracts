@@ -28,7 +28,7 @@ export function getRgbString(rgb: string[], a: string = '1') {
   return `rgba(${rgb.join(',')},${a})`;
 }
 
-function createFormData(
+export function createFormData(
   obj: Record<string, any>,
   form?: FormData,
   namespace?: string
@@ -59,4 +59,17 @@ function createFormData(
   }
 
   return formData;
+}
+
+export function calculateAvailableYears(firstYear: number | undefined) {
+  if (firstYear === undefined) return [];
+
+  const years: number[] = [];
+  const currentYear = new Date(Date.now()).getFullYear();
+
+  for (let i = 0; i <= currentYear - firstYear; i++) {
+    years.push(currentYear - i);
+  }
+
+  return years;
 }
