@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import ContractCard from './contract-card';
 import { useSearchParams } from 'next/navigation';
 import { SearchFilters, searchFiltersSchema } from '@/lib/validation';
+import { getContractStatus } from '@/lib/utils';
 
 // ------ FILTERING UTILS ------
 // Utils for filtering and cleaner code
@@ -23,8 +24,7 @@ const filterByStatus: FilterFunction<ContractDashboard> = (
   return contracts.filter((contract) => {
     if (filter.status === 'ALL' || filter.status === null) return true;
 
-    const status =
-      contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED';
+    const status = getContractStatus(contract.startDate, contract.endDate);
 
     return status === filter.status;
   });

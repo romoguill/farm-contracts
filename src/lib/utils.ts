@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { ContractStatus } from './validation';
 
 export const MAX_CONTRACT_PDF_SIZE = 1500 * 1000; // 1.5 MB
 
@@ -72,4 +73,16 @@ export function calculateAvailableYears(firstYear: number | undefined) {
   }
 
   return years;
+}
+
+export function getContractStatus(
+  startDate: Date,
+  endDate: Date
+): ContractStatus {
+  const today = new Date(Date.now());
+
+  if (endDate < today) return 'FINISHED';
+  if (startDate > today) return 'PENDING';
+
+  return 'ONGOING';
 }

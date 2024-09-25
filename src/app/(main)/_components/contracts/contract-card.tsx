@@ -2,7 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useContractDetail } from '@/hooks/useContractDetail';
-import { cn, formatCurrency, formatDateFromCalendar } from '@/lib/utils';
+import {
+  cn,
+  formatCurrency,
+  formatDateFromCalendar,
+  getContractStatus,
+} from '@/lib/utils';
 
 interface ContractCardProps {
   contractId: string;
@@ -13,7 +18,10 @@ function ContractCard({ contractId }: ContractCardProps) {
 
   if (isError || isPending || !contract) return null;
 
-  const isFinished = contract.endDate < new Date(Date.now());
+  const contractStatus = getContractStatus(
+    contract.startDate,
+    contract.endDate
+  );
 
   return (
     <Card>
@@ -25,11 +33,13 @@ function ContractCard({ contractId }: ContractCardProps) {
           <li className='flex gap-4'>
             Status:
             <span
-              className={cn('ml-auto text-green-500 font-semibold', {
-                'text-blue-500': isFinished,
+              className={cn('ml-auto font-semibold capitalize', {
+                'text-blue-500': contractStatus === 'FINISHED',
+                'text-purple-500': contractStatus === 'PENDING',
+                'text-green-500': contractStatus === 'ONGOING',
               })}
             >
-              {isFinished ? 'Finished' : 'Ongoing'}
+              {contractStatus.toLowerCase()}
             </span>
           </li>
           <li className='flex gap-4'>
