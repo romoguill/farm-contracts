@@ -62,12 +62,12 @@ export const createParcelSchema = z.object({
 
 export type CreateParcel = z.infer<typeof createParcelSchema>;
 
-export const contractStatusSchema = z.enum(['ONGOING', 'FINISHED', 'ALL']);
+export const contractStatusSchema = z.enum(['ONGOING', 'FINISHED', 'PENDING']);
 
 export type ContractStatus = z.infer<typeof contractStatusSchema>;
 
 export const searchFiltersSchema = z.object({
-  status: contractStatusSchema.catch('ALL'),
+  status: z.enum([...contractStatusSchema.options, 'ALL']).catch('ALL'),
   year: z.coerce.string().catch(String(new Date(Date.now()).getFullYear())),
 });
 

@@ -11,5 +11,6 @@ export async function getSoyCurrentMarketData(date: Date) {
     where: and(gt(marketData.date, dayBefore), lte(marketData.date, date)),
   });
 
-  return data;
+  // React query gives error if value returned is undefined
+  return data ?? null;
 }
