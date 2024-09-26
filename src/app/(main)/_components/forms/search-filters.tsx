@@ -1,6 +1,7 @@
 'use client';
 
 import { getOldestContract } from '@/actions/contracts.actions';
+import { getParcels } from '@/actions/parcels.actions';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -41,6 +42,15 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
     queryFn: () => getOldestContract(),
   });
 
+  const {
+    data: parcels,
+    isPending: isPendingParcels,
+    isError: isErrorParcels,
+  } = useQuery({
+    queryKey: ['parcels'],
+    queryFn: () => getParcels(),
+  });
+
   const form = useForm<ISearchFilters>({
     defaultValues: {
       status: initialFilters?.status || 'ALL',
@@ -76,12 +86,16 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value={'ALL'}>ALL</SelectItem>
+                    <SelectItem value={'ALL'}>All</SelectItem>
                     {contractStatusSchema.options
                       .sort((a, b) => a.localeCompare(b))
                       .map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
+                        <SelectItem
+                          key={status}
+                          value={status}
+                          className='capitalize'
+                        >
+                          {status.toLocaleLowerCase()}
                         </SelectItem>
                       ))}
                   </SelectContent>
@@ -102,10 +116,35 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value={'ALL'}>ALL</SelectItem>
+                    <SelectItem value={'ALL'}>All</SelectItem>
                     {availableYears.map((year) => (
                       <SelectItem key={year} value={String(year)}>
-                        {year}
+                        {String(year)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='parcel'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parcel</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={'ALL'}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select parcel' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={'ALL'}>All</SelectItem>
+                    {parcels?.map((parcel) => (
+                      <SelectItem key={parcel.label} value={parcel.label}>
+                        {parcel.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

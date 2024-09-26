@@ -32,12 +32,24 @@ const filterByStatus: FilterFunction<ContractDashboard> = (
 
 const filterByYear: FilterFunction<ContractDashboard> = (contracts, filter) => {
   return contracts.filter((contract) => {
-    console.log(filter.year);
     if (filter.year === 'ALL' || filter.year === null) return true;
 
     return (
       String(contract.startDate.getFullYear()) <= filter.year &&
       String(contract.endDate.getFullYear()) >= filter.year
+    );
+  });
+};
+
+const filterByParcel: FilterFunction<ContractDashboard> = (
+  contracts,
+  filter
+) => {
+  return contracts.filter((contract) => {
+    if (filter.parcel === 'ALL' || filter.parcel === null) return true;
+
+    return contract.contractToParcel.some(
+      (ctp) => ctp.parcel.label === filter.parcel
     );
   });
 };
@@ -76,7 +88,7 @@ function ContractsVisualizer() {
 
     return applyFilters<ContractDashboard>(
       contracts,
-      [filterByStatus, filterByYear],
+      [filterByStatus, filterByYear, filterByParcel],
       filtersParsed
     );
   }, [contracts, filters]);

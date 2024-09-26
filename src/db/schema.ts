@@ -91,7 +91,7 @@ export const parcel = pgTable(
     id: uuid('id')
       .primaryKey()
       .default(sql`gen_random_uuid()`),
-    label: char('label', { length: 2 }).unique(),
+    label: char('label', { length: 2 }).unique().notNull(),
     userId: text('user_id')
       .references(() => user.id, { onDelete: 'cascade' })
       .notNull(),
