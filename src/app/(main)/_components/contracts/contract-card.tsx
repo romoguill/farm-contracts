@@ -55,6 +55,16 @@ function ContractCard({ contractId }: ContractCardProps) {
             </span>
           </li>
           <li className='flex gap-4'>
+            Parcels:
+            <span className='ml-auto font-semibold'>
+              {contract.parcels.reduce((list, parcel) => {
+                if (contract.parcels.length <= 1) return parcel.label || '';
+                if (list.length <= 1) return parcel.label || '';
+                return `${list}, ${parcel.label}`;
+              }, '')}
+            </span>
+          </li>
+          <li className='flex gap-4'>
             Soy kgs/(hxm):
             <span className='ml-auto font-semibold'>{contract.soyKgs}</span>
           </li>
