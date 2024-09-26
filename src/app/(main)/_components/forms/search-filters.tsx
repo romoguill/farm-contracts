@@ -31,7 +31,6 @@ interface SearchFiltersrProps {
 
 function SearchFilters({ initialFilters }: SearchFiltersrProps) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const {
     data: firstContract,
@@ -51,7 +50,6 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
 
   const onSubmit: SubmitHandler<ISearchFilters> = (data) => {
     const url = new URL(window.location.href);
-    console.log(url);
     const query = new URLSearchParams(data);
     url.search = query.toString();
     router.push(url.toString());

@@ -68,7 +68,7 @@ export type ContractStatus = z.infer<typeof contractStatusSchema>;
 
 export const searchFiltersSchema = z.object({
   status: z.enum([...contractStatusSchema.options, 'ALL']).catch('ALL'),
-  year: z.coerce.string().catch('ALL'),
+  year: z.string().catch('ALL'),
 });
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;

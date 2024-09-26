@@ -32,6 +32,7 @@ const filterByStatus: FilterFunction<ContractDashboard> = (
 
 const filterByYear: FilterFunction<ContractDashboard> = (contracts, filter) => {
   return contracts.filter((contract) => {
+    console.log(filter.year);
     if (filter.year === 'ALL' || filter.year === null) return true;
 
     return (

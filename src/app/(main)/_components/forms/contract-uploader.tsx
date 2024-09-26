@@ -16,7 +16,6 @@ function ContractUploader({ onChange, files }: ContractUploaderProps) {
 
   // At least chrome doesn't handle correctly the input accept prop. Handle it here
   const isValidFileType = (files: File[]) => {
-    console.log(files);
     return files.every((file) => file.type === 'application/pdf');
   };
 
