@@ -18,20 +18,15 @@ import {
 } from '@/components/ui/select';
 import { calculateAvailableYears } from '@/lib/utils';
 import {
-  ContractStatus,
   contractStatusSchema,
   SearchFilters as ISearchFilters,
-  searchFiltersSchema,
 } from '@/lib/validation';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 interface SearchFiltersrProps {
-  initialFilters?: {
-    status: ContractStatus;
-    year: string;
-  };
+  initialFilters?: ISearchFilters;
 }
 
 function SearchFilters({ initialFilters }: SearchFiltersrProps) {
@@ -76,16 +71,14 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={'ALL'}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder='Select contract status' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    <SelectItem value={'ALL'}>ALL</SelectItem>
                     {contractStatusSchema.options
                       .sort((a, b) => a.localeCompare(b))
                       .map((status) => (

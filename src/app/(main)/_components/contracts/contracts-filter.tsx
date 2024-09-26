@@ -18,4 +18,5 @@ function ContractsFilter({ searchParams }: ContractsFilterProps) {
     </div>
   );
 }
+
 export default ContractsFilter;
