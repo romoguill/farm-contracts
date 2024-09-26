@@ -24,7 +24,7 @@ function ContractCard({ contractId }: ContractCardProps) {
   );
 
   return (
-    <Card>
+    <Card className='my-4'>
       <CardHeader>
         <CardTitle>Contract</CardTitle>
       </CardHeader>
