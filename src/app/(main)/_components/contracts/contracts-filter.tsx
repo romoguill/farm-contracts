@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { useState } from 'react';
 
 interface ContractsFilterProps {
   searchParams?: {
@@ -16,17 +17,27 @@ interface ContractsFilterProps {
 }
 
 function ContractsFilter({ searchParams }: ContractsFilterProps) {
+  const [accordionOpen, setAccordionOpen] = useState('');
+
   const initialFilters = searchFiltersSchema.parse(searchParams);
 
   return (
-    <div className='rounded-xl bg-muted'>
-      <Accordion type='single' collapsible>
+    <div className='rounded-md bg-muted'>
+      <Accordion
+        type='single'
+        collapsible
+        value={accordionOpen}
+        onValueChange={() => setAccordionOpen('filter')}
+      >
         <AccordionItem value='filter' className='border-none'>
-          <AccordionTrigger className='bg-muted rounded-md px-2'>
+          <AccordionTrigger className='bg-muted rounded-md px-2 text-lg font-semibold'>
             Filters
           </AccordionTrigger>
-          <AccordionContent>
-            <SearchFilters initialFilters={initialFilters} />
+          <AccordionContent className='rounded-md'>
+            <SearchFilters
+              initialFilters={initialFilters}
+              setAccordionOpen={setAccordionOpen}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

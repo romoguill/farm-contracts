@@ -24,13 +24,18 @@ import {
 } from '@/lib/validation';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
+import { SetStateAction } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 interface SearchFiltersrProps {
   initialFilters?: ISearchFilters;
+  setAccordionOpen: React.Dispatch<SetStateAction<string>>;
 }
 
-function SearchFilters({ initialFilters }: SearchFiltersrProps) {
+function SearchFilters({
+  initialFilters,
+  setAccordionOpen,
+}: SearchFiltersrProps) {
   const router = useRouter();
 
   const {
@@ -63,6 +68,7 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
     const query = new URLSearchParams(data);
     url.search = query.toString();
     router.push(url.toString());
+    setAccordionOpen('');
   };
 
   const availableYears = calculateAvailableYears(
@@ -70,7 +76,7 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
   );
 
   return (
-    <div className='rounded-xl border border-slate-800 h-64'>
+    <div className='rounded-md px-2'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -153,7 +159,9 @@ function SearchFilters({ initialFilters }: SearchFiltersrProps) {
             )}
           />
 
-          <Button type='submit'>Apply</Button>
+          <Button type='submit' className='block ml-auto mt-4'>
+            Apply
+          </Button>
         </form>
       </Form>
     </div>
