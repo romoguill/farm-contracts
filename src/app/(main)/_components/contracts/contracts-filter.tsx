@@ -27,7 +27,9 @@ function ContractsFilter({ searchParams }: ContractsFilterProps) {
         type='single'
         collapsible
         value={accordionOpen}
-        onValueChange={() => setAccordionOpen('filter')}
+        onValueChange={() =>
+          accordionOpen ? setAccordionOpen('') : setAccordionOpen('filter')
+        }
       >
         <AccordionItem value='filter' className='border-none'>
           <AccordionTrigger className='bg-muted rounded-md px-2 text-lg font-semibold'>

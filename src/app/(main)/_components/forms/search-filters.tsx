@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import useQueryFilters from '@/hooks/useQueryFilters';
 import { calculateAvailableYears } from '@/lib/utils';
 import {
   contractStatusSchema,
@@ -37,21 +38,14 @@ function SearchFilters({
   setAccordionOpen,
 }: SearchFiltersrProps) {
   const router = useRouter();
+  const q = useQueryFilters();
 
-  const {
-    data: firstContract,
-    isPending: isFirstContractPending,
-    isError: isFirstContractError,
-  } = useQuery({
+  const { data: firstContract } = useQuery({
     queryKey: ['contracts', 'first'],
     queryFn: () => getOldestContract(),
   });
 
-  const {
-    data: parcels,
-    isPending: isPendingParcels,
-    isError: isErrorParcels,
-  } = useQuery({
+  const { data: parcels } = useQuery({
     queryKey: ['parcels'],
     queryFn: () => getParcels(),
   });
@@ -60,6 +54,7 @@ function SearchFilters({
     defaultValues: {
       status: initialFilters?.status || 'ALL',
       year: initialFilters?.year || 'ALL',
+      parcel: initialFilters?.parcel || 'ALL',
     },
   });
 
