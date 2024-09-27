@@ -31,6 +31,13 @@ import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
 import { createContract } from '@/actions/contracts.actions';
 import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface CreateContractFormProps {}
 
@@ -41,6 +48,8 @@ export default function CreateContractForm({}: CreateContractFormProps) {
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
     defaultValues: {
+      title: '',
+      tenantId: '',
       startDate: new Date(),
       endDate: new Date(),
       soyKgs: 0,
@@ -110,6 +119,46 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className='space-y-3'>
+          <FormField
+            control={form.control}
+            name='title'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <Input
+                  {...field}
+                  placeholder='Descriptive title. (e.g. John wheat 2025 summer)'
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='tenantId'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tenant</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a tenant' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='123'>John McLovin</SelectItem>
+                    <SelectItem value='124'>Peter parker</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name='startDate'

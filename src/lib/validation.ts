@@ -40,6 +40,8 @@ export const contractPDFSchema = z
 export const createContractSchema = z.object({
   startDate: z.date(),
   endDate: z.date(),
+  title: z.string(),
+  tenantId: z.string(),
   soyKgs: z.coerce
     .number({ message: 'Must be a positive number' })
     .positive('Kilograms of soy must be greater than 1')
