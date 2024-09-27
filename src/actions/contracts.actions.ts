@@ -37,6 +37,8 @@ export async function createContract({
         const [insertedContract] = await tx
           .insert(contract)
           .values({
+            title: data.title,
+            tenantId: data.tenantId,
             startDate: data.startDate,
             endDate: data.endDate,
             soyKgs: data.soyKgs,
