@@ -11,6 +11,7 @@ import {
   decimal,
   doublePrecision,
   index,
+  integer,
   numeric,
   pgTable,
   primaryKey,
@@ -19,6 +20,7 @@ import {
   timestamp,
   unique,
   uuid,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 // --------- USER REALTED ---------
@@ -66,6 +68,10 @@ export const contract = pgTable('contract', {
   id: uuid('id')
     .primaryKey()
     .default(sql`gen_random_uuid()`),
+  title: text('name').notNull(),
+  tenantId: uuid('tenant_id')
+    .notNull()
+    .references(() => tenant.id, { onDelete: 'restrict' }),
   startDate: timestamp('start_date').notNull(),
   endDate: timestamp('end_date').notNull(),
   soyKgs: smallint('soy_kgs').notNull(),
@@ -80,6 +86,10 @@ export const contractRelations = relations(contract, ({ one, many }) => ({
   owner: one(user, {
     fields: [contract.userId],
     references: [user.id],
+  }),
+  tenant: one(tenant, {
+    fields: [contract.tenantId],
+    references: [tenant.id],
   }),
   contractToParcel: many(contractToParcel),
   files: many(uploadedFile),
@@ -142,6 +152,17 @@ export const contractToParcelRelations = relations(
     }),
   })
 );
+
+// --------- TENANTS ---------
+export const tenant = pgTable('tenant', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 40 }).notNull(),
+  cuit: integer('cuit').notNull(),
+});
+
+export const tenantRelations = relations(tenant, ({ many }) => ({
+  contracts: many(contract),
+}));
 
 // --------- PDF UPLOAD ---------
 export const uploadedFile = pgTable(
