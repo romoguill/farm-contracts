@@ -38,7 +38,7 @@ function SearchFilters({
   setAccordionOpen,
 }: SearchFiltersrProps) {
   const router = useRouter();
-  const q = useQueryFilters();
+  const filters = useQueryFilters();
 
   const { data: firstContract } = useQuery({
     queryKey: ['contracts', 'first'],
@@ -52,9 +52,9 @@ function SearchFilters({
 
   const form = useForm<ISearchFilters>({
     defaultValues: {
-      status: initialFilters?.status || 'ALL',
-      year: initialFilters?.year || 'ALL',
-      parcel: initialFilters?.parcel || 'ALL',
+      status: initialFilters?.status || filters.status,
+      year: initialFilters?.year || filters.year,
+      parcel: initialFilters?.parcel || filters.parcel,
     },
   });
 
@@ -70,6 +70,8 @@ function SearchFilters({
     firstContract?.startDate.getFullYear()
   );
 
+  console.log(form.getValues());
+
   return (
     <div className='rounded-md px-2'>
       <Form {...form}>
@@ -80,9 +82,12 @@ function SearchFilters({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={'ALL'}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className='capitalize'>
                       <SelectValue placeholder='Select contract status' />
                     </SelectTrigger>
                   </FormControl>
@@ -110,7 +115,10 @@ function SearchFilters({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Year</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={'ALL'}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder='Select year' />
@@ -135,10 +143,16 @@ function SearchFilters({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Parcel</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={'ALL'}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Select parcel' />
+                      <SelectValue
+                        placeholder='Select parcel'
+                        className='capitalize'
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
