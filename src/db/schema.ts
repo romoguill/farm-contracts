@@ -68,7 +68,7 @@ export const contract = pgTable('contract', {
   id: uuid('id')
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  title: text('name').notNull(),
+  title: text('title').notNull(),
   tenantId: uuid('tenant_id')
     .notNull()
     .references(() => tenant.id, { onDelete: 'restrict' }),
