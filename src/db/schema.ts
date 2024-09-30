@@ -6,6 +6,7 @@ import {
 } from 'drizzle-orm';
 import { BuildAliasTable } from 'drizzle-orm/mysql-core';
 import {
+  bigint,
   boolean,
   char,
   decimal,
@@ -158,7 +159,7 @@ export const contractToParcelRelations = relations(
 export const tenant = pgTable('tenant', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 40 }).notNull(),
-  cuit: integer('cuit').notNull(),
+  cuit: bigint('cuit', { mode: 'bigint' }).notNull(),
   userId: text('user_id')
     .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),

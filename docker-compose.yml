@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: farm-contracts-pg
-    image: postgres
+    image: postgres:15.4
     hostname: ${POSTGRES_HOST}
     ports:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
