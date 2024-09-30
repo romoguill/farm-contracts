@@ -40,6 +40,7 @@ export const user = pgTable('user', {
 export const userRelations = relations(user, ({ many }) => ({
   contracts: many(contract),
   parcels: many(parcel),
+  tenants: many(tenant),
 }));
 
 export const session = pgTable('session', {
@@ -158,9 +159,16 @@ export const tenant = pgTable('tenant', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 40 }).notNull(),
   cuit: integer('cuit').notNull(),
+  userId: text('user_id')
+    .references(() => user.id, { onDelete: 'cascade' })
+    .notNull(),
 });
 
-export const tenantRelations = relations(tenant, ({ many }) => ({
+export const tenantRelations = relations(tenant, ({ many, one }) => ({
+  owner: one(user, {
+    fields: [tenant.userId],
+    references: [user.id],
+  }),
   contracts: many(contract),
 }));
 
