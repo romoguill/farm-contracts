@@ -30,7 +30,6 @@ const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      console.log('run');
       if (!isValidFileType(Array.from(e.target.files ?? []))) {
         toast.error('Files must be PDFs');
         return;
@@ -60,8 +59,6 @@ const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
       onChange([...files, ...droppedFiles]);
       setIsDragging(false);
     };
-
-    console.log({ ref: ref.current?.files });
 
     return (
       <>

@@ -121,7 +121,6 @@ const s3 = new S3Client(s3Config);
 
 export async function uploadContractPdf(formData: FormData) {
   const files = formData.getAll('files');
-  console.log(files);
 
   try {
     // Validate file (size and type)
@@ -176,7 +175,6 @@ export async function getContractPdfUrls(fileIds: string[]) {
       const command = new GetObjectCommand(params);
       // Since it's a private bucket, create a url to download file that lasts for 20min
       const url = await getSignedUrl(s3, command, { expiresIn: 60 * 20 });
-      console.log(url);
     }
   } catch (error) {}
 }

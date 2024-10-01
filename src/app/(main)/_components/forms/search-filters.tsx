@@ -70,8 +70,6 @@ function SearchFilters({
     firstContract?.startDate.getFullYear()
   );
 
-  console.log(form.getValues());
-
   return (
     <div className='rounded-md px-2'>
       <Form {...form}>

@@ -98,7 +98,6 @@ export default function CreateContractForm({}: CreateContractFormProps) {
   };
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
-    console.log(data);
     startTransition(async () => {
       // This part I'm not so sure if it's the best thing to do
       // I could convert all data to FormData but it's simpler to just serialize the files
@@ -120,8 +119,6 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       }
     });
   };
-
-  console.log(form.getValues());
 
   return (
     <Form {...form}>
@@ -317,7 +314,6 @@ export default function CreateContractForm({}: CreateContractFormProps) {
         <LoadingButton isLoading={isPending} className='w-full mt-6'>
           Create
         </LoadingButton>
-        <Button onClick={() => form.reset()}>Test reset</Button>
       </form>
     </Form>
   );
