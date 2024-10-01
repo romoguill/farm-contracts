@@ -94,7 +94,7 @@ function ContractsVisualizer() {
   }, [contracts, filters]);
 
   if (isPending) {
-    return <CustomLoader />;
+    return <CustomLoader className='mt-8' />;
   }
 
   if (isError) {

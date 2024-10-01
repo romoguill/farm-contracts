@@ -221,6 +221,7 @@ export async function getContractForDashboard(contractId: string) {
             parcel: true,
           },
         },
+        tenant: true,
       },
     });
 

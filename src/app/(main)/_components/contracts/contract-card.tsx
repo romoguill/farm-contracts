@@ -25,8 +25,10 @@ function ContractCard({ contractId }: ContractCardProps) {
 
   return (
     <Card className='my-4'>
-      <CardHeader>
-        <CardTitle>Contract</CardTitle>
+      <CardHeader className='pt-4 pb-3'>
+        <CardTitle className='overflow-hidden whitespace-nowrap text-ellipsis w-2/5 py-1 text-lg md:text-xl'>
+          {contract.title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ul>
@@ -40,6 +42,12 @@ function ContractCard({ contractId }: ContractCardProps) {
               })}
             >
               {contractStatus.toLowerCase()}
+            </span>
+          </li>
+          <li className='flex gap-4'>
+            Tenant:
+            <span className='ml-auto font-semibold'>
+              {contract.tenant.name}
             </span>
           </li>
           <li className='flex gap-4'>

@@ -82,6 +82,8 @@ export function useContractDetail(contractId: string) {
     isError: false,
     data: {
       id: contract.id,
+      title: contract.title,
+      tenant: contract.tenant,
       status: contract.endDate > new Date(Date.now()) ? 'ONGOING' : 'FINISHED',
       startDate: contract.startDate,
       endDate: contract.endDate,
