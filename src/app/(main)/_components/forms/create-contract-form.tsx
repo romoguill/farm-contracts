@@ -25,7 +25,7 @@ import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, FileTextIcon } from 'lucide-react';
-import { useRef, useState, useTransition } from 'react';
+import { RefObject, useRef, useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
@@ -39,11 +39,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getTenants } from '@/actions/tenants.actions';
+import { useRouter } from 'next/navigation';
 
 interface CreateContractFormProps {}
 
 export default function CreateContractForm({}: CreateContractFormProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const uploaderRef = useRef<HTMLInputElement>(null);
+
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
     defaultValues: {
@@ -86,34 +90,35 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     );
   }
 
+  // Some issues in GitHub, couldn't find a better way to explicitlly delete files in input
+  const resetFiles = (ref: RefObject<HTMLInputElement>) => {
+    if (ref.current) {
+      ref.current.value = '';
+    }
+  };
+
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
     console.log(data);
-    // startTransition(async () => {
-    //   // This part I'm not so sure if it's the best thing to do
-    //   // I could convert all data to FormData but it's simpler to just serialize the files
-    //   const { files, ...rest } = data;
-    //   const formData = new FormData();
-    //   files.forEach((file) => formData.append('files', file));
+    startTransition(async () => {
+      // This part I'm not so sure if it's the best thing to do
+      // I could convert all data to FormData but it's simpler to just serialize the files
+      const { files, ...rest } = data;
+      const formData = new FormData();
+      files.forEach((file) => formData.append('files', file));
 
-    //   const { error } = await createContract({
-    //     data: rest,
-    //     filesSerialized: formData,
-    //   });
-    //   if (!error) {
-    //     toast.success('Contract created');
-    //     form.reset({
-    //       title: '',
-    //       tenantId: '',
-    //       startDate: new Date(),
-    //       endDate: new Date(),
-    //       soyKgs: 0,
-    //       parcelIds: [],
-    //       files: [],
-    //     });
-    //   } else {
-    //     toast.error('Error creating contract');
-    //   }
-    // });
+      const { error } = await createContract({
+        data: rest,
+        filesSerialized: formData,
+      });
+      if (!error) {
+        toast.success('Contract created');
+        form.reset();
+        resetFiles(uploaderRef);
+        router.refresh();
+      } else {
+        toast.error('Error creating contract');
+      }
+    });
   };
 
   console.log(form.getValues());
@@ -296,7 +301,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                   <ContractUploader
                     files={field.value}
                     onChange={(files: File[]) => field.onChange(files)}
-                    ref={field.ref}
+                    ref={uploaderRef}
                   />
                 </FormControl>
                 <FormMessage />

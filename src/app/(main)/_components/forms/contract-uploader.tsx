@@ -1,10 +1,15 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef,
+  RefObject,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 import PDFsPreview from './pdfs-preview';
-import { InputProps } from '@/components/ui/input';
 
 interface ContractUploaderProps {
   files: File[];
