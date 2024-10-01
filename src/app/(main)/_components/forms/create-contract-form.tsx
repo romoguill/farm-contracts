@@ -25,7 +25,7 @@ import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, FileTextIcon } from 'lucide-react';
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
@@ -87,24 +87,36 @@ export default function CreateContractForm({}: CreateContractFormProps) {
   }
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
-    startTransition(async () => {
-      // This part I'm not so sure if it's the best thing to do
-      // I could convert all data to FormData but it's simpler to just serialize the files
-      const { files, ...rest } = data;
-      const formData = new FormData();
-      files.forEach((file) => formData.append('files', file));
+    console.log(data);
+    // startTransition(async () => {
+    //   // This part I'm not so sure if it's the best thing to do
+    //   // I could convert all data to FormData but it's simpler to just serialize the files
+    //   const { files, ...rest } = data;
+    //   const formData = new FormData();
+    //   files.forEach((file) => formData.append('files', file));
 
-      const { error } = await createContract({
-        data: rest,
-        filesSerialized: formData,
-      });
-      if (!error) {
-        toast.success('Contract created');
-      } else {
-        toast.error('Error creating contract');
-      }
-    });
+    //   const { error } = await createContract({
+    //     data: rest,
+    //     filesSerialized: formData,
+    //   });
+    //   if (!error) {
+    //     toast.success('Contract created');
+    //     form.reset({
+    //       title: '',
+    //       tenantId: '',
+    //       startDate: new Date(),
+    //       endDate: new Date(),
+    //       soyKgs: 0,
+    //       parcelIds: [],
+    //       files: [],
+    //     });
+    //   } else {
+    //     toast.error('Error creating contract');
+    //   }
+    // });
   };
+
+  console.log(form.getValues());
 
   return (
     <Form {...form}>
@@ -143,7 +155,10 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                   <SelectContent>
                     {tenants.map((tenant) => (
                       <SelectItem key={tenant.id} value={tenant.id}>
-                        {tenant.name} <span>{tenant.cuit}</span>
+                        {tenant.name}
+                        <span className='text-xs text-muted-foreground ml-4'>
+                          ({String(tenant.cuit)})
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -281,6 +296,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                   <ContractUploader
                     files={field.value}
                     onChange={(files: File[]) => field.onChange(files)}
+                    ref={field.ref}
                   />
                 </FormControl>
                 <FormMessage />
@@ -296,6 +312,7 @@ export default function CreateContractForm({}: CreateContractFormProps) {
         <LoadingButton isLoading={isPending} className='w-full mt-6'>
           Create
         </LoadingButton>
+        <Button onClick={() => form.reset()}>Test reset</Button>
       </form>
     </Form>
   );
