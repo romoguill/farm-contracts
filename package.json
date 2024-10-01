@@ -10,7 +10,7 @@
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "seed:parcels": "node ./src/db/seed/seed.parcel.js",
-    "seed:tenants": "node ./src/db/seed/tenant.parcel.js"
+    "seed:tenants": "node ./src/db/seed/seed.tenant.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
