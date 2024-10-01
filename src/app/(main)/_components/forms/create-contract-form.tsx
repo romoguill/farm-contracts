@@ -38,12 +38,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { getTenants } from '@/actions/tenants.actions';
 
 interface CreateContractFormProps {}
 
 export default function CreateContractForm({}: CreateContractFormProps) {
-  const [fileUpload, setFileUpload] = useState<File | undefined>(undefined);
-  const [fileUrl, setFileUrl] = useState<string | undefined>('');
   const [isPending, startTransition] = useTransition();
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
@@ -57,6 +56,8 @@ export default function CreateContractForm({}: CreateContractFormProps) {
       files: [],
     },
   });
+
+  // QUERIES
   const {
     data: parcels,
     isPending: isPendingParcels,
@@ -66,30 +67,20 @@ export default function CreateContractForm({}: CreateContractFormProps) {
     queryFn: () => getParcels(),
   });
 
-  // const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   const formData = new FormData();
+  const {
+    data: tenants,
+    isPending: isPendingTenants,
+    isError: isErrorTenants,
+  } = useQuery({
+    queryKey: ['tenants'],
+    queryFn: () => getTenants(),
+  });
 
-  //   if (file) {
-  //     const url = URL.createObjectURL(file);
-  //     setFileUpload(file);
-  //     setFileUrl(url);
-  //     formData.append('pdfUpload', file);
-  //     const { error, fileIds } = await uploadContractPdf(formData);
-  //     if (error !== null) {
-  //       toast.error('Failed to upload file');
-  //       return;
-  //     }
-
-  //     form.setValue('fileIds', fileIds);
-  //   }
-  // };
-
-  if (isPendingParcels) {
+  if (isPendingParcels || isPendingTenants) {
     return <CustomLoader size='lg' />;
   }
 
-  if (isErrorParcels) {
+  if (isErrorParcels || isErrorTenants) {
     return (
       <p>Oops! There was an error setting up the from. Try again later.</p>
     );
@@ -150,8 +141,11 @@ export default function CreateContractForm({}: CreateContractFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='123'>John McLovin</SelectItem>
-                    <SelectItem value='124'>Peter parker</SelectItem>
+                    {tenants.map((tenant) => (
+                      <SelectItem key={tenant.id} value={tenant.id}>
+                        {tenant.name} <span>{tenant.cuit}</span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

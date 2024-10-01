@@ -1,3 +1,5 @@
+'use server';
+
 import { tenant } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
