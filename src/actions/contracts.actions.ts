@@ -13,7 +13,7 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, count, eq, gte, lte } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -250,6 +250,34 @@ export async function getOldestContract() {
         },
       },
     });
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getContractsCountByYear(year: number) {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const startDate = new Date(`${year}/01/01`);
+    const endDate = new Date(`${year}/12/31`);
+
+    return db
+      .select({ count: count() })
+      .from(contract)
+      .where(
+        and(
+          eq(contract.userId, user.id),
+          and(
+            gte(contract.startDate, endDate),
+            lte(contract.endDate, startDate)
+          )
+        )
+      );
   } catch (error) {
     throw error;
   }
