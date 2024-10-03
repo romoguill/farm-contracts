@@ -1,10 +1,8 @@
-import { getSoyCurrentMarketData } from '@/actions/market.actions';
-import LogoutButton from '@/app/auth/_components/logout-button';
-import { marketData } from '@/db/schema';
+import MainContainer from '@/components/main-container';
+import MainTitle from '@/components/main-title';
 import { validateRequest } from '@/lib/auth';
-import { db } from '@/lib/dbClient';
-import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+import ChartDashboard from '../_components/charts/chart-dashboard';
 
 async function DashboardPage() {
   const { session } = await validateRequest();
@@ -13,13 +11,11 @@ async function DashboardPage() {
     return redirect('/auth/login');
   }
 
-  // const data = await fetch('http://localhost:3000/crons/market-data');
-
   return (
-    <div>
-      DashboardPage
-      <LogoutButton />
-    </div>
+    <MainContainer>
+      <MainTitle>Dashboard</MainTitle>
+      <ChartDashboard />
+    </MainContainer>
   );
 }
 export default DashboardPage;
