@@ -18,6 +18,8 @@ function ChartDashboard() {
     queryKey: ['contracts', 2024],
     queryFn: () => getContractsCountByYear(2024),
   });
+
+  console.log(data);
   const chartData = [
     { month: 'January', desktop: 186, mobile: 80 },
     { month: 'February', desktop: 305, mobile: 200 },

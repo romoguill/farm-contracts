@@ -273,8 +273,8 @@ export async function getContractsCountByYear(year: number) {
         and(
           eq(contract.userId, user.id),
           and(
-            gte(contract.startDate, endDate),
-            lte(contract.endDate, startDate)
+            lte(contract.startDate, endDate),
+            gte(contract.endDate, startDate)
           )
         )
       );
