@@ -1,6 +1,6 @@
 'use client';
 
-import { getContractsCountByYear } from '@/actions/contracts.actions';
+import { getContractsGraphData } from '@/actions/contracts.actions';
 import {
   ChartConfig,
   ChartContainer,
@@ -16,7 +16,7 @@ import YearPicker from './year-picker';
 function ChartDashboard() {
   const { data: contracts } = useQuery({
     queryKey: ['contracts', 2024],
-    queryFn: () => getContractsCountByYear(2024),
+    queryFn: () => getContractsGraphData(2024),
   });
 
   const chartData = [
@@ -38,6 +38,8 @@ function ChartDashboard() {
       color: '#60a5fa',
     },
   } satisfies ChartConfig;
+
+  console.log(contracts);
   return (
     <div>
       <YearPicker />

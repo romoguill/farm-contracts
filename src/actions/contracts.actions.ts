@@ -1,6 +1,11 @@
 'use server';
 
-import { contract, contractToParcel, uploadedFile } from '@/db/schema';
+import {
+  contract,
+  contractToParcel,
+  marketData,
+  uploadedFile,
+} from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
 import { contractPDFSchema, CreateContract } from '@/lib/validation';
@@ -13,7 +18,7 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, lte, sql, sum } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -279,7 +284,7 @@ export async function getNewestContract() {
   }
 }
 
-export async function getContractsCountByYear(year: number) {
+export async function getContractsGraphData(year: number) {
   try {
     const { user } = await validateRequest();
 
@@ -290,8 +295,8 @@ export async function getContractsCountByYear(year: number) {
     const startDate = new Date(`${year}/01/01`);
     const endDate = new Date(`${year}/12/31`);
 
-    return db
-      .select({ count: count() })
+    const contracts = db
+      .select()
       .from(contract)
       .where(
         and(
@@ -302,6 +307,8 @@ export async function getContractsCountByYear(year: number) {
           )
         )
       );
+
+    return contracts;
   } catch (error) {
     throw error;
   }
