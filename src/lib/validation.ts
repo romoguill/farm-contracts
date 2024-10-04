@@ -75,3 +75,17 @@ export const searchFiltersSchema = z.object({
 });
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;
+
+export type Months =
+  | 'january'
+  | 'february'
+  | 'march'
+  | 'april'
+  | 'may'
+  | 'june'
+  | 'july'
+  | 'august'
+  | 'september'
+  | 'october'
+  | 'november'
+  | 'december';

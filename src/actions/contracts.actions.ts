@@ -8,7 +8,7 @@ import {
 } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
-import { contractPDFSchema, CreateContract } from '@/lib/validation';
+import { contractPDFSchema, CreateContract, Months } from '@/lib/validation';
 import {
   GetObjectCommand,
   GetObjectCommandInput,
@@ -284,7 +284,13 @@ export async function getNewestContract() {
   }
 }
 
-export async function getContractsGraphData(year: number) {
+type GraphData = {
+  month: Months;
+  contractsCount: number;
+  contractsValue: number;
+}[];
+
+export async function getContractsGraphData(year: number): Promise<GraphData> {
   try {
     const { user } = await validateRequest();
 
@@ -295,7 +301,7 @@ export async function getContractsGraphData(year: number) {
     const startDate = new Date(`${year}/01/01`);
     const endDate = new Date(`${year}/12/31`);
 
-    const contracts = db
+    const contracts = await db
       .select()
       .from(contract)
       .where(
@@ -308,7 +314,46 @@ export async function getContractsGraphData(year: number) {
         )
       );
 
-    return contracts;
+    const soyPrice = await db.query.marketData.findFirst({
+      orderBy: desc(marketData.date),
+    });
+
+    const months: Months[] = [
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december',
+    ];
+
+    const monthData: GraphData = new Array(12)
+      .fill(undefined)
+      .map((_item, i) => ({
+        month: months[i],
+        contractsCount: 0,
+        contractsValue: 0,
+      }));
+
+    monthData.forEach((item, i) => {
+      contracts.forEach((contract) => {
+        if (
+          contract.startDate.getMonth() >= i &&
+          contract.endDate.getMonth() <= i
+        ) {
+          item.contractsCount++;
+          item.contractsValue += contract.soyKgs * (soyPrice?.price || 0);
+        }
+      });
+    });
+
+    return monthData;
   } catch (error) {
     throw error;
   }
