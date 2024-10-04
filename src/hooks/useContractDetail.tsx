@@ -26,30 +26,49 @@ export function useContractDetail(contractId: string) {
   const totalValue = useMemo(() => {
     if (!contract || !marketData) return;
 
-    // Days of contract: miliseconds difference to days
-    const contractDurationInDays = Math.floor(
-      (contract.endDate.getTime() - contract.startDate.getTime()) /
-        (1000 * 60 * 60 * 24)
-    );
-    // Get the proportional pay per day based on the contract month
+    // // Days of contract: miliseconds difference to days
+    // const contractDurationInDays = Math.floor(
+    //   (contract.endDate.getTime() - contract.startDate.getTime()) /
+    //     (1000 * 60 * 60 * 24)
+    // );
+
+    // Total hectares (a.k.a sum of area of all parcels in contract)
+    const parcelsHasTotal = contract.contractToParcel.reduce((prev, curr) => {
+      return (prev += Number(curr.parcel.area));
+    }, 0);
+
     return marketData
-      ? contractDurationInDays * ((marketData.price * contract.soyKgs) / 365)
+      ? (marketData.price * contract.soyKgs * parcelsHasTotal) / 1000
       : 0;
   }, [marketData, contract]);
 
   const remainingValue = useMemo(() => {
     if (!contract || !marketData) return;
 
+    const totalDays =
+      Math.floor(contract.endDate.getTime() - contract.startDate.getTime()) /
+      (1000 * 60 * 60 * 24);
+
     // Days of contract: miliseconds difference to days
-    const contractDurationInDays = Math.max(
-      Math.floor(
-        (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    const remainingDays = Math.min(
+      Math.max(
+        Math.floor(
+          (contract.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        ),
+        0
       ),
-      0
+      totalDays
     );
+
+    // Total hectares (a.k.a sum of area of all parcels in contract)
+    const parcelsHasTotal = contract.contractToParcel.reduce((prev, curr) => {
+      return (prev += Number(curr.parcel.area));
+    }, 0);
+    console.log({ totalDays, remainingDays });
     // Get the proportional pay per day based on the contract month
     return marketData
-      ? contractDurationInDays * ((marketData.price * contract.soyKgs) / 365)
+      ? (remainingDays / totalDays) *
+          ((marketData.price * contract.soyKgs * parcelsHasTotal) / 1000)
       : 0;
   }, [contract, marketData]);
 

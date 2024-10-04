@@ -14,37 +14,38 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import YearPicker from './year-picker';
 
 function ChartDashboard() {
-  const { data: contracts } = useQuery({
+  const { data: graphData } = useQuery({
     queryKey: ['contracts', 2024],
     queryFn: () => getContractsGraphData(2024),
   });
 
-  const chartData = [
-    { month: 'January', desktop: 186, mobile: 80 },
-    { month: 'February', desktop: 305, mobile: 200 },
-    { month: 'March', desktop: 237, mobile: 120 },
-    { month: 'April', desktop: 73, mobile: 190 },
-    { month: 'May', desktop: 209, mobile: 130 },
-    { month: 'June', desktop: 214, mobile: 140 },
-  ];
+  // const chartData = [
+  //   { month: 'January', desktop: 186, mobile: 80 },
+  //   { month: 'February', desktop: 305, mobile: 200 },
+  //   { month: 'March', desktop: 237, mobile: 120 },
+  //   { month: 'April', desktop: 73, mobile: 190 },
+  //   { month: 'May', desktop: 209, mobile: 130 },
+  //   { month: 'June', desktop: 214, mobile: 140 },
+  // ];
 
   const chartConfig = {
-    desktop: {
-      label: 'Desktop',
+    contractsCount: {
+      label: 'Quantity',
       color: '#2563eb',
     },
-    mobile: {
-      label: 'Mobile',
+    contractsValue: {
+      label: 'Value',
       color: '#60a5fa',
     },
   } satisfies ChartConfig;
 
-  console.log(contracts);
+  console.log(graphData);
+
   return (
     <div>
       <YearPicker />
       <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
-        <BarChart accessibilityLayer data={chartData}>
+        <BarChart accessibilityLayer data={graphData}>
           <XAxis
             dataKey='month'
             tickLine={false}
@@ -55,8 +56,12 @@ function ChartDashboard() {
           <CartesianGrid vertical={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
-          <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
+          <Bar
+            dataKey='contractsCount'
+            fill='var(--color-desktop)'
+            radius={4}
+          />
+          <Bar dataKey='contractsValue' fill='var(--color-mobile)' radius={4} />
         </BarChart>
       </ChartContainer>
     </div>
