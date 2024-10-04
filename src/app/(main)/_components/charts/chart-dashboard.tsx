@@ -1,5 +1,6 @@
 'use client';
 
+import { getContractsCountByYear } from '@/actions/contracts.actions';
 import {
   ChartConfig,
   ChartContainer,
@@ -8,18 +9,16 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import YearPicker from './year-picker';
-import { useQuery } from '@tanstack/react-query';
-import { getContractsCountByYear } from '@/actions/contracts.actions';
 
 function ChartDashboard() {
-  const { data } = useQuery({
+  const { data: contracts } = useQuery({
     queryKey: ['contracts', 2024],
     queryFn: () => getContractsCountByYear(2024),
   });
 
-  console.log(data);
   const chartData = [
     { month: 'January', desktop: 186, mobile: 80 },
     { month: 'February', desktop: 305, mobile: 200 },

@@ -1,6 +1,11 @@
 'use client';
 
+import {
+  getNewestContract,
+  getOldestContract,
+} from '@/actions/contracts.actions';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useReducer, useState } from 'react';
 
@@ -21,10 +26,20 @@ const reducer = (state: number, action: PickerActions) => {
 };
 
 function YearPicker() {
-  const [state, dispatch] = useReducer(
+  const [year, dispatch] = useReducer(
     reducer,
     new Date(Date.now()).getFullYear()
   );
+
+  const { data: oldestContract } = useQuery({
+    queryKey: ['contracts', 'first'],
+    queryFn: () => getOldestContract(),
+  });
+
+  const { data: newestContract } = useQuery({
+    queryKey: ['contracts', 'first'],
+    queryFn: () => getNewestContract(),
+  });
 
   return (
     <div className='mx-auto flex items-center justify-center gap-6'>
@@ -32,17 +47,25 @@ function YearPicker() {
         variant='outline'
         size='icon'
         className='h-8'
+        disabled={
+          oldestContract && year <= oldestContract?.startDate.getFullYear() // disable selecting years prior to oldest contract
+        }
         onClick={() => dispatch({ type: 'previous_year' })}
       >
         <ChevronLeft />
       </Button>
 
-      <span className='text-xl'>{state}</span>
+      <span className='text-xl'>{year}</span>
 
       <Button
         variant='outline'
         size='icon'
         className='h-8'
+        disabled={
+          newestContract &&
+          year >= newestContract?.endDate.getFullYear() &&
+          year >= new Date(Date.now()).getFullYear()
+        } // disable selection contracts past the latest contract OR the current year
         onClick={() => dispatch({ type: 'next_year' })}
       >
         <ChevronRight />
