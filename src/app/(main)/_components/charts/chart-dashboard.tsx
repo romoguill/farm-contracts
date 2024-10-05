@@ -51,14 +51,18 @@ function ChartDashboard() {
   return (
     <div>
       <YearPicker />
-      <div className='relative'>
+      <div className='relative border border-slate-200 rounded-xl'>
         <Select>
-          <SelectTrigger className='w-36'>
+          <SelectTrigger className='w-24 h-8 text-xs m-2 rounded-xl'>
             <SelectValue placeholder='Chart data' />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='quantity'>Quantity</SelectItem>
-            <SelectItem value='value'>Value</SelectItem>
+          <SelectContent className='min-w-28'>
+            <SelectItem value='quantity' className='text-xs'>
+              Quantity
+            </SelectItem>
+            <SelectItem value='value' className='text-xs'>
+              Value
+            </SelectItem>
           </SelectContent>
         </Select>
         <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
