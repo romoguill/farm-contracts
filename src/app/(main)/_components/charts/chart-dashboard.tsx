@@ -12,6 +12,13 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import YearPicker from './year-picker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function ChartDashboard() {
   const { data: graphData } = useQuery({
@@ -44,26 +51,42 @@ function ChartDashboard() {
   return (
     <div>
       <YearPicker />
-      <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
-        <BarChart accessibilityLayer data={graphData}>
-          <XAxis
-            dataKey='month'
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
-          />
-          <CartesianGrid vertical={false} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          <Bar
-            dataKey='contractsCount'
-            fill='var(--color-desktop)'
-            radius={4}
-          />
-          <Bar dataKey='contractsValue' fill='var(--color-mobile)' radius={4} />
-        </BarChart>
-      </ChartContainer>
+      <div className='relative'>
+        <Select>
+          <SelectTrigger className='w-36'>
+            <SelectValue placeholder='Chart data' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='quantity'>Quantity</SelectItem>
+            <SelectItem value='value'>Value</SelectItem>
+          </SelectContent>
+        </Select>
+        <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
+          <BarChart accessibilityLayer data={graphData}>
+            <XAxis
+              dataKey='month'
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              className='capitalize'
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <CartesianGrid vertical={false} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar
+              dataKey='contractsCount'
+              fill='var(--color-desktop)'
+              radius={4}
+            />
+            <Bar
+              dataKey='contractsValue'
+              fill='var(--color-mobile)'
+              radius={4}
+            />
+          </BarChart>
+        </ChartContainer>
+      </div>
     </div>
   );
 }
