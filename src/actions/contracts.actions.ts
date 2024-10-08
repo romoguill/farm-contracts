@@ -380,12 +380,12 @@ export async function getActiveContractsAndParcels() {
       throw new Error('Invalid credentials');
     }
 
-    const contracts = await db.query.contract.findFirst({
+    const contracts = await db.query.contract.findMany({
       where: and(
         eq(contract.userId, user.id),
         and(
-          gte(contract.startDate, new Date()),
-          lte(contract.endDate, new Date())
+          lte(contract.startDate, new Date()),
+          gte(contract.endDate, new Date())
         )
       ),
       with: {
