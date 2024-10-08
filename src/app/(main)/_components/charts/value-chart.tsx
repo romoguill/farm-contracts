@@ -7,14 +7,14 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
+import { useMemo } from 'react';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 interface ValueChartProps {
   data: Awaited<ReturnType<typeof getContractsGraphData>> | undefined;
 }
 
 function ValueChart({ data }: ValueChartProps) {
-  console.log(data);
   const chartConfig = {
     contractsValue: {
       label: 'Value',
@@ -22,9 +22,18 @@ function ValueChart({ data }: ValueChartProps) {
     },
   } satisfies ChartConfig;
 
+  const formatedData = useMemo(
+    () =>
+      data?.map((item) => ({
+        ...item,
+        contractsValue: item.contractsValue / 1000,
+      })),
+    [data]
+  );
+
   return (
     <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
-      <LineChart accessibilityLayer data={data}>
+      <LineChart accessibilityLayer data={formatedData}>
         <XAxis
           dataKey='month'
           tickLine={false}
@@ -33,6 +42,7 @@ function ValueChart({ data }: ValueChartProps) {
           className='capitalize'
           tickFormatter={(value) => value.slice(0, 3)}
         />
+        <YAxis label={{ value: '$K', position: 'insideTopLeft' }} width={80} />
         <CartesianGrid vertical={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
@@ -40,6 +50,7 @@ function ValueChart({ data }: ValueChartProps) {
           dataKey='contractsValue'
           fill='var(--color-desktop)'
           type='monotone'
+          isAnimationActive={false}
         />
       </LineChart>
     </ChartContainer>

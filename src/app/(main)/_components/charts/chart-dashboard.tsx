@@ -47,7 +47,7 @@ function ChartDashboard() {
           value={selectedType}
           onValueChange={(value: DataType) => setSelectedType(value)}
         >
-          <SelectTrigger className='w-24 h-8 text-xs m-2 rounded-xl'>
+          <SelectTrigger className='w-24 h-8 text-xs m-2 rounded-xl focus-visible:ring-transparent'>
             <SelectValue placeholder='Chart data' />
           </SelectTrigger>
           <SelectContent className='min-w-28'>
