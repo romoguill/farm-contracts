@@ -314,6 +314,8 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
         )
       );
 
+    console.log(contracts);
+
     const soyPrice = await db.query.marketData.findFirst({
       orderBy: desc(marketData.date),
     });
@@ -343,10 +345,15 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
 
     monthData.forEach((item, i) => {
       contracts.forEach((contract) => {
+        console.log(
+          contract.startDate.getMonth() >= i,
+          contract.endDate.getMonth() <= i
+        );
         if (
           contract.startDate.getMonth() >= i &&
           contract.endDate.getMonth() <= i
         ) {
+          console.log('run');
           item.contractsCount++;
           item.contractsValue += contract.soyKgs * (soyPrice?.price || 0);
         }

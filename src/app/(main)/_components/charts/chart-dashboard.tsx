@@ -27,16 +27,21 @@ type DataType = 'quantity' | 'value';
 
 function ChartDashboard() {
   const [selectedType, setSelectedType] = useState<DataType>('quantity');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
   const { data: graphData } = useQuery({
-    queryKey: ['contracts', 2024],
-    queryFn: () => getContractsGraphData(2024),
+    queryKey: ['contracts', selectedYear],
+    queryFn: () => getContractsGraphData(selectedYear),
   });
 
   console.log(graphData);
 
   return (
     <div>
-      <YearPicker />
+      <YearPicker
+        defaultValue={new Date().getFullYear()}
+        onChange={setSelectedYear}
+      />
       <div className='relative border border-slate-200 rounded-xl'>
         <Select
           value={selectedType}

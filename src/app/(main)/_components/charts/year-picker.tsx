@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 type PickerActions = {
   type: 'next_year' | 'previous_year';
@@ -25,11 +25,13 @@ const reducer = (state: number, action: PickerActions) => {
   return state;
 };
 
-function YearPicker() {
-  const [year, dispatch] = useReducer(
-    reducer,
-    new Date(Date.now()).getFullYear()
-  );
+interface YearPickerProps {
+  defaultValue: number;
+  onChange: (value: number) => void;
+}
+
+function YearPicker({ defaultValue, onChange }: YearPickerProps) {
+  const [year, dispatch] = useReducer(reducer, defaultValue);
 
   const { data: oldestContract } = useQuery({
     queryKey: ['contracts', 'first'],
@@ -40,6 +42,10 @@ function YearPicker() {
     queryKey: ['contracts', 'first'],
     queryFn: () => getNewestContract(),
   });
+
+  useEffect(() => {
+    onChange(year);
+  }, [year, onChange]);
 
   return (
     <div className='mx-auto flex items-center justify-center gap-6'>
