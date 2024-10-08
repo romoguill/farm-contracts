@@ -350,8 +350,10 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
           contract.endDate.getMonth() <= i
         );
         if (
-          contract.startDate.getMonth() >= i &&
-          contract.endDate.getMonth() <= i
+          (contract.startDate.getMonth() <= i ||
+            contract.startDate.getFullYear() < year) &&
+          (contract.endDate.getMonth() >= i ||
+            contract.endDate.getFullYear() > year)
         ) {
           console.log('run');
           item.contractsCount++;
