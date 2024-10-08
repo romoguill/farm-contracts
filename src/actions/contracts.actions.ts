@@ -18,7 +18,18 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { and, asc, count, desc, eq, gte, lte, sql, sum } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  between,
+  count,
+  desc,
+  eq,
+  gte,
+  lte,
+  sql,
+  sum,
+} from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -314,8 +325,6 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
         )
       );
 
-    console.log(contracts);
-
     const soyPrice = await db.query.marketData.findFirst({
       orderBy: desc(marketData.date),
     });
@@ -345,17 +354,12 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
 
     monthData.forEach((item, i) => {
       contracts.forEach((contract) => {
-        console.log(
-          contract.startDate.getMonth() >= i,
-          contract.endDate.getMonth() <= i
-        );
         if (
           (contract.startDate.getMonth() <= i ||
             contract.startDate.getFullYear() < year) &&
           (contract.endDate.getMonth() >= i ||
             contract.endDate.getFullYear() > year)
         ) {
-          console.log('run');
           item.contractsCount++;
           item.contractsValue += contract.soyKgs * (soyPrice?.price || 0);
         }
@@ -363,6 +367,38 @@ export async function getContractsGraphData(year: number): Promise<GraphData> {
     });
 
     return monthData;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getActiveContractsAndParcels() {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const contracts = await db.query.contract.findFirst({
+      where: and(
+        eq(contract.userId, user.id),
+        and(
+          gte(contract.startDate, new Date()),
+          lte(contract.endDate, new Date())
+        )
+      ),
+      with: {
+        contractToParcel: {
+          with: {
+            parcel: true,
+          },
+        },
+        tenant: true,
+      },
+    });
+
+    return contracts;
   } catch (error) {
     throw error;
   }
