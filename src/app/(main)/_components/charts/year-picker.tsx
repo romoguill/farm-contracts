@@ -39,7 +39,7 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
   });
 
   const { data: newestContract } = useQuery({
-    queryKey: ['contracts', 'first'],
+    queryKey: ['contracts', 'last'],
     queryFn: () => getNewestContract(),
   });
 
@@ -47,6 +47,7 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
     onChange(year);
   }, [year, onChange]);
 
+  console.log(newestContract);
   return (
     <div className='mx-auto flex items-center justify-center gap-6'>
       <Button
@@ -54,7 +55,9 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
         size='icon'
         className='h-8'
         disabled={
-          oldestContract && year <= oldestContract?.startDate.getFullYear() // disable selecting years prior to oldest contract
+          oldestContract
+            ? year <= oldestContract?.startDate.getFullYear()
+            : year <= new Date().getFullYear() // disable selecting years prior to oldest contract
         }
         onClick={() => dispatch({ type: 'previous_year' })}
       >
@@ -69,8 +72,11 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
         className='h-8'
         disabled={
           newestContract &&
-          year >= newestContract?.endDate.getFullYear() &&
-          year >= new Date(Date.now()).getFullYear()
+          year >=
+            Math.max(
+              newestContract?.endDate.getFullYear(),
+              new Date(Date.now()).getFullYear()
+            )
         } // disable selection contracts past the latest contract OR the current year
         onClick={() => dispatch({ type: 'next_year' })}
       >
