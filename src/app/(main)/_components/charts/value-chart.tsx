@@ -32,7 +32,7 @@ function ValueChart({ data }: ValueChartProps) {
   );
 
   return (
-    <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
+    <ChartContainer config={chartConfig} className='h-[300px] w-full'>
       <LineChart accessibilityLayer data={formatedData}>
         <XAxis
           dataKey='month'

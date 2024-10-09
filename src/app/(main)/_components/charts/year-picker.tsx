@@ -53,7 +53,7 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
       <Button
         variant='outline'
         size='icon'
-        className='h-8'
+        className='h-6 w-6'
         disabled={
           oldestContract
             ? year <= oldestContract?.startDate.getFullYear()
@@ -61,15 +61,15 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
         }
         onClick={() => dispatch({ type: 'previous_year' })}
       >
-        <ChevronLeft />
+        <ChevronLeft size={16} />
       </Button>
 
-      <span className='text-xl'>{year}</span>
+      <span className='text-base'>{year}</span>
 
       <Button
         variant='outline'
         size='icon'
-        className='h-8'
+        className='h-6 w-6'
         disabled={
           newestContract &&
           year >=
@@ -80,7 +80,7 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
         } // disable selection contracts past the latest contract OR the current year
         onClick={() => dispatch({ type: 'next_year' })}
       >
-        <ChevronRight />
+        <ChevronRight size={16} />
       </Button>
     </div>
   );

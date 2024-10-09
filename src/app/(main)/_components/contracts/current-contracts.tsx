@@ -10,8 +10,6 @@ function CurrentContracts() {
     queryFn: () => getActiveContractsAndParcels(),
   });
 
-  console.log(activeContracts);
-
   return (
     <div>
       {activeContracts?.map((contract) => (

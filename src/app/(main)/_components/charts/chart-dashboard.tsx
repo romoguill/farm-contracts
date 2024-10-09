@@ -34,31 +34,32 @@ function ChartDashboard() {
     queryFn: () => getContractsGraphData(selectedYear),
   });
 
-  console.log(graphData);
-
   return (
-    <div>
-      <YearPicker
-        defaultValue={new Date().getFullYear()}
-        onChange={setSelectedYear}
-      />
+    <div className='flex-grow'>
       <div className='relative border border-slate-200 rounded-xl'>
-        <Select
-          value={selectedType}
-          onValueChange={(value: DataType) => setSelectedType(value)}
-        >
-          <SelectTrigger className='w-24 h-8 text-xs m-2 rounded-xl focus-visible:ring-transparent'>
-            <SelectValue placeholder='Chart data' />
-          </SelectTrigger>
-          <SelectContent className='min-w-28'>
-            <SelectItem value='quantity' className='text-xs'>
-              Quantity
-            </SelectItem>
-            <SelectItem value='value' className='text-xs'>
-              Value
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className='grid grid-cols-[1fr,4fr,1fr] p-2'>
+          <Select
+            value={selectedType}
+            onValueChange={(value: DataType) => setSelectedType(value)}
+          >
+            <SelectTrigger className='w-24 h-fit py-1 text-xs rounded-xl m-0 focus-visible:ring-transparent focus:ring-transparent'>
+              <SelectValue placeholder='Chart data' />
+            </SelectTrigger>
+            <SelectContent className='min-w-28'>
+              <SelectItem value='quantity' className='text-xs'>
+                Quantity
+              </SelectItem>
+              <SelectItem value='value' className='text-xs'>
+                Value
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <YearPicker
+            defaultValue={new Date().getFullYear()}
+            onChange={setSelectedYear}
+          />
+        </div>
 
         {selectedType === 'quantity' && <QuantityChart data={graphData} />}
         {selectedType === 'value' && <ValueChart data={graphData} />}

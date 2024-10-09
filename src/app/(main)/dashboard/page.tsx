@@ -16,8 +16,10 @@ async function DashboardPage() {
   return (
     <MainContainer>
       <MainTitle>Dashboard</MainTitle>
-      <ChartDashboard />
-      <CurrencyConverter />
+      <section className='flex flex-col gap-5 md:flex-row'>
+        <ChartDashboard />
+        <CurrencyConverter />
+      </section>
       <CurrentContracts />
     </MainContainer>
   );

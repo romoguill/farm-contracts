@@ -22,7 +22,7 @@ function QuantityChart({ data }: QuantityChartProps) {
   } satisfies ChartConfig;
 
   return (
-    <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
+    <ChartContainer config={chartConfig} className='h-[300px] w-full'>
       <BarChart accessibilityLayer data={data}>
         <XAxis
           dataKey='month'

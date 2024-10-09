@@ -49,11 +49,11 @@ const CurrencyConverter = function CurrencyConverter() {
   }
 
   return (
-    <div>
+    <div className='w-full md:min-w-[250px] md:w-2/6'>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Dolar type</TableHead>
+            <TableHead className='whitespace-nowrap'>Dolar type</TableHead>
             <TableHead>Buy</TableHead>
             <TableHead>Sell</TableHead>
           </TableRow>
