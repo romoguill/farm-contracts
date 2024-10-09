@@ -93,9 +93,9 @@ function ParcelViewer({ parcels }: ParcelViewerProps) {
               onShapeFocused={(parcel) => {
                 setFocusedParcel(parcel);
               }}
-              focused={focusedParcel?.id === parcel.id ?? null}
+              focused={focusedParcel?.id === parcel.id || false}
               onShapeSelected={(parcel) => setSelectedParcel(parcel)}
-              selected={selectedParcel?.id === parcel.id ?? null}
+              selected={selectedParcel?.id === parcel.id || false}
             />
           ))}
         </div>

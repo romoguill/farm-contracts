@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import ChartDashboard from '../_components/charts/chart-dashboard';
 import CurrentContracts from '../_components/contracts/current-contracts';
 import CurrencyConverter from '../_components/dasboard/currency-converter';
+import ParcelViewer from '../_components/parcels/parcel-viewer';
+import { getParcels } from '@/actions/parcels.actions';
 
 async function DashboardPage() {
   const { session } = await validateRequest();
@@ -13,6 +15,8 @@ async function DashboardPage() {
     return redirect('/auth/login');
   }
 
+  const parcels = await getParcels();
+
   return (
     <MainContainer>
       <MainTitle>Dashboard</MainTitle>
@@ -20,7 +24,10 @@ async function DashboardPage() {
         <ChartDashboard />
         <CurrencyConverter />
       </section>
-      <CurrentContracts />
+      <section className='flex flex-col gap-5 md:flex-row'>
+        <CurrentContracts />
+        <ParcelViewer parcels={parcels} />
+      </section>
     </MainContainer>
   );
 }
