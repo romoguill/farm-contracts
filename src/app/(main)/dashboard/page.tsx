@@ -4,6 +4,7 @@ import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import ChartDashboard from '../_components/charts/chart-dashboard';
 import CurrentContracts from '../_components/contracts/current-contracts';
+import CurrencyConverter from '../_components/dasboard/currency-converter';
 
 async function DashboardPage() {
   const { session } = await validateRequest();
@@ -16,6 +17,7 @@ async function DashboardPage() {
     <MainContainer>
       <MainTitle>Dashboard</MainTitle>
       <ChartDashboard />
+      <CurrencyConverter />
       <CurrentContracts />
     </MainContainer>
   );
