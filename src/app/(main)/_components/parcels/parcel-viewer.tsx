@@ -28,8 +28,8 @@ function ParcelViewer({
   forDashboard = false,
   defaultSelected = [],
 }: ParcelViewerProps) {
-  const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
-  const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
+  const [focusedParcels, setFocusedParcel] = useState<Parcel[] | null>(null);
+  const [selectedParcels, setSelectedParcel] = useState<Parcel[] | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
   const { currentScreenWidth, tw } = useCurrentBreakpoint();
 
@@ -80,7 +80,7 @@ function ParcelViewer({
         <ParcelList
           parcels={parcels}
           onFocus={(parcel) => setFocusedParcel(parcel)}
-          selectedParcel={selectedParcel}
+          selectedParcels={selectedParcels}
           onSelect={(parcel) => setSelectedParcel(parcel)}
         />
 

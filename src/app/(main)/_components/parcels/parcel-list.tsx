@@ -5,27 +5,27 @@ import { cn, getRgbString } from '@/lib/utils';
 
 interface ParcelLegendProps {
   parcels: Parcel[];
-  onFocus: (parcel: Parcel | null) => void;
-  selectedParcel: Parcel | null;
-  onSelect: (parcel: Parcel | null) => void;
+  onFocus: (parcels: Parcel[] | null) => void;
+  selectedParcels: Parcel[] | null;
+  onSelect: (parcels: Parcel[] | null) => void;
 }
 
 function ParcelLegend({
   parcels,
   onFocus,
-  selectedParcel,
+  selectedParcels,
   onSelect,
 }: ParcelLegendProps) {
   const handleClick = (parcel: Parcel) => {
-    if (!selectedParcel) {
-      onSelect(parcel);
+    if (!selectedParcels) {
+      onSelect([parcel]);
       return;
     }
 
-    if (selectedParcel.id === parcel.id) {
+    if (selectedParcels.some((p) => p.id === parcel.id)) {
       onSelect(null);
     } else {
-      onSelect(parcel);
+      onSelect([parcel]);
       return;
     }
   };
@@ -39,10 +39,11 @@ function ParcelLegend({
             'flex items-center gap-1 cursor-pointer w-fit hover:bg-slate-100 rounded-lg p-2',
             {
               'outline outline-slate-700':
-                selectedParcel && selectedParcel.id === parcel.id,
+                selectedParcels &&
+                selectedParcels.some((p) => p.id === parcel.id),
             }
           )}
-          onMouseEnter={() => onFocus(parcel)}
+          onMouseEnter={() => onFocus([parcel])}
           onMouseLeave={() => onFocus(null)}
           onClick={(e) => handleClick(parcel)}
         >
