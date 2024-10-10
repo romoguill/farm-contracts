@@ -1,7 +1,7 @@
 'use client';
 
 import { Parcel } from '@/db/schema';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CursorTooltip from './cursor-tooltip';
 import ParcelShape from './parcel-shape';
 import ParcelList from './parcel-list';
@@ -32,6 +32,12 @@ function ParcelViewer({
   const [selectedParcels, setSelectedParcel] = useState<Parcel[] | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
   const { currentScreenWidth, tw } = useCurrentBreakpoint();
+
+  useEffect(() => {
+    if (forDashboard) {
+      setSelectedParcel(defaultSelected);
+    }
+  }, [forDashboard, defaultSelected]);
 
   // In order to scale correctly the whole viewer, I need to get the max x coordinate.
   // First reduce gets the highest x coordinate from each parcel and the second one gets the highest among all parcels
@@ -81,7 +87,10 @@ function ParcelViewer({
           parcels={parcels}
           onFocus={(parcel) => setFocusedParcel(parcel)}
           selectedParcels={selectedParcels}
-          onSelect={(parcel) => setSelectedParcel(parcel)}
+          onSelect={(parcel) => {
+            if (forDashboard) return;
+            setSelectedParcel(parcel);
+          }}
         />
 
         <div
@@ -100,7 +109,10 @@ function ParcelViewer({
                 setFocusedParcel(parcel);
               }}
               focused={focusedParcel?.id === parcel.id}
-              onShapeSelected={(parcel) => setSelectedParcel(parcel)}
+              onShapeSelected={(parcel) => {
+                if (forDashboard) return;
+                setSelectedParcel(parcel);
+              }}
               selected={
                 selectedParcels?.some((p) => p.id === parcel.id) || false
               }
