@@ -11,6 +11,8 @@ import { TwScreen, useCurrentBreakpoint } from '@/hooks/useCurrentBreakpoint';
 
 interface ParcelViewerProps {
   parcels: Parcel[];
+  forDashboard?: boolean;
+  defaultSelected?: Parcel[];
 }
 
 const VIEWER_WIDTH_PX: Record<TwScreen, number> = {
@@ -21,7 +23,11 @@ const VIEWER_WIDTH_PX: Record<TwScreen, number> = {
   '2xl': 820,
 };
 
-function ParcelViewer({ parcels }: ParcelViewerProps) {
+function ParcelViewer({
+  parcels,
+  forDashboard = false,
+  defaultSelected = [],
+}: ParcelViewerProps) {
   const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
   const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
