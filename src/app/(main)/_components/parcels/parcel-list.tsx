@@ -5,7 +5,7 @@ import { cn, getRgbString } from '@/lib/utils';
 
 interface ParcelLegendProps {
   parcels: Parcel[];
-  onFocus: (parcels: Parcel[] | null) => void;
+  onFocus: (parcels: Parcel | null) => void;
   selectedParcels: Parcel[] | null;
   onSelect: (parcels: Parcel[] | null) => void;
 }
@@ -43,7 +43,7 @@ function ParcelLegend({
                 selectedParcels.some((p) => p.id === parcel.id),
             }
           )}
-          onMouseEnter={() => onFocus([parcel])}
+          onMouseEnter={() => onFocus(parcel)}
           onMouseLeave={() => onFocus(null)}
           onClick={(e) => handleClick(parcel)}
         >

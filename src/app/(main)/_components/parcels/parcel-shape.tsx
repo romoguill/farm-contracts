@@ -10,7 +10,7 @@ interface ParcelShape {
   maxXCoordinate: number;
   onShapeFocused: (parcel: Parcel | null) => void;
   focused: boolean;
-  onShapeSelected: (parcel: Parcel | null) => void;
+  onShapeSelected: (parcel: Parcel[] | null) => void;
   selected: boolean;
 }
 
@@ -47,7 +47,7 @@ function ParcelShape({
         innerPolygon: `polygon(${innerPolygonArray.join(', ')})`,
       };
     },
-    [maxXCoordinate, viewerWidth]
+    [maxXCoordinate]
   );
 
   const clipPath = useMemo(
@@ -73,7 +73,7 @@ function ParcelShape({
         onMouseEnter={() => onShapeFocused(parcel)}
         onMouseLeave={() => onShapeFocused(null)}
         onClick={() =>
-          selected ? onShapeSelected(null) : onShapeSelected(parcel)
+          selected ? onShapeSelected(null) : onShapeSelected([parcel])
         }
       >
         {/* <div

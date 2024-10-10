@@ -28,7 +28,7 @@ function ParcelViewer({
   forDashboard = false,
   defaultSelected = [],
 }: ParcelViewerProps) {
-  const [focusedParcels, setFocusedParcel] = useState<Parcel[] | null>(null);
+  const [focusedParcel, setFocusedParcel] = useState<Parcel | null>(null);
   const [selectedParcels, setSelectedParcel] = useState<Parcel[] | null>(null);
   const [graphFocused, setGraphFocused] = useState(false);
   const { currentScreenWidth, tw } = useCurrentBreakpoint();
@@ -99,15 +99,21 @@ function ParcelViewer({
               onShapeFocused={(parcel) => {
                 setFocusedParcel(parcel);
               }}
-              focused={focusedParcel?.id === parcel.id || false}
+              focused={focusedParcel?.id === parcel.id}
               onShapeSelected={(parcel) => setSelectedParcel(parcel)}
-              selected={selectedParcel?.id === parcel.id || false}
+              selected={
+                selectedParcels?.some((p) => p.id === parcel.id) || false
+              }
             />
           ))}
         </div>
       </div>
 
-      {selectedParcel && <ParcelStats parcel={selectedParcel} />}
+      {!forDashboard &&
+        selectedParcels &&
+        selectedParcels.map((parcel) => (
+          <ParcelStats key={parcel.id} parcel={parcel} />
+        ))}
 
       {graphFocused && focusedParcel && (
         <CursorTooltip
