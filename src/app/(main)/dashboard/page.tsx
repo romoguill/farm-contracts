@@ -8,6 +8,10 @@ import CurrencyConverter from '../_components/dasboard/currency-converter';
 import ParcelViewer from '../_components/parcels/parcel-viewer';
 import { getParcels } from '@/actions/parcels.actions';
 import { getActiveContractsAndParcels } from '@/actions/contracts.actions';
+import { Mukta } from 'next/font/google';
+import { cn } from '@/lib/utils';
+
+const font = Mukta({ weight: '700', subsets: ['latin'] });
 
 async function DashboardPage() {
   const { session } = await validateRequest();
@@ -31,12 +35,22 @@ async function DashboardPage() {
         <CurrencyConverter />
       </section>
       <section className='flex flex-col gap-5 md:flex-row'>
-        <CurrentContracts />
-        <ParcelViewer
-          parcels={parcels}
-          forDashboard
-          defaultSelected={activeParcels}
-        />
+        <article>
+          <h3 className={cn('font-bold text-xl text-center', font.className)}>
+            Active Contracts
+          </h3>
+          <CurrentContracts />
+        </article>
+        <article>
+          <h3 className={cn('font-bold text-xl text-center', font.className)}>
+            Active Parcels
+          </h3>
+          <ParcelViewer
+            parcels={parcels}
+            forDashboard
+            defaultSelected={activeParcels}
+          />
+        </article>
       </section>
     </MainContainer>
   );

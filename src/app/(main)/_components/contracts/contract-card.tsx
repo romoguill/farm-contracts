@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useContractDetail } from '@/hooks/useContractDetail';
 import {
@@ -8,6 +9,8 @@ import {
   formatDateFromCalendar,
   getContractStatus,
 } from '@/lib/utils';
+import { SquareArrowOutUpRightIcon } from 'lucide-react';
+import Link from 'next/link';
 
 interface ContractCardProps {
   contractId: string;
@@ -25,10 +28,15 @@ function ContractCard({ contractId }: ContractCardProps) {
 
   return (
     <Card className='my-4'>
-      <CardHeader className='pt-4 pb-3'>
+      <CardHeader className='pt-4 pb-3 flex-row justify-between items-center'>
         <CardTitle className='overflow-hidden whitespace-nowrap text-ellipsis w-2/5 py-1 text-lg md:text-xl'>
           {contract.title}
         </CardTitle>
+        <Button size='icon' variant='link'>
+          <Link href={`/contracts/${contract.id}`}>
+            <SquareArrowOutUpRightIcon className='text-orange-700' />
+          </Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <ul>

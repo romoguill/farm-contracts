@@ -30,12 +30,11 @@ function QuantityChart({ data }: QuantityChartProps) {
           tickMargin={10}
           axisLine={false}
           className='capitalize'
-          tickFormatter={(value) => value.slice(0, 3)}
+          tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <YAxis />
         <CartesianGrid vertical={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
         <Bar
           dataKey='contractsCount'
           fill='var(--color-desktop)'

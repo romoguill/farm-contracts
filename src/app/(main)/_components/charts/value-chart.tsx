@@ -40,12 +40,11 @@ function ValueChart({ data }: ValueChartProps) {
           tickMargin={10}
           axisLine={false}
           className='capitalize'
-          tickFormatter={(value) => value.slice(0, 3)}
+          tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <YAxis label={{ value: '$K', position: 'insideTopLeft' }} width={80} />
         <CartesianGrid vertical={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
         <Line
           dataKey='contractsValue'
           fill='var(--color-desktop)'
