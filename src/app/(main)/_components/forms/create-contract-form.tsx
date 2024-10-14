@@ -41,12 +41,21 @@ import {
 import { getTenants } from '@/actions/tenants.actions';
 import { useRouter } from 'next/navigation';
 
-interface CreateContractFormProps {}
+interface CreateContractFormProps {
+  contractId?: string;
+}
 
-export default function CreateContractForm({}: CreateContractFormProps) {
+export default function CreateContractForm({
+  contractId,
+}: CreateContractFormProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
+
+  const { data: contract } = useQuery({
+    queryKey: ['contracts', contractId],
+    enabled: Boolean(contractId),
+  });
 
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),

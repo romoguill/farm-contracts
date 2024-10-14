@@ -124,6 +124,23 @@ export async function getContracts() {
   return { data: contracts };
 }
 
+export async function getContractById(id: string) {
+  const { user } = await validateRequest();
+
+  if (!user) {
+    return { error: 'Invalid credentials' };
+  }
+
+  const contracts = await db.query.contract.findFirst({
+    where: and(eq(contract.userId, user.id), eq(contract.id, id)),
+    with: {
+      files: true,
+    },
+  });
+
+  return { data: contracts };
+}
+
 // CONTRACT PDF FILE
 const s3Config: S3ClientConfig = {
   region: process.env.AWS_BUCKET_REGION!,
