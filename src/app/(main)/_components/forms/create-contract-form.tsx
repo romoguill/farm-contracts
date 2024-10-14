@@ -26,10 +26,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, FileTextIcon } from 'lucide-react';
 import { RefObject, useRef, useState, useTransition } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
-import { createContract } from '@/actions/contracts.actions';
+import { createContract, getContractById } from '@/actions/contracts.actions';
 import { toast } from 'sonner';
 import {
   Select,
@@ -54,20 +54,29 @@ export default function CreateContractForm({
 
   const { data: contract } = useQuery({
     queryKey: ['contracts', contractId],
+    queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
 
+  let defaultValues: UseFormProps<CreateContract>['defaultValues'] = {
+    title: '',
+    tenantId: '',
+    startDate: new Date(),
+    endDate: new Date(),
+    soyKgs: 0,
+    parcelIds: [],
+    files: [],
+  };
+
+  if (contract) {
+    defaultValues = {
+      ...contract,
+    };
+  }
+
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
-    defaultValues: {
-      title: '',
-      tenantId: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      soyKgs: 0,
-      parcelIds: [],
-      files: [],
-    },
+    defaultValues,
   });
 
   // QUERIES

@@ -125,20 +125,24 @@ export async function getContracts() {
 }
 
 export async function getContractById(id: string) {
-  const { user } = await validateRequest();
+  try {
+    const { user } = await validateRequest();
 
-  if (!user) {
-    return { error: 'Invalid credentials' };
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const response = await db.query.contract.findFirst({
+      where: and(eq(contract.userId, user.id), eq(contract.id, id)),
+      with: {
+        files: true,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
   }
-
-  const contracts = await db.query.contract.findFirst({
-    where: and(eq(contract.userId, user.id), eq(contract.id, id)),
-    with: {
-      files: true,
-    },
-  });
-
-  return { data: contracts };
 }
 
 // CONTRACT PDF FILE
