@@ -139,6 +139,8 @@ export async function getContractById(id: string) {
       },
     });
 
+    console.log({ response });
+
     return response;
   } catch (error) {
     throw error;
@@ -203,6 +205,8 @@ export async function uploadContractPdf(formData: FormData) {
 }
 
 export async function getContractPdfUrls(fileIds: string[]) {
+  const urls: string[] = [];
+
   try {
     for (const fileId of fileIds) {
       const params: GetObjectCommandInput = {
@@ -211,9 +215,13 @@ export async function getContractPdfUrls(fileIds: string[]) {
       };
       const command = new GetObjectCommand(params);
       // Since it's a private bucket, create a url to download file that lasts for 20min
-      const url = await getSignedUrl(s3, command, { expiresIn: 60 * 20 });
+      urls.push(await getSignedUrl(s3, command, { expiresIn: 60 * 20 }));
     }
-  } catch (error) {}
+
+    return urls;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // Getter with all relations, used for dashboard viewer

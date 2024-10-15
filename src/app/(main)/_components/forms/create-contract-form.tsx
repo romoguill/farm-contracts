@@ -29,7 +29,11 @@ import { RefObject, useRef, useState, useTransition } from 'react';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
-import { createContract, getContractById } from '@/actions/contracts.actions';
+import {
+  createContract,
+  getContractById,
+  getContractPdfUrls,
+} from '@/actions/contracts.actions';
 import { toast } from 'sonner';
 import {
   Select,
@@ -52,12 +56,22 @@ export default function CreateContractForm({
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
 
+  console.log({ contractId });
   const { data: contract } = useQuery({
     queryKey: ['contracts', contractId],
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
 
+  console.log({ contract });
+
+  const { data: pdfUrls } = useQuery({
+    queryKey: ['pdfUrls', contractId],
+    queryFn: () => getContractPdfUrls(contract!.files.map((file) => file.s3Id)), // assert since this query is dependant on the previous result
+    enabled: Boolean(contract),
+  });
+
+  console.log(pdfUrls);
   let defaultValues: UseFormProps<CreateContract>['defaultValues'] = {
     title: '',
     tenantId: '',
@@ -68,11 +82,11 @@ export default function CreateContractForm({
     files: [],
   };
 
-  if (contract) {
-    defaultValues = {
-      ...contract,
-    };
-  }
+  // if (contract) {
+  //   defaultValues = {
+  //     ...contract,
+  //   };
+  // }
 
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),

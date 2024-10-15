@@ -16,7 +16,7 @@ async function ContractDetailPage({
 
   return (
     <MainContainer>
-      <CreateContractForm />
+      <CreateContractForm contractId={id} />
     </MainContainer>
   );
 }
