@@ -93,3 +93,11 @@ export function formatDatesForGraph(date: Date) {
     '0'
   )}`;
 }
+
+export async function convertFileUrlToObject(url: string) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  console.log({ blob });
+  return new File([blob], 'download', { type: 'application/pdf' });
+}

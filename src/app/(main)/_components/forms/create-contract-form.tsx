@@ -20,12 +20,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { cn, formatDateFromCalendar } from '@/lib/utils';
+import {
+  cn,
+  convertFileUrlToObject,
+  formatDateFromCalendar,
+} from '@/lib/utils';
 import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, FileTextIcon } from 'lucide-react';
-import { RefObject, useRef, useState, useTransition } from 'react';
+import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
@@ -56,14 +60,11 @@ export default function CreateContractForm({
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
 
-  console.log({ contractId });
   const { data: contract } = useQuery({
     queryKey: ['contracts', contractId],
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
-
-  console.log({ contract });
 
   const { data: pdfUrls } = useQuery({
     queryKey: ['pdfUrls', contractId],
@@ -71,7 +72,14 @@ export default function CreateContractForm({
     enabled: Boolean(contract),
   });
 
-  console.log(pdfUrls);
+  // Make call to s3 to get files and convert them to a File object
+  useEffect(() => {
+    if (!pdfUrls) return;
+
+    const filePromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
+    const files = Promise.all(filePromises).then();
+  }, [pdfUrls]);
+
   let defaultValues: UseFormProps<CreateContract>['defaultValues'] = {
     title: '',
     tenantId: '',
@@ -122,7 +130,7 @@ export default function CreateContractForm({
     );
   }
 
-  // Some issues in GitHub, couldn't find a better way to explicitlly delete files in input
+  // Some issues on GitHub, couldn't find a better way to explicitlly delete files in input
   const resetFiles = (ref: RefObject<HTMLInputElement>) => {
     if (ref.current) {
       ref.current.value = '';
