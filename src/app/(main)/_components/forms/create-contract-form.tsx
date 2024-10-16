@@ -1,6 +1,12 @@
 'use client';
 
+import {
+  createContract,
+  getContractById,
+  getContractPdfUrls,
+} from '@/actions/contracts.actions';
 import { getParcels } from '@/actions/parcels.actions';
+import { getTenants } from '@/actions/tenants.actions';
 import CustomLoader from '@/components/custom-loader';
 import SubmitError from '@/components/forms/submit-error';
 import LoadingButton from '@/components/loading-button';
@@ -21,6 +27,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   cn,
   convertFileUrlToObject,
   formatDateFromCalendar,
@@ -28,26 +41,13 @@ import {
 import { CreateContract, createContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarIcon, FileTextIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
+import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
-import {
-  createContract,
-  getContractById,
-  getContractPdfUrls,
-} from '@/actions/contracts.actions';
-import { toast } from 'sonner';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { getTenants } from '@/actions/tenants.actions';
-import { useRouter } from 'next/navigation';
 
 interface CreateContractFormProps {
   contractId?: string;
@@ -56,6 +56,17 @@ interface CreateContractFormProps {
 export default function CreateContractForm({
   contractId,
 }: CreateContractFormProps) {
+  const [defaultValues, setDefaultValues] = useState<
+    UseFormProps<CreateContract>['defaultValues']
+  >({
+    title: '',
+    tenantId: '',
+    startDate: new Date(),
+    endDate: new Date(),
+    soyKgs: 0,
+    parcelIds: [],
+    files: [],
+  });
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
@@ -70,31 +81,42 @@ export default function CreateContractForm({
     queryKey: ['pdfUrls', contractId],
     queryFn: () => getContractPdfUrls(contract!.files.map((file) => file.s3Id)), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
+    staleTime: Infinity,
+    placeholderData: [],
   });
 
-  // Make call to s3 to get files and convert them to a File object
+  console.log({ pdfUrls });
+
   useEffect(() => {
-    if (!pdfUrls) return;
+    if (!contract) return;
+    console.log({ contract, pdfUrls });
+    // // Files will be handled separetly
+    const { files, ...rest } = contract;
 
-    const filePromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
-    const files = Promise.all(filePromises).then();
-  }, [pdfUrls]);
+    // Don't know why I have to type the previous state. Should be infered.
+    setDefaultValues((prev: UseFormProps<CreateContract>['defaultValues']) => ({
+      ...prev,
+      ...rest,
+    }));
 
-  let defaultValues: UseFormProps<CreateContract>['defaultValues'] = {
-    title: '',
-    tenantId: '',
-    startDate: new Date(),
-    endDate: new Date(),
-    soyKgs: 0,
-    parcelIds: [],
-    files: [],
-  };
+    const convertPromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
 
-  // if (contract) {
-  //   defaultValues = {
-  //     ...contract,
-  //   };
-  // }
+    if (convertPromises) {
+      Promise.all(convertPromises)
+        .then((files) => {
+          console.log({ files });
+          setDefaultValues(
+            (prev: UseFormProps<CreateContract>['defaultValues']) => ({
+              ...prev,
+              files,
+            })
+          );
+        })
+        .catch(console.error);
+    }
+  }, [contract, pdfUrls]);
+
+  console.log(defaultValues);
 
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),

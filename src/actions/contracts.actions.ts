@@ -215,12 +215,16 @@ export async function getContractPdfUrls(fileIds: string[]) {
       };
       const command = new GetObjectCommand(params);
       // Since it's a private bucket, create a url to download file that lasts for 20min
-      urls.push(await getSignedUrl(s3, command, { expiresIn: 60 * 20 }));
+      const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 20 });
+      console.log({ signedUrl });
+      urls.push(signedUrl);
     }
 
     return urls;
   } catch (error) {
+    console.log('There was an error');
     console.error(error);
+    return [];
   }
 }
 

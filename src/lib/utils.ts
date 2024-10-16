@@ -95,9 +95,15 @@ export function formatDatesForGraph(date: Date) {
 }
 
 export async function convertFileUrlToObject(url: string) {
-  const response = await fetch(url);
-  const blob = await response.blob();
+  console.log('converting');
+  try {
+    const response = await fetch(url);
+    console.log({ response });
+    const blob = await response.blob();
 
-  console.log({ blob });
-  return new File([blob], 'download', { type: 'application/pdf' });
+    console.log({ blob });
+    return new File([blob], 'download', { type: 'application/pdf' });
+  } catch (error) {
+    console.error(error);
+  }
 }
