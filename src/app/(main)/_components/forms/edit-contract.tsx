@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  createContract,
   getContractById,
   getContractPdfUrls,
 } from '@/actions/contracts.actions';
@@ -38,7 +37,7 @@ import {
   convertFileUrlToObject,
   formatDateFromCalendar,
 } from '@/lib/utils';
-import { CreateContract, createContractSchema } from '@/lib/validation';
+import { EditContract, editContractSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
@@ -54,7 +53,7 @@ import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
 
-const defaultValues: CreateContract = {
+const defaultValues = {
   title: '',
   tenantId: '',
   startDate: new Date(),
@@ -64,14 +63,14 @@ const defaultValues: CreateContract = {
   files: [],
 };
 
-interface CreateContractFormProps {
+interface EditContractFormProps {
   contractId?: string;
 }
 
-export default function CreateContractForm({
+export default function EditContractForm({
   contractId,
-}: CreateContractFormProps) {
-  const [editValues, setEditValues] = useState<CreateContract>(defaultValues);
+}: EditContractFormProps) {
+  const [editValues, setEditValues] = useState<EditContract | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
@@ -90,11 +89,13 @@ export default function CreateContractForm({
     placeholderData: [],
   });
 
-  const form = useForm<CreateContract>({
-    resolver: zodResolver(createContractSchema),
+  const form = useForm<EditContract>({
+    resolver: zodResolver(editContractSchema),
     defaultValues,
-    values: editValues,
+    values: editValues || undefined,
   });
+
+  console.log({ form: form.getValues() });
 
   useEffect(() => {
     if (!contract) return;
@@ -112,10 +113,11 @@ export default function CreateContractForm({
     if (convertPromises) {
       Promise.all(convertPromises)
         .then((files) => {
-          console.log({ files });
-          setDefaultValues((prev) => ({
+          if (files.some((file) => file === undefined)) return;
+
+          setEditValues((prev) => ({
             ...prev,
-            files,
+            files: files as File[], //Checked above. TS can't infer boolean filter
           }));
           // Default values are cached in react hook form. Need to reset them
           form.reset();
@@ -162,7 +164,7 @@ export default function CreateContractForm({
     }
   };
 
-  const onSubmit: SubmitHandler<CreateContract> = (data) => {
+  const onSubmit: SubmitHandler<EditContract> = (data) => {
     startTransition(async () => {
       // This part I'm not so sure if it's the best thing to do
       // I could convert all data to FormData but it's simpler to just serialize the files
@@ -170,7 +172,7 @@ export default function CreateContractForm({
       const formData = new FormData();
       files.forEach((file) => formData.append('files', file));
 
-      const { error } = await createContract({
+      const { error } = await EditContract({
         data: rest,
         filesSerialized: formData,
       });
@@ -213,6 +215,7 @@ export default function CreateContractForm({
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -335,12 +338,12 @@ export default function CreateContractForm({
                 <FormLabel>
                   Parcels
                   <span className='ml-1 text-muted-foreground'>
-                    ({field.value.length} selected)
+                    ({field.value?.length || 0} selected)
                   </span>
                 </FormLabel>
                 <SelectParcelsInput
                   onChange={field.onChange}
-                  values={field.value}
+                  values={field.value || []}
                   parcels={parcels}
                 />
                 <FormMessage />

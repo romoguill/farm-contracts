@@ -2,6 +2,7 @@ import MainContainer from '@/components/main-container';
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import CreateContractForm from '../../_components/forms/create-contract-form';
+import EditContractForm from '../../_components/forms/edit-contract';
 
 async function ContractDetailPage({
   params: { id },
@@ -16,7 +17,7 @@ async function ContractDetailPage({
 
   return (
     <MainContainer>
-      <CreateContractForm contractId={id} />
+      <EditContractForm contractId={id} />
     </MainContainer>
   );
 }
