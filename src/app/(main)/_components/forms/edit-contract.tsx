@@ -54,6 +54,16 @@ import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
 
+const defaultValues: CreateContract = {
+  title: '',
+  tenantId: '',
+  startDate: new Date(),
+  endDate: new Date(),
+  soyKgs: 0,
+  parcelIds: [],
+  files: [],
+};
+
 interface CreateContractFormProps {
   contractId?: string;
 }
@@ -61,22 +71,60 @@ interface CreateContractFormProps {
 export default function CreateContractForm({
   contractId,
 }: CreateContractFormProps) {
+  const [editValues, setEditValues] = useState<CreateContract>(defaultValues);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
 
+  const { data: contract } = useQuery({
+    queryKey: ['contracts', contractId],
+    queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
+    enabled: Boolean(contractId),
+  });
+
+  const { data: pdfUrls } = useQuery({
+    queryKey: ['pdfUrls', contractId],
+    queryFn: () => getContractPdfUrls(contract!.files.map((file) => file.s3Id)), // assert since this query is dependant on the previous result
+    enabled: Boolean(contract),
+    staleTime: Infinity,
+    placeholderData: [],
+  });
+
   const form = useForm<CreateContract>({
     resolver: zodResolver(createContractSchema),
-    defaultValues: {
-      title: '',
-      tenantId: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      soyKgs: 0,
-      parcelIds: [],
-      files: [],
-    },
+    defaultValues,
+    values: editValues,
   });
+
+  useEffect(() => {
+    if (!contract) return;
+    console.log({ contract, pdfUrls });
+    // // Files will be handled separetly
+    const { files, ...rest } = contract;
+
+    setEditValues((prev) => ({
+      ...prev,
+      ...rest,
+    }));
+
+    const convertPromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
+
+    if (convertPromises) {
+      Promise.all(convertPromises)
+        .then((files) => {
+          console.log({ files });
+          setDefaultValues((prev) => ({
+            ...prev,
+            files,
+          }));
+          // Default values are cached in react hook form. Need to reset them
+          form.reset();
+        })
+        .catch(console.error);
+    }
+  }, [contract, pdfUrls, form]);
+
+  console.log(defaultValues);
 
   // QUERIES
   const {
