@@ -136,6 +136,11 @@ export async function getContractById(id: string) {
       where: and(eq(contract.userId, user.id), eq(contract.id, id)),
       with: {
         files: true,
+        contractToParcel: {
+          with: {
+            parcel: true,
+          },
+        },
       },
     });
 

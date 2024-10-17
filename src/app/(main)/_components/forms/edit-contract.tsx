@@ -101,10 +101,20 @@ export default function EditContractForm({
     if (!contract) return;
     console.log({ contract, pdfUrls });
     // // Files will be handled separetly
-    const { files, ...rest } = contract;
+    const { files, contractToParcel, ...rest } = contract;
+
+    const parcelIds = contractToParcel.map((ctp) => ctp.parcelId);
+
+    const { data: payloadWithoutFiles, error: validationError } =
+      editContractSchema.safeParse({
+        parcelIds,
+        ...rest,
+      });
+
+    if (validationError) return;
 
     setEditValues((prev) => ({
-      ...prev,
+      ...payloadWithoutFiles,
       ...rest,
     }));
 
