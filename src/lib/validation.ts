@@ -52,6 +52,10 @@ export const createContractSchema = z.object({
 
 export type CreateContract = z.infer<typeof createContractSchema>;
 
+export const editContractSchema = createContractSchema.partial();
+
+export type EditContract = z.infer<typeof editContractSchema>;
+
 // ========= PARCEL =========
 export const createParcelSchema = z.object({
   label: z.string().length(2),
