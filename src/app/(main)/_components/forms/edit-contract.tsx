@@ -83,7 +83,7 @@ export default function EditContractForm({
 
   const { data: pdfUrls } = useQuery({
     queryKey: ['pdfUrls', contractId],
-    queryFn: () => getContractPdfUrls(contract!.files.map((file) => file.s3Id)), // assert since this query is dependant on the previous result
+    queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
     staleTime: Infinity,
     placeholderData: [],

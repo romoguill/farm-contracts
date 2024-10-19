@@ -206,8 +206,10 @@ export async function uploadContractPdf(formData: FormData) {
   }
 }
 
+export type FileWithUrl = UploadedFile & { url: string };
+
 export async function getContractPdfUrls(files: UploadedFile[]) {
-  const urls: string[] = [];
+  const urls: FileWithUrl[] = [];
 
   try {
     for (const file of files) {
@@ -218,7 +220,7 @@ export async function getContractPdfUrls(files: UploadedFile[]) {
       const command = new GetObjectCommand(params);
       // Since it's a private bucket, create a url to download file that lasts for 20min
       const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 20 });
-      urls.push(signedUrl);
+      urls.push({ ...file, url: signedUrl });
     }
 
     return urls;

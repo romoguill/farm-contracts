@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ContractStatus } from './validation';
+import { FileWithUrl } from '@/actions/contracts.actions';
 
 export const MAX_CONTRACT_PDF_SIZE = 1500 * 1000; // 1.5 MB
 
@@ -94,12 +95,12 @@ export function formatDatesForGraph(date: Date) {
   )}`;
 }
 
-export async function convertFileUrlToObject(url: string) {
+export async function convertFileUrlToObject(file: FileWithUrl) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(file.url);
     const blob = await response.blob();
 
-    return new File([blob], 'download', { type: 'application/pdf' });
+    return new File([blob], file.name, { type: 'application/pdf' });
   } catch (error) {
     console.error(error);
   }
