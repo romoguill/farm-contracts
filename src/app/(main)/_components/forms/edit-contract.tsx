@@ -95,11 +95,8 @@ export default function EditContractForm({
     values: editValues || undefined,
   });
 
-  console.log({ form: form.getValues() });
-
   useEffect(() => {
     if (!contract) return;
-    console.log({ contract, pdfUrls });
     // // Files will be handled separetly
     const { files, contractToParcel, ...rest } = contract;
 
@@ -113,10 +110,10 @@ export default function EditContractForm({
 
     if (validationError) return;
 
-    setEditValues((prev) => ({
+    setEditValues({
       ...payloadWithoutFiles,
       ...rest,
-    }));
+    });
 
     const convertPromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
 
@@ -136,7 +133,7 @@ export default function EditContractForm({
     }
   }, [contract, pdfUrls, form]);
 
-  console.log(defaultValues);
+  console.log({ editValues });
 
   // QUERIES
   const {

@@ -36,8 +36,6 @@ const CurrencyConverter = function CurrencyConverter() {
     queryFn: getCurrencyConversions,
   });
 
-  console.log(isPending);
-
   if (isPending) {
     return <LoadingSkeleton />;
   }

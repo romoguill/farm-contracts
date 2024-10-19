@@ -64,7 +64,7 @@ export function useContractDetail(contractId: string) {
     const parcelsHasTotal = contract.contractToParcel.reduce((prev, curr) => {
       return (prev += Number(curr.parcel.area));
     }, 0);
-    console.log({ totalDays, remainingDays });
+
     // Get the proportional pay per day based on the contract month
     return marketData
       ? (remainingDays / totalDays) *

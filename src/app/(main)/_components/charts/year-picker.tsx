@@ -47,7 +47,6 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
     onChange(year);
   }, [year, onChange]);
 
-  console.log(newestContract);
   return (
     <div className='mx-auto flex items-center justify-center gap-6'>
       <Button
