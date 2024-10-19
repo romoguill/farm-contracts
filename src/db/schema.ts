@@ -196,6 +196,8 @@ export const uploadedFileRelations = relations(uploadedFile, ({ one }) => ({
   }),
 }));
 
+export type UploadedFile = typeof uploadedFile.$inferSelect;
+
 // --------- MARKET DATA ---------
 export const marketData = pgTable(
   'market_data',

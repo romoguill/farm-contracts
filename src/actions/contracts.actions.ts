@@ -4,6 +4,7 @@ import {
   contract,
   contractToParcel,
   marketData,
+  UploadedFile,
   uploadedFile,
 } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
@@ -115,9 +116,7 @@ export async function getContracts() {
     },
   });
 
-  contracts.forEach((contract) =>
-    getContractPdfUrls(contract.files.map((file) => file.s3Id))
-  );
+  contracts.forEach((contract) => getContractPdfUrls(contract.files));
 
   // await getContractPdfUrls(contracts.map(contract => contract.))
 
@@ -207,14 +206,14 @@ export async function uploadContractPdf(formData: FormData) {
   }
 }
 
-export async function getContractPdfUrls(fileIds: string[]) {
+export async function getContractPdfUrls(files: UploadedFile[]) {
   const urls: string[] = [];
 
   try {
-    for (const fileId of fileIds) {
+    for (const file of files) {
       const params: GetObjectCommandInput = {
         Bucket: process.env.AWS_BUCKET_NAME!,
-        Key: fileId,
+        Key: file.s3Id,
       };
       const command = new GetObjectCommand(params);
       // Since it's a private bucket, create a url to download file that lasts for 20min
