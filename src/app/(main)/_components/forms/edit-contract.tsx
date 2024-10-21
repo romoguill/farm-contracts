@@ -45,7 +45,12 @@ import {
   editContractSchema,
 } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
@@ -82,11 +87,13 @@ export default function EditContractForm({
   const uploaderRef = useRef<HTMLInputElement>(null);
 
   const queryClient = useQueryClient();
-  const { data: contract } = useQuery({
+  const contractQueryOptions = queryOptions({
     queryKey: ['contracts', contractId],
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
+
+  const { data: contract } = useQuery(contractQueryOptions);
 
   const { data: pdfUrls } = useQuery({
     queryKey: ['pdfUrls', contractId],
@@ -109,27 +116,86 @@ export default function EditContractForm({
     }
   };
 
-  const { mutate, error } = useMutation<
-    void,
-    Error,
-    {
-      id: string;
-      data: Omit<CreateContract, 'files'>;
-      filesSerialized: FormData;
-    }
-  >({
-    mutationFn: (props) => editContract(props),
+  // <
+  //   void,
+  //   Error,
+  //   {
+  //     id: string;
+  //     data: Omit<CreateContract, 'files'>;
+  //     filesSerialized: FormData;
+  //   }
+  // >
+
+  type EditPayload = {
+    id: string;
+    data: Omit<CreateContract, 'files'>;
+    filesSerialized: FormData;
+  };
+
+  const { mutate, error: submitError } = useMutation({
+    mutationFn: (data: EditContract) => {
+      if (!contract) throw Error;
+      // This part I'm not so sure if it's the best thing to do
+      // I could convert all data to FormData but it's simpler to just serialize the files
+      const { files, ...rest } = data;
+      const formData = new FormData();
+      files?.forEach((file) => formData.append('files', file));
+
+      return editContract({
+        id: contract.id,
+        data: rest,
+        filesSerialized: formData,
+      });
+    },
+    onMutate: async (data: EditContract) => {
+      await queryClient.cancelQueries(contractQueryOptions);
+      const previousContract = queryClient.getQueryData(
+        contractQueryOptions.queryKey
+      );
+      if (!contract) throw Error;
+
+      const { files, ...rest } = data;
+      // Set update optimistically the cache. Only problem are files that need further processing.
+      // Kind of a hack is to only set the values needed for UI, so that when updating at least the file previwes doesn't go to previous state
+      if (previousContract) {
+        queryClient.setQueryData(contractQueryOptions.queryKey, {
+          ...previousContract,
+          ...rest,
+          files:
+            data.files?.map((file) => ({
+              contractId: contract.id,
+              id: '',
+              name: file.name,
+              s3Id: '',
+            })) || [],
+        });
+      }
+
+      return { previousContract };
+    },
+
     onSuccess: () => {
       toast.success('Contract updated');
       form.reset();
       resetFiles(uploaderRef);
       router.refresh();
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
     },
-    onError: () => {
+    onError: (_err, _variables, context) => {
+      if (context?.previousContract) {
+        queryClient.setQueryData(
+          ['contracts', contractId],
+          context.previousContract
+        );
+      }
       toast.error('Error updating contract');
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({ queryKey: ['contracts', contractId] });
+    },
   });
+
+  console.log({ submitError });
 
   useEffect(() => {
     if (!contract) return;
@@ -199,17 +265,7 @@ export default function EditContractForm({
   }
 
   const onSubmit: SubmitHandler<CreateContract> = (data) => {
-    // This part I'm not so sure if it's the best thing to do
-    // I could convert all data to FormData but it's simpler to just serialize the files
-    const { files, ...rest } = data;
-    const formData = new FormData();
-    files?.forEach((file) => formData.append('files', file));
-
-    mutate({
-      id: contract.id,
-      data: rest,
-      filesSerialized: formData,
-    });
+    mutate(data);
   };
 
   return (
