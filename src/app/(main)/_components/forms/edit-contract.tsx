@@ -40,7 +40,6 @@ import {
 } from '@/lib/utils';
 import {
   CreateContract,
-  createContractSchema,
   EditContract,
   editContractSchema,
 } from '@/lib/validation';
@@ -54,12 +53,7 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
-import {
-  DefaultValues,
-  SubmitHandler,
-  useForm,
-  UseFormProps,
-} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
@@ -116,23 +110,11 @@ export default function EditContractForm({
     }
   };
 
-  // <
-  //   void,
-  //   Error,
-  //   {
-  //     id: string;
-  //     data: Omit<CreateContract, 'files'>;
-  //     filesSerialized: FormData;
-  //   }
-  // >
-
-  type EditPayload = {
-    id: string;
-    data: Omit<CreateContract, 'files'>;
-    filesSerialized: FormData;
-  };
-
-  const { mutate, error: submitError } = useMutation({
+  const {
+    mutate,
+    error: submitError,
+    isPending: isSubmitPending,
+  } = useMutation({
     mutationFn: (data: EditContract) => {
       if (!contract) throw Error;
       // This part I'm not so sure if it's the best thing to do
@@ -264,13 +246,9 @@ export default function EditContractForm({
     );
   }
 
-  const onSubmit: SubmitHandler<CreateContract> = (data) => {
-    mutate(data);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit((data) => mutate(data))}>
         <div className='space-y-3'>
           <FormField
             control={form.control}
@@ -460,8 +438,8 @@ export default function EditContractForm({
           )}
         </div>
 
-        <LoadingButton isLoading={isPending} className='w-full mt-6'>
-          Create
+        <LoadingButton isLoading={isSubmitPending} className='w-full mt-6'>
+          Confirm
         </LoadingButton>
       </form>
     </Form>
