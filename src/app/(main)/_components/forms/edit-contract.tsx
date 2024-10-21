@@ -158,9 +158,6 @@ export default function EditContractForm({
 
     onSuccess: () => {
       toast.success('Contract updated');
-      form.reset();
-      resetFiles(uploaderRef);
-      router.refresh();
     },
     onError: (_err, _variables, context) => {
       if (context?.previousContract) {
