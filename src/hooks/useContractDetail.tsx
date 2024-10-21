@@ -10,7 +10,7 @@ export function useContractDetail(contractId: string) {
     isPending: isPendingContracts,
     isError: isErrorContracts,
   } = useQuery({
-    queryKey: ['contracts', contractId],
+    queryKey: ['contracts', 'dashboard', contractId],
     queryFn: async () => getContractForDashboard(contractId),
   });
 

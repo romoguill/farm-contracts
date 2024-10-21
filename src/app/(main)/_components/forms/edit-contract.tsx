@@ -80,12 +80,11 @@ export default function EditContractForm({
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
-
+  console.log({ contract });
   const { data: pdfUrls } = useQuery({
     queryKey: ['pdfUrls', contractId],
     queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
-    staleTime: Infinity,
     placeholderData: [],
   });
 

@@ -19,18 +19,7 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import {
-  and,
-  asc,
-  between,
-  count,
-  desc,
-  eq,
-  gte,
-  lte,
-  sql,
-  sum,
-} from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -210,6 +199,7 @@ export type FileWithUrl = UploadedFile & { url: string };
 
 export async function getContractPdfUrls(files: UploadedFile[]) {
   const urls: FileWithUrl[] = [];
+  console.log({ files });
 
   try {
     for (const file of files) {
