@@ -37,7 +37,12 @@ import {
   convertFileUrlToObject,
   formatDateFromCalendar,
 } from '@/lib/utils';
-import { EditContract, editContractSchema } from '@/lib/validation';
+import {
+  CreateContract,
+  createContractSchema,
+  EditContract,
+  editContractSchema,
+} from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
@@ -70,7 +75,7 @@ interface EditContractFormProps {
 export default function EditContractForm({
   contractId,
 }: EditContractFormProps) {
-  const [editValues, setEditValues] = useState<EditContract | null>(null);
+  const [editValues, setEditValues] = useState<CreateContract | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
@@ -80,15 +85,16 @@ export default function EditContractForm({
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
     enabled: Boolean(contractId),
   });
-  console.log({ contract });
+
   const { data: pdfUrls } = useQuery({
     queryKey: ['pdfUrls', contractId],
     queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
+    staleTime: Infinity,
     placeholderData: [],
   });
 
-  const form = useForm<EditContract>({
+  const form = useForm<CreateContract>({
     resolver: zodResolver(editContractSchema),
     defaultValues,
     values: editValues || undefined,
@@ -100,6 +106,7 @@ export default function EditContractForm({
     const { files, contractToParcel, ...rest } = contract;
 
     const parcelIds = contractToParcel.map((ctp) => ctp.parcelId);
+    console.log({ contract, parcelIds });
 
     const { data: payloadWithoutFiles, error: validationError } =
       editContractSchema.safeParse({
@@ -107,12 +114,9 @@ export default function EditContractForm({
         ...rest,
       });
 
-    if (validationError) return;
+    console.log({ payloadWithoutFiles });
 
-    setEditValues({
-      ...payloadWithoutFiles,
-      ...rest,
-    });
+    if (validationError) return;
 
     const convertPromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
 
@@ -121,10 +125,14 @@ export default function EditContractForm({
         .then((files) => {
           if (files.some((file) => file === undefined)) return;
 
-          setEditValues((prev) => ({
-            ...prev,
-            files: files as File[], //Checked above. TS can't infer boolean filter
-          }));
+          setEditValues((prev) => {
+            if (!prev) return null;
+
+            return {
+              ...prev,
+              files: files as File[], //Checked above. TS can't infer boolean filter
+            };
+          });
           // Default values are cached in react hook form. Need to reset them
           form.reset();
         })
@@ -176,7 +184,7 @@ export default function EditContractForm({
       // I could convert all data to FormData but it's simpler to just serialize the files
       const { files, ...rest } = data;
       const formData = new FormData();
-      files.forEach((file) => formData.append('files', file));
+      files?.forEach((file) => formData.append('files', file));
 
       const { error } = await EditContract({
         data: rest,
