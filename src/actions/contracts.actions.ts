@@ -91,6 +91,76 @@ export async function createContract({
   return { error: null };
 }
 
+export async function editContract({
+  id,
+  data,
+  filesSerialized,
+}: {
+  id: string;
+  data: Omit<CreateContract, 'files'>;
+  filesSerialized: FormData;
+}) {
+  const { user } = await validateRequest();
+
+  if (!user) {
+    throw new Error('Invalid credentials');
+  }
+
+  const { parcelIds, ...contractValues } = data;
+
+  try {
+    await db.transaction(
+      async (tx) => {
+        // Update Contract table
+        const [updatedContract] = await tx
+          .update(contract)
+          .set({ ...contractValues })
+          .where(eq(contract.id, id))
+          .returning();
+
+        // Delete old relations in join table
+        await tx
+          .delete(contractToParcel)
+          .where(eq(contractToParcel.contractId, id));
+
+        // Update join table
+        await tx.insert(contractToParcel).values(
+          data.parcelIds.map((parcelId) => ({
+            parcelId: parcelId,
+            contractId: updatedContract.id,
+          }))
+        );
+
+        // const { error: fileUploadError, files } = await uploadContractPdf(
+        //   filesSerialized
+        // );
+
+        // // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
+        // if (fileUploadError !== null) {
+        //   tx.rollback();
+        //   return;
+        // }
+
+        // await tx.insert(uploadedFile).values(
+        //   files.map((file) => ({
+        //     contractId: insertedContract.id,
+        //     name: file.fileName,
+        //     s3Id: file.s3Id,
+        //   }))
+        // );
+      },
+      {
+        isolationLevel: 'read committed',
+        accessMode: 'read write',
+        deferrable: true,
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function getContracts() {
   const { user } = await validateRequest();
 

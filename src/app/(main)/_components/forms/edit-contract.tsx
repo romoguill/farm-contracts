@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  editContract,
   getContractById,
   getContractPdfUrls,
 } from '@/actions/contracts.actions';
@@ -44,7 +45,7 @@ import {
   editContractSchema,
 } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
@@ -80,6 +81,7 @@ export default function EditContractForm({
   const router = useRouter();
   const uploaderRef = useRef<HTMLInputElement>(null);
 
+  const queryClient = useQueryClient();
   const { data: contract } = useQuery({
     queryKey: ['contracts', contractId],
     queryFn: () => getContractById(contractId!), // assert since query will be disabled if contractId is undefined
@@ -98,6 +100,35 @@ export default function EditContractForm({
     resolver: zodResolver(editContractSchema),
     defaultValues,
     values: editValues || undefined,
+  });
+
+  // Some issues on GitHub, couldn't find a better way to explicitlly delete files in input
+  const resetFiles = (ref: RefObject<HTMLInputElement>) => {
+    if (ref.current) {
+      ref.current.value = '';
+    }
+  };
+
+  const { mutate, error } = useMutation<
+    void,
+    Error,
+    {
+      id: string;
+      data: Omit<CreateContract, 'files'>;
+      filesSerialized: FormData;
+    }
+  >({
+    mutationFn: (props) => editContract(props),
+    onSuccess: () => {
+      toast.success('Contract updated');
+      form.reset();
+      resetFiles(uploaderRef);
+      router.refresh();
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+    },
+    onError: () => {
+      toast.error('Error updating contract');
+    },
   });
 
   useEffect(() => {
@@ -125,13 +156,9 @@ export default function EditContractForm({
         .then((files) => {
           if (files.some((file) => file === undefined)) return;
 
-          setEditValues((prev) => {
-            if (!prev) return null;
-
-            return {
-              ...prev,
-              files: files as File[], //Checked above. TS can't infer boolean filter
-            };
+          setEditValues({
+            ...payloadWithoutFiles,
+            files: files as File[], //Checked above. TS can't infer boolean filter
           });
           // Default values are cached in react hook form. Need to reset them
           form.reset();
@@ -165,39 +192,23 @@ export default function EditContractForm({
     return <CustomLoader size='lg' />;
   }
 
-  if (isErrorParcels || isErrorTenants) {
+  if (!contract || isErrorParcels || isErrorTenants) {
     return (
       <p>Oops! There was an error setting up the from. Try again later.</p>
     );
   }
 
-  // Some issues on GitHub, couldn't find a better way to explicitlly delete files in input
-  const resetFiles = (ref: RefObject<HTMLInputElement>) => {
-    if (ref.current) {
-      ref.current.value = '';
-    }
-  };
+  const onSubmit: SubmitHandler<CreateContract> = (data) => {
+    // This part I'm not so sure if it's the best thing to do
+    // I could convert all data to FormData but it's simpler to just serialize the files
+    const { files, ...rest } = data;
+    const formData = new FormData();
+    files?.forEach((file) => formData.append('files', file));
 
-  const onSubmit: SubmitHandler<EditContract> = (data) => {
-    startTransition(async () => {
-      // This part I'm not so sure if it's the best thing to do
-      // I could convert all data to FormData but it's simpler to just serialize the files
-      const { files, ...rest } = data;
-      const formData = new FormData();
-      files?.forEach((file) => formData.append('files', file));
-
-      const { error } = await EditContract({
-        data: rest,
-        filesSerialized: formData,
-      });
-      if (!error) {
-        toast.success('Contract created');
-        form.reset();
-        resetFiles(uploaderRef);
-        router.refresh();
-      } else {
-        toast.error('Error creating contract');
-      }
+    mutate({
+      id: contract.id,
+      data: rest,
+      filesSerialized: formData,
     });
   };
 
