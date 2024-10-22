@@ -44,12 +44,17 @@ function SelectParcelsInput({
             size='icon'
             variant='outline'
             key={parcel.label}
-            className={cn('border-2 transition-colors', {
-              'bg-slate-400 border-slate-500': values.includes(parcel.id),
-              'border-green-600 hover:border-green-400': !disabled,
-              'bg-green-600 hover:border-green-400 hover:bg-green-600':
-                values.includes(parcel.id) && !disabled,
-            })}
+            className={cn(
+              'border-2 transition-colors hover:bg-inherit cursor-default',
+              {
+                'bg-slate-400 border-slate-500 hover:bg-slate-400 hover:border-slate-500':
+                  values.includes(parcel.id),
+                'border-green-600 hover:border-green-400 cursor-pointer':
+                  !disabled,
+                'bg-green-600 hover:border-green-400 hover:bg-green-600 cursor-pointer':
+                  values.includes(parcel.id) && !disabled,
+              }
+            )}
             onClick={() => !disabled && handleParcelSelect(parcel)}
           >
             {parcel.label}

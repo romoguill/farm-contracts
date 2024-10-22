@@ -287,7 +287,11 @@ export default function EditContractForm({
               <FormItem className='flex flex-col'>
                 <FormLabel>Start Date</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild>
+                  <PopoverTrigger
+                    asChild
+                    disabled={isDisabled}
+                    className='disabled:opacity-80'
+                  >
                     <FormControl>
                       <Button
                         variant={'outline'}
@@ -328,7 +332,11 @@ export default function EditContractForm({
               <FormItem className='flex flex-col'>
                 <FormLabel>End Date</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild>
+                  <PopoverTrigger
+                    asChild
+                    disabled={isDisabled}
+                    className='disabled:opacity-80'
+                  >
                     <FormControl>
                       <Button
                         variant={'outline'}
@@ -352,7 +360,6 @@ export default function EditContractForm({
                       selected={field.value}
                       onSelect={field.onChange}
                       initialFocus
-                      disabled={isDisabled}
                     />
                   </PopoverContent>
                 </Popover>

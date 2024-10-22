@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { FileTextIcon, X } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -70,19 +71,25 @@ function PDFsPreview({ files, onRemove, disabled = false }: PDFsPreviewProps) {
       {filesParsed.map((fileP) => (
         <ul key={fileP.id}>
           <li>
-            <div className='flex items-center gap-2'>
+            <div
+              className={cn('flex items-center gap-2', {
+                'opacity-80': disabled,
+              })}
+            >
               <FileTextIcon size={24} className='flex-shrink-0' />
               <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
                 {fileP.file.name}
               </h5>
-              <Button
-                className='ml-auto text-red-500'
-                variant='link'
-                onClick={() => handleOnRemoveClick(fileP)}
-              >
-                <X size={16} />
-                Remove
-              </Button>
+              {!disabled && (
+                <Button
+                  className='ml-auto text-red-500'
+                  variant='link'
+                  onClick={() => handleOnRemoveClick(fileP)}
+                >
+                  <X size={16} />
+                  Remove
+                </Button>
+              )}
             </div>
           </li>
         </ul>
