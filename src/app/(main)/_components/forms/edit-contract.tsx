@@ -56,6 +56,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
+import { useRouter } from 'next/navigation';
 
 const defaultValues = {
   title: '',
@@ -77,6 +78,8 @@ export default function EditContractForm({
   const [editValues, setEditValues] = useState<CreateContract | null>(null);
   const [isEditMode, setEditMode] = useState(false);
   const uploaderRef = useRef<HTMLInputElement>(null);
+
+  const router = useRouter();
 
   const queryClient = useQueryClient();
   const contractQueryOptions = queryOptions({
@@ -158,6 +161,7 @@ export default function EditContractForm({
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['contracts', contractId] });
+      setEditMode(false);
     },
   });
 
@@ -447,8 +451,20 @@ export default function EditContractForm({
 
           {isEditMode && (
             <div className='flex gap-6 items-center justify-center mt-6'>
-              <Button variant='destructive'>Discard</Button>
-              <LoadingButton isLoading={isSubmitPending} className='w-2/3'>
+              <Button
+                variant='destructive'
+                onClick={() => {
+                  setEditMode(false);
+                  form.reset();
+                }}
+              >
+                Discard
+              </Button>
+              <LoadingButton
+                type='submit'
+                isLoading={isSubmitPending}
+                className='w-2/3'
+              >
                 Confirm
               </LoadingButton>
             </div>
