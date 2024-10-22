@@ -1,11 +1,8 @@
 'use client';
 
-import { getParcels } from '@/actions/parcels.actions';
-import CustomLoader from '@/components/custom-loader';
 import { Button } from '@/components/ui/button';
 import { Parcel } from '@/db/schema';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
 
 // Pass all props except render that is handled inside this custom component
 // interface SelectParcelsInputProps

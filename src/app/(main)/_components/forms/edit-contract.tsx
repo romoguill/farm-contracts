@@ -50,7 +50,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Pencil } from 'lucide-react';
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -228,214 +228,233 @@ export default function EditContractForm({
   const isDisabled = !isEditMode || isSubmitPending;
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => mutate(data))}>
-        <div className='space-y-3'>
-          <FormField
-            control={form.control}
-            name='title'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <Input
-                  {...field}
-                  placeholder='Descriptive title. (e.g. John wheat 2025 summer)'
-                  disabled={isDisabled}
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='tenantId'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tenant</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
-                  disabled={isDisabled}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder='Select a tenant' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {tenants.map((tenant) => (
-                      <SelectItem key={tenant.id} value={tenant.id}>
-                        {tenant.name}
-                        <span className='text-xs text-muted-foreground ml-4'>
-                          ({String(tenant.cuit)})
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='startDate'
-            render={({ field }) => (
-              <FormItem className='flex flex-col'>
-                <FormLabel>Start Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger
-                    asChild
-                    disabled={isDisabled}
-                    className='disabled:opacity-80'
-                  >
-                    <FormControl>
-                      <Button
-                        variant={'outline'}
-                        className={cn(
-                          'w-[240px] pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value ? (
-                          formatDateFromCalendar(field.value)
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className='w-auto p-0' align='start'>
-                    <Calendar
-                      mode='single'
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                      disabled={isDisabled}
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='endDate'
-            render={({ field }) => (
-              <FormItem className='flex flex-col'>
-                <FormLabel>End Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger
-                    asChild
-                    disabled={isDisabled}
-                    className='disabled:opacity-80'
-                  >
-                    <FormControl>
-                      <Button
-                        variant={'outline'}
-                        className={cn(
-                          'w-[240px] pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value ? (
-                          formatDateFromCalendar(field.value)
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className='w-auto p-0' align='start'>
-                    <Calendar
-                      mode='single'
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='soyKgs'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
-                <Input {...field} disabled={isDisabled} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='parcelIds'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Parcels
-                  <span className='ml-1 text-muted-foreground'>
-                    ({field.value?.length || 0} selected)
-                  </span>
-                </FormLabel>
-                <SelectParcelsInput
-                  onChange={field.onChange}
-                  values={field.value || []}
-                  parcels={parcels}
-                  disabled={isDisabled}
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='files'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Files
-                  <span className='ml-1 text-muted-foreground'>
-                    ({field.value.length} selected)
-                  </span>
-                </FormLabel>
-                <FormControl>
-                  <ContractUploader
-                    files={field.value}
-                    onChange={(files: File[]) => field.onChange(files)}
-                    ref={uploaderRef}
+    <div className='relative'>
+      {!isEditMode && (
+        <Button
+          className='absolute right-0 -top-6 gap-2'
+          variant='secondary'
+          onClick={() => setEditMode(true)}
+        >
+          <span>
+            <Pencil size={14} />
+          </span>
+          Edit
+        </Button>
+      )}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit((data) => mutate(data))}>
+          <div className='space-y-3'>
+            <FormField
+              control={form.control}
+              name='title'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <Input
+                    {...field}
+                    placeholder='Descriptive title. (e.g. John wheat 2025 summer)'
                     disabled={isDisabled}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='tenantId'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tenant</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                    disabled={isDisabled}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select a tenant' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {tenants.map((tenant) => (
+                        <SelectItem key={tenant.id} value={tenant.id}>
+                          {tenant.name}
+                          <span className='text-xs text-muted-foreground ml-4'>
+                            ({String(tenant.cuit)})
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='startDate'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Start Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger
+                      asChild
+                      disabled={isDisabled}
+                      className='disabled:opacity-80'
+                    >
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            formatDateFromCalendar(field.value)
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                        disabled={isDisabled}
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='endDate'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>End Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger
+                      asChild
+                      disabled={isDisabled}
+                      className='disabled:opacity-80'
+                    >
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            formatDateFromCalendar(field.value)
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='soyKgs'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
+                  <Input {...field} disabled={isDisabled} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='parcelIds'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Parcels
+                    <span className='ml-1 text-muted-foreground'>
+                      ({field.value?.length || 0} selected)
+                    </span>
+                  </FormLabel>
+                  <SelectParcelsInput
+                    onChange={field.onChange}
+                    values={field.value || []}
+                    parcels={parcels}
+                    disabled={isDisabled}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='files'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Files
+                    <span className='ml-1 text-muted-foreground'>
+                      ({field.value.length} selected)
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <ContractUploader
+                      files={field.value}
+                      onChange={(files: File[]) => field.onChange(files)}
+                      ref={uploaderRef}
+                      disabled={isDisabled}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {form.formState.errors.root?.message && (
+              <SubmitError message={form.formState.errors.root.message} />
             )}
-          />
+          </div>
 
-          {form.formState.errors.root?.message && (
-            <SubmitError message={form.formState.errors.root.message} />
+          {isEditMode && (
+            <div className='flex gap-6 items-center justify-center mt-6'>
+              <Button variant='destructive'>Discard</Button>
+              <LoadingButton isLoading={isSubmitPending} className='w-2/3'>
+                Confirm
+              </LoadingButton>
+            </div>
           )}
-        </div>
-
-        <LoadingButton isLoading={isSubmitPending} className='w-full mt-6'>
-          Confirm
-        </LoadingButton>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 }
