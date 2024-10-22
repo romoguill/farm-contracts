@@ -14,10 +14,11 @@ import PDFsPreview from './pdfs-preview';
 interface ContractUploaderProps {
   files: File[];
   onChange: (files: File[]) => void;
+  disabled?: boolean;
 }
 
 const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
-  ({ onChange, files }, forwardedRef) => {
+  ({ onChange, files, disabled = false }, forwardedRef) => {
     const ref = useRef<HTMLInputElement>(null);
 
     useImperativeHandle(forwardedRef, () => ref.current as HTMLInputElement);
@@ -62,7 +63,7 @@ const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
 
     return (
       <>
-        {files.length < 3 && (
+        {!disabled && files.length < 3 && (
           <div
             className={cn(
               'w-full h-28 border-2 border-dashed border-input flex flex-col items-center justify-center',
@@ -99,6 +100,7 @@ const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
         )}
         {files && (
           <PDFsPreview
+            disabled={disabled}
             files={files}
             onRemove={(files) => {
               // Need to reset the input. Edge case can happen when user removes a file and tries to upload it again. Since the html input still has that value, on change event doesn't trigger

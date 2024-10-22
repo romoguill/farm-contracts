@@ -11,9 +11,10 @@ interface FileParsed {
 interface PDFsPreviewProps {
   files: File[];
   onRemove: (files: File[]) => void;
+  disabled?: boolean;
 }
 
-function PDFsPreview({ files, onRemove }: PDFsPreviewProps) {
+function PDFsPreview({ files, onRemove, disabled = false }: PDFsPreviewProps) {
   const filesParsed: FileParsed[] = useMemo(() => {
     return files.map((file) => ({
       file,
@@ -39,14 +40,16 @@ function PDFsPreview({ files, onRemove }: PDFsPreviewProps) {
                 <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
                   {fileP.file.name}
                 </h5>
-                <Button
-                  className='ml-auto text-red-500'
-                  variant='link'
-                  onClick={() => handleOnRemoveClick(fileP)}
-                >
-                  <X size={16} />
-                  Remove
-                </Button>
+                {!disabled && (
+                  <Button
+                    className='ml-auto text-red-500'
+                    variant='link'
+                    onClick={() => handleOnRemoveClick(fileP)}
+                  >
+                    <X size={16} />
+                    Remove
+                  </Button>
+                )}
               </div>
               <object
                 className='w-full'

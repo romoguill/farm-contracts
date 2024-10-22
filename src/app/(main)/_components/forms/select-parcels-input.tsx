@@ -15,12 +15,14 @@ interface SelectParcelsInputProps {
   onChange: (ids: string[]) => void;
   values: string[];
   parcels: Parcel[];
+  disabled?: boolean;
 }
 
 function SelectParcelsInput({
   onChange,
   values,
   parcels,
+  disabled = false,
 }: SelectParcelsInputProps) {
   const handleParcelSelect = (parcel: Parcel) => {
     if (values.includes(parcel.id)) {
@@ -29,7 +31,10 @@ function SelectParcelsInput({
       onChange([...values, parcel.id]);
     }
   };
-
+  // 'border-2 border-green-600 hover:border-green-400 transition-colors',
+  //   'bg-green-600 hover:border-green-400 hover:bg-green-600':
+  //   values.includes(parcel.id),
+  // 'hover:border-inherit': disabled,
   return (
     <div>
       <div className='flex gap-2'>
@@ -39,14 +44,13 @@ function SelectParcelsInput({
             size='icon'
             variant='outline'
             key={parcel.label}
-            className={cn(
-              'border-2 border-green-600 hover:border-green-400 transition-colors',
-              {
-                'bg-green-600 hover:border-green-400 hover:bg-green-600':
-                  values.includes(parcel.id),
-              }
-            )}
-            onClick={() => handleParcelSelect(parcel)}
+            className={cn('border-2 transition-colors', {
+              'bg-slate-400 border-slate-500': values.includes(parcel.id),
+              'border-green-600 hover:border-green-400': !disabled,
+              'bg-green-600 hover:border-green-400 hover:bg-green-600':
+                values.includes(parcel.id) && !disabled,
+            })}
+            onClick={() => !disabled && handleParcelSelect(parcel)}
           >
             {parcel.label}
           </Button>

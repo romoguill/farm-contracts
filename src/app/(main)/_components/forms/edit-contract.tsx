@@ -51,8 +51,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { RefObject, useEffect, useRef, useState, useTransition } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
@@ -76,8 +75,7 @@ export default function EditContractForm({
   contractId,
 }: EditContractFormProps) {
   const [editValues, setEditValues] = useState<CreateContract | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
+  const [isEditMode, setEditMode] = useState(false);
   const uploaderRef = useRef<HTMLInputElement>(null);
 
   const queryClient = useQueryClient();
@@ -103,18 +101,7 @@ export default function EditContractForm({
     values: editValues || undefined,
   });
 
-  // Some issues on GitHub, couldn't find a better way to explicitlly delete files in input
-  const resetFiles = (ref: RefObject<HTMLInputElement>) => {
-    if (ref.current) {
-      ref.current.value = '';
-    }
-  };
-
-  const {
-    mutate,
-    error: submitError,
-    isPending: isSubmitPending,
-  } = useMutation({
+  const { mutate, isPending: isSubmitPending } = useMutation({
     mutationFn: (data: EditContract) => {
       if (!contract) throw Error;
       // This part I'm not so sure if it's the best thing to do
@@ -174,23 +161,18 @@ export default function EditContractForm({
     },
   });
 
-  console.log({ submitError });
-
   useEffect(() => {
     if (!contract) return;
     // // Files will be handled separetly
     const { files, contractToParcel, ...rest } = contract;
 
     const parcelIds = contractToParcel.map((ctp) => ctp.parcelId);
-    console.log({ contract, parcelIds });
 
     const { data: payloadWithoutFiles, error: validationError } =
       editContractSchema.safeParse({
         parcelIds,
         ...rest,
       });
-
-    console.log({ payloadWithoutFiles });
 
     if (validationError) return;
 
@@ -212,8 +194,6 @@ export default function EditContractForm({
     }
   }, [contract, pdfUrls, form]);
 
-  console.log({ editValues });
-
   // QUERIES
   const {
     data: parcels,
@@ -233,6 +213,8 @@ export default function EditContractForm({
     queryFn: () => getTenants(),
   });
 
+  // REMOVE PREVIOUS UPLOADED FILES
+
   if (isPendingParcels || isPendingTenants) {
     return <CustomLoader size='lg' />;
   }
@@ -242,6 +224,8 @@ export default function EditContractForm({
       <p>Oops! There was an error setting up the from. Try again later.</p>
     );
   }
+
+  const isDisabled = !isEditMode || isSubmitPending;
 
   return (
     <Form {...form}>
@@ -256,6 +240,7 @@ export default function EditContractForm({
                 <Input
                   {...field}
                   placeholder='Descriptive title. (e.g. John wheat 2025 summer)'
+                  disabled={isDisabled}
                 />
                 <FormMessage />
               </FormItem>
@@ -272,6 +257,7 @@ export default function EditContractForm({
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   value={field.value}
+                  disabled={isDisabled}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -325,6 +311,7 @@ export default function EditContractForm({
                       selected={field.value}
                       onSelect={field.onChange}
                       initialFocus
+                      disabled={isDisabled}
                     />
                   </PopoverContent>
                 </Popover>
@@ -365,6 +352,7 @@ export default function EditContractForm({
                       selected={field.value}
                       onSelect={field.onChange}
                       initialFocus
+                      disabled={isDisabled}
                     />
                   </PopoverContent>
                 </Popover>
@@ -380,7 +368,7 @@ export default function EditContractForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kgs of soy / (Ha x Month)</FormLabel>
-                <Input {...field} />
+                <Input {...field} disabled={isDisabled} />
                 <FormMessage />
               </FormItem>
             )}
@@ -401,6 +389,7 @@ export default function EditContractForm({
                   onChange={field.onChange}
                   values={field.value || []}
                   parcels={parcels}
+                  disabled={isDisabled}
                 />
                 <FormMessage />
               </FormItem>
@@ -423,6 +412,7 @@ export default function EditContractForm({
                     files={field.value}
                     onChange={(files: File[]) => field.onChange(files)}
                     ref={uploaderRef}
+                    disabled={isDisabled}
                   />
                 </FormControl>
                 <FormMessage />
