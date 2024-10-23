@@ -52,7 +52,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { CalendarIcon, Pencil } from 'lucide-react';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
@@ -77,6 +77,7 @@ export default function EditContractForm({
   contractId,
 }: EditContractFormProps) {
   const [editValues, setEditValues] = useState<CreateContract | null>(null);
+  const [storedFilesToRemove, setStoredFilesToRemove] = useState<File[]>([]);
   const [isEditMode, setEditMode] = useState(false);
   const uploaderRef = useRef<HTMLInputElement>(null);
 
@@ -173,6 +174,11 @@ export default function EditContractForm({
     },
   });
 
+  const convertPromises = useMemo(
+    () => pdfUrls?.map((url) => convertFileUrlToObject(url)) || [],
+    [pdfUrls]
+  );
+
   useEffect(() => {
     if (!contract) return;
     // // Files and parcels need some handling.
@@ -188,8 +194,6 @@ export default function EditContractForm({
 
     if (validationError) return;
 
-    const convertPromises = pdfUrls?.map((url) => convertFileUrlToObject(url));
-
     if (convertPromises) {
       Promise.all(convertPromises)
         .then((files) => {
@@ -204,7 +208,7 @@ export default function EditContractForm({
         })
         .catch(console.error);
     }
-  }, [contract, pdfUrls, form]);
+  }, [contract, convertPromises, form]);
 
   // QUERIES
   const {
@@ -226,6 +230,11 @@ export default function EditContractForm({
   });
 
   // REMOVE PREVIOUS UPLOADED FILES
+  const handleStoredFileRemove = (file: File) => {
+    setStoredFilesToRemove(prevFiles => {
+      const newFilesToRemove = 
+    })
+  }
 
   if (isPendingParcels || isPendingTenants) {
     return <CustomLoader size='lg' />;
@@ -445,6 +454,7 @@ export default function EditContractForm({
                       onChange={(files: File[]) => field.onChange(files)}
                       ref={uploaderRef}
                       disabled={isDisabled}
+                      onRemoveStored={handleStoredFileRemove}
                     />
                   </FormControl>
                   <FormMessage />

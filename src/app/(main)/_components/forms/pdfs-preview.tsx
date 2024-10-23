@@ -12,10 +12,16 @@ interface FileParsed {
 interface PDFsPreviewProps {
   files: File[];
   onRemove: (files: File[]) => void;
+  onRemoveStored: (files: File) => void;
   disabled?: boolean;
 }
 
-function PDFsPreview({ files, onRemove, disabled = false }: PDFsPreviewProps) {
+function PDFsPreview({
+  files,
+  onRemove,
+  onRemoveStored,
+  disabled = false,
+}: PDFsPreviewProps) {
   const filesParsed: FileParsed[] = useMemo(() => {
     return files.map((file) => ({
       file,
@@ -28,6 +34,7 @@ function PDFsPreview({ files, onRemove, disabled = false }: PDFsPreviewProps) {
     onRemove(
       filesParsed.filter((fp) => fp.id !== file.id).map((fp) => fp.file)
     );
+    onRemoveStored(file.file);
   };
 
   if (window.navigator.pdfViewerEnabled) {

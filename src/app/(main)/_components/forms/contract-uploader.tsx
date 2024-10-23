@@ -15,10 +15,11 @@ interface ContractUploaderProps {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
+  onRemoveStored: (files: File) => void;
 }
 
 const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
-  ({ onChange, files, disabled = false }, forwardedRef) => {
+  ({ onChange, files, onRemoveStored, disabled = false }, forwardedRef) => {
     const ref = useRef<HTMLInputElement>(null);
 
     useImperativeHandle(forwardedRef, () => ref.current as HTMLInputElement);
@@ -109,6 +110,7 @@ const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(
               }
               onChange(files);
             }}
+            onRemoveStored={onRemoveStored}
           />
         )}
       </>
