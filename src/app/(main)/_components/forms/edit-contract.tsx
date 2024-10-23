@@ -79,8 +79,6 @@ export default function EditContractForm({
   const [isEditMode, setEditMode] = useState(false);
   const uploaderRef = useRef<HTMLInputElement>(null);
 
-  const router = useRouter();
-
   const queryClient = useQueryClient();
   const contractQueryOptions = queryOptions({
     queryKey: ['contracts', contractId],
@@ -110,6 +108,7 @@ export default function EditContractForm({
       // This part I'm not so sure if it's the best thing to do
       // I could convert all data to FormData but it's simpler to just serialize the files
       const { files, ...rest } = data;
+
       const formData = new FormData();
       files?.forEach((file) => formData.append('files', file));
 
@@ -167,7 +166,7 @@ export default function EditContractForm({
 
   useEffect(() => {
     if (!contract) return;
-    // // Files will be handled separetly
+    // // Files and parcels need some handling.
     const { files, contractToParcel, ...rest } = contract;
 
     const parcelIds = contractToParcel.map((ctp) => ctp.parcelId);
@@ -197,6 +196,8 @@ export default function EditContractForm({
         .catch(console.error);
     }
   }, [contract, pdfUrls, form]);
+
+  console.log(editValues);
 
   // QUERIES
   const {
