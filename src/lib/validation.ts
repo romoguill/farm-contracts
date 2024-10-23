@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MAX_CONTRACT_PDF_SIZE } from './utils';
+import { FileDB, MAX_CONTRACT_PDF_SIZE } from './utils';
 
 // ========= AUTH =========
 export const signUpCredentialsSchema = z
@@ -25,15 +25,15 @@ export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
 
 // ========= FILES =========
 export const contractPDFSchema = z
-  .array(z.instanceof(File))
+  .array(z.union([z.instanceof(File), z.instanceof(FileDB)]))
   .min(1, 'At least must upload 1 contract file')
   .refine(
     (files) => files.every((file) => file.size <= MAX_CONTRACT_PDF_SIZE),
-    'Files must be smaller than 1.5MG'
+    'Files must be smaller than 1.5M'
   )
   .refine(
     (files) => files.every((file) => file.type === 'application/pdf'),
-    'Files must be smaller than 1.5MG'
+    'Files must be smaller than 1.5M'
   );
 
 // ========= CONTACTS =========
@@ -52,7 +52,7 @@ export const createContractSchema = z.object({
 
 export type CreateContract = z.infer<typeof createContractSchema>;
 
-export const editContractSchema = createContractSchema.partial({ files: true });
+export const editContractSchema = createContractSchema.partial();
 
 export type EditContract = z.infer<typeof editContractSchema>;
 

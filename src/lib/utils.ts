@@ -118,3 +118,17 @@ export function areFilesEqual(f1: File, f2: File) {
 
   return true;
 }
+
+export class FileDB extends File {
+  public dbId: string;
+
+  constructor(
+    dbId: string,
+    fileBits: BlobPart[],
+    fileName: string,
+    options?: FilePropertyBag
+  ) {
+    super(fileBits, fileName, options);
+    this.dbId = dbId;
+  }
+}
