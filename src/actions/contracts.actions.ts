@@ -9,6 +9,7 @@ import {
 } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
+import { FileDB } from '@/lib/utils';
 import { contractPDFSchema, CreateContract, Months } from '@/lib/validation';
 import {
   GetObjectCommand,
@@ -269,7 +270,6 @@ export type FileWithUrl = UploadedFile & { url: string };
 
 export async function getContractPdfUrls(files: UploadedFile[]) {
   const urls: FileWithUrl[] = [];
-  console.log({ files });
 
   try {
     for (const file of files) {

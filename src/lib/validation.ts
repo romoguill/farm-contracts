@@ -52,7 +52,7 @@ export const createContractSchema = z.object({
 
 export type CreateContract = z.infer<typeof createContractSchema>;
 
-export const editContractSchema = createContractSchema.partial();
+export const editContractSchema = createContractSchema.partial({ files: true });
 
 export type EditContract = z.infer<typeof editContractSchema>;
 

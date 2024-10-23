@@ -100,7 +100,9 @@ export async function convertFileUrlToObject(file: FileWithUrl) {
     const response = await fetch(file.url);
     const blob = await response.blob();
 
-    return new File([blob], file.name, { type: 'application/pdf' });
+    return new FileDB(file.id, file.s3Id, file.url, [blob], file.name, {
+      type: 'application/pdf',
+    });
   } catch (error) {
     console.error(error);
   }
@@ -120,15 +122,21 @@ export function areFilesEqual(f1: File, f2: File) {
 }
 
 export class FileDB extends File {
-  public dbId: string;
+  readonly dbId: string;
+  readonly s3Id: string;
+  readonly url: string;
 
   constructor(
     dbId: string,
+    s3Id: string,
+    url: string,
     fileBits: BlobPart[],
     fileName: string,
     options?: FilePropertyBag
   ) {
     super(fileBits, fileName, options);
     this.dbId = dbId;
+    this.s3Id = s3Id;
+    this.url = url;
   }
 }

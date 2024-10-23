@@ -37,6 +37,7 @@ import {
   areFilesEqual,
   cn,
   convertFileUrlToObject,
+  FileDB,
   formatDateFromCalendar,
 } from '@/lib/utils';
 import {
@@ -112,8 +113,15 @@ export default function EditContractForm({
       const { files, ...rest } = data;
 
       const formData = new FormData();
-      files?.forEach((file) => formData.append('files', file));
 
+      // Before appending files to be serialized, exclude files already stored in S3
+      files?.forEach((file) => {
+        if (!(file instanceof FileDB)) {
+          formData.append('files', file);
+        }
+      });
+
+      console.log(data, formData.getAll('files'));
       return editContract({
         id: contract.id,
         data: rest,
@@ -128,13 +136,6 @@ export default function EditContractForm({
       if (!contract) throw Error;
 
       const { files, ...rest } = data;
-
-      files?.forEach((file) =>
-        editValues?.files?.forEach((editFile) => {
-          console.log({ file, editFile });
-          console.log(areFilesEqual(file, editFile));
-        })
-      );
 
       // Set update optimistically the cache. Only problem are files that need further processing.
       // Kind of a hack is to only set the values needed for UI, so that when updating at least the file previwes doesn't go to previous state
@@ -231,10 +232,10 @@ export default function EditContractForm({
 
   // REMOVE PREVIOUS UPLOADED FILES
   const handleStoredFileRemove = (file: File) => {
-    setStoredFilesToRemove(prevFiles => {
-      const newFilesToRemove = 
-    })
-  }
+    // setStoredFilesToRemove(prevFiles => {
+    //   const newFilesToRemove =
+    // })
+  };
 
   if (isPendingParcels || isPendingTenants) {
     return <CustomLoader size='lg' />;
