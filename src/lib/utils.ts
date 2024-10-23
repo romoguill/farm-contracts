@@ -107,11 +107,13 @@ export async function convertFileUrlToObject(file: FileWithUrl) {
 }
 
 // Since input file recreates the file references, I'll check every property and infer wich files have been modified.
-export async function areFilesEqual(f1: File, f2: File) {
-  const keys1 = Object.keys(f1) as Array<keyof File>;
+export function areFilesEqual(f1: File, f2: File) {
+  const keys: Array<keyof File> = ['name', 'size', 'type', 'lastModified'];
 
-  for (const key of keys1) {
-    if (f1[key] !== f2[key]) return false;
+  for (const key of keys) {
+    if (f1[key] !== f2[key]) {
+      return false;
+    }
   }
 
   return true;

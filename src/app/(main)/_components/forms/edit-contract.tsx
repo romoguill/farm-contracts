@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  areFilesEqual,
   cn,
   convertFileUrlToObject,
   formatDateFromCalendar,
@@ -126,6 +127,14 @@ export default function EditContractForm({
       if (!contract) throw Error;
 
       const { files, ...rest } = data;
+
+      files?.forEach((file) =>
+        editValues?.files?.forEach((editFile) => {
+          console.log({ file, editFile });
+          console.log(areFilesEqual(file, editFile));
+        })
+      );
+
       // Set update optimistically the cache. Only problem are files that need further processing.
       // Kind of a hack is to only set the values needed for UI, so that when updating at least the file previwes doesn't go to previous state
       if (previousContract) {
@@ -196,8 +205,6 @@ export default function EditContractForm({
         .catch(console.error);
     }
   }, [contract, pdfUrls, form]);
-
-  console.log(editValues);
 
   // QUERIES
   const {
