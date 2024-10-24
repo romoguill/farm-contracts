@@ -96,7 +96,7 @@ export default function EditContractForm({
     queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
     staleTime: Infinity,
-    placeholderData: [],
+    // placeholderData: [],
   });
 
   const form = useForm<CreateContract>({
@@ -144,12 +144,23 @@ export default function EditContractForm({
           ...previousContract,
           ...rest,
           files:
-            data.files?.map((file) => ({
-              contractId: contract.id,
-              id: '',
-              name: file.name,
-              s3Id: '',
-            })) || [],
+            data.files?.map((file) => {
+              if (file instanceof FileDB) {
+                return {
+                  contractId: contract.id,
+                  id: file.dbId,
+                  name: file.name,
+                  s3Id: file.s3Id,
+                };
+              } else {
+                return {
+                  contractId: contract.id,
+                  id: '',
+                  name: file.name,
+                  s3Id: '',
+                };
+              }
+            }) || [],
         });
       }
 
@@ -168,9 +179,14 @@ export default function EditContractForm({
       }
       toast.error('Error updating contract');
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      queryClient.invalidateQueries({ queryKey: ['contracts', contractId] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['contracts', contractId],
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['pdfUrls', contractId] });
+
       setEditMode(false);
     },
   });

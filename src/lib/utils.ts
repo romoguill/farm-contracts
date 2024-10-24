@@ -96,6 +96,8 @@ export function formatDatesForGraph(date: Date) {
 }
 
 export async function convertFileUrlToObject(file: FileWithUrl) {
+  if (!file.id || !file.s3Id) return;
+
   try {
     const response = await fetch(file.url);
     const blob = await response.blob();
@@ -140,3 +142,6 @@ export class FileDB extends File {
     this.url = url;
   }
 }
+
+// Util for making optional only some properties
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;

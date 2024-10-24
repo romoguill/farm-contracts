@@ -9,7 +9,7 @@ import {
 } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
-import { FileDB } from '@/lib/utils';
+import { FileDB, Optional } from '@/lib/utils';
 import { contractPDFSchema, CreateContract, Months } from '@/lib/validation';
 import {
   GetObjectCommand,
@@ -266,13 +266,21 @@ export async function uploadContractPdf(formData: FormData) {
   }
 }
 
-export type FileWithUrl = UploadedFile & { url: string };
+export type FileWithUrl = Optional<UploadedFile, 'id' | 's3Id'> & {
+  url: string;
+};
 
-export async function getContractPdfUrls(files: UploadedFile[]) {
+// Get urls are only going to work for already uploaded files.
+// When using optimistic update, the values of id and s3Id will not be present
+export async function getContractPdfUrls(
+  files: Optional<UploadedFile, 'id' | 's3Id'>[]
+) {
   const urls: FileWithUrl[] = [];
-
+  console.log('refetch');
+  console.log({ files });
   try {
     for (const file of files) {
+      if (!file.id || !file.s3Id) continue;
       const params: GetObjectCommandInput = {
         Bucket: process.env.AWS_BUCKET_NAME!,
         Key: file.s3Id,
@@ -283,6 +291,7 @@ export async function getContractPdfUrls(files: UploadedFile[]) {
       urls.push({ ...file, url: signedUrl });
     }
 
+    console.log(urls);
     return urls;
   } catch (error) {
     console.error(error);
