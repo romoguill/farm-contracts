@@ -132,23 +132,23 @@ export async function editContract({
           }))
         );
 
-        // const { error: fileUploadError, files } = await uploadContractPdf(
-        //   filesSerialized
-        // );
+        const { error: fileUploadError, files } = await uploadContractPdf(
+          filesSerialized
+        );
 
-        // // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
-        // if (fileUploadError !== null) {
-        //   tx.rollback();
-        //   return;
-        // }
+        // If an error occured in S3 I can't create entry in uploadFile, so I rollback the whole transaction.
+        if (fileUploadError !== null) {
+          tx.rollback();
+          return;
+        }
 
-        // await tx.insert(uploadedFile).values(
-        //   files.map((file) => ({
-        //     contractId: insertedContract.id,
-        //     name: file.fileName,
-        //     s3Id: file.s3Id,
-        //   }))
-        // );
+        await tx.insert(uploadedFile).values(
+          files.map((file) => ({
+            contractId: updatedContract.id,
+            name: file.fileName,
+            s3Id: file.s3Id,
+          }))
+        );
       },
       {
         isolationLevel: 'read committed',
