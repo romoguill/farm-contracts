@@ -52,7 +52,29 @@ export const createContractSchema = z.object({
 
 export type CreateContract = z.infer<typeof createContractSchema>;
 
-export const editContractSchema = createContractSchema.partial({ files: true });
+const editContractPDFSchema = z
+  .array(z.union([z.instanceof(File), z.instanceof(FileDB)]))
+  .refine(
+    (files) => files.every((file) => file.size <= MAX_CONTRACT_PDF_SIZE),
+    'Files must be smaller than 1.5M'
+  )
+  .refine(
+    (files) => files.every((file) => file.type === 'application/pdf'),
+    'Files must be smaller than 1.5M'
+  );
+
+export const editContractSchema = z.object({
+  startDate: z.date(),
+  endDate: z.date(),
+  title: z.string(),
+  tenantId: z.string(),
+  soyKgs: z.coerce
+    .number({ message: 'Must be a positive number' })
+    .positive('Kilograms of soy must be greater than 1')
+    .gt(0, 'Kilograms of soy must be greater than 1'),
+  parcelIds: z.array(z.string()).nonempty('At least 1 parcel is required'),
+  files: editContractPDFSchema,
+});
 
 export type EditContract = z.infer<typeof editContractSchema>;
 

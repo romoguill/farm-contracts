@@ -34,7 +34,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  areFilesEqual,
   cn,
   convertFileUrlToObject,
   FileDB,
@@ -53,12 +52,11 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { CalendarIcon, Pencil } from 'lucide-react';
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ContractUploader from './contract-uploader';
 import SelectParcelsInput from './select-parcels-input';
-import { useRouter } from 'next/navigation';
 
 const defaultValues = {
   title: '',
@@ -99,7 +97,7 @@ export default function EditContractForm({
     // placeholderData: [],
   });
 
-  const form = useForm<CreateContract>({
+  const form = useForm<EditContract>({
     resolver: zodResolver(editContractSchema),
     defaultValues,
     values: editValues || undefined,
@@ -207,6 +205,7 @@ export default function EditContractForm({
       editContractSchema.safeParse({
         parcelIds,
         ...rest,
+        files: [], // Needed for validation. Later updated with real values
       });
 
     if (validationError) return;
