@@ -56,7 +56,7 @@ function PDFsPreview({
         {filesParsed.map((fileP) => (
           <ul key={fileP.id}>
             <li>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 my-2'>
                 <FileTextIcon size={24} className='flex-shrink-0' />
                 <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
                   {fileP.file.name}
@@ -92,7 +92,7 @@ function PDFsPreview({
         <ul key={fileP.id}>
           <li>
             <div
-              className={cn('flex items-center gap-2', {
+              className={cn('flex items-center gap-2 my-2', {
                 'opacity-80': disabled,
               })}
             >

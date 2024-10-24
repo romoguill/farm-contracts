@@ -121,11 +121,11 @@ export default function EditContractForm({
         }
       });
 
-      console.log(data, formData.getAll('files'));
       return editContract({
         id: contract.id,
         data: rest,
         filesSerialized: formData,
+        s3IdsToDelete: storedFilesToRemove.map((file) => file.s3Id),
       });
     },
     onMutate: async (data: EditContract) => {

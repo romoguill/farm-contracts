@@ -23,7 +23,7 @@ import {
   waitUntilObjectNotExists,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lte } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { ZodError } from 'zod';
 
@@ -147,6 +147,7 @@ export async function editContract({
           return;
         }
 
+        // Add new files
         await tx.insert(uploadedFile).values(
           files.map((file) => ({
             contractId: updatedContract.id,
@@ -154,6 +155,11 @@ export async function editContract({
             s3Id: file.s3Id,
           }))
         );
+
+        // Delete removed files that where already stored from DB
+        await tx
+          .delete(uploadedFile)
+          .where(inArray(uploadedFile.s3Id, s3IdsToDelete));
       },
       {
         isolationLevel: 'read committed',
@@ -162,7 +168,7 @@ export async function editContract({
       }
     );
 
-    // Delete removed files that where already stored
+    // Delete removed files that where already stored from S3
     await deleteContractPdfs(s3IdsToDelete);
   } catch (error) {
     console.error(error);
@@ -335,13 +341,16 @@ export async function deleteContractPdfs(fileS3Ids: string[]) {
 
     await s3.send(new DeleteObjectsCommand(params));
 
-    // Not sure if wait for confirmation of delete or just use the promise above to resolve.
-    for (const file in fileS3Ids) {
-      await waitUntilObjectNotExists(
-        { client: s3, maxWaitTime: 2 },
-        { Bucket: process.env.AWS_BUCKET_NAME!, Key: file }
-      );
-    }
+    // Decided not to use code below. User shouldn't care aboute s3 removal. Only, db removal
+
+    // // Not sure if wait for confirmation of delete or just use the promise above to resolve.
+    // // Need to be at least 6 seconds the wait due to library restrictions. It's too long....
+    // for (const file in fileS3Ids) {
+    //   await waitUntilObjectNotExists(
+    //     { client: s3, maxWaitTime: 6 },
+    //     { Bucket: process.env.AWS_BUCKET_NAME!, Key: file }
+    //   );
+    // }
   } catch (error) {
     console.error(error);
   }
