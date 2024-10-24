@@ -318,7 +318,6 @@ export async function getContractPdfUrls(
       urls.push({ ...file, url: signedUrl });
     }
 
-    console.log(urls);
     return urls;
   } catch (error) {
     console.error(error);

@@ -97,9 +97,14 @@ function PDFsPreview({
               })}
             >
               <FileTextIcon size={24} className='flex-shrink-0' />
-              <h5 className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'>
+              <a
+                href={fileP.url}
+                download
+                target='_blank'
+                className='text-sm text-ellipsis min-w-0 whitespace-nowrap overflow-hidden'
+              >
                 {fileP.file.name}
-              </h5>
+              </a>
               {!disabled && (
                 <Button
                   className='ml-auto text-red-500'

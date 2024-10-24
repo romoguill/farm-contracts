@@ -89,13 +89,15 @@ export default function EditContractForm({
 
   const { data: contract } = useQuery(contractQueryOptions);
 
-  const { data: pdfUrls } = useQuery({
+  const pdfUrlsQueryOptions = queryOptions({
     queryKey: ['pdfUrls', contractId],
     queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
     staleTime: Infinity,
     // placeholderData: [],
   });
+
+  const { data: pdfUrls } = useQuery(pdfUrlsQueryOptions);
 
   const form = useForm<EditContract>({
     resolver: zodResolver(editContractSchema),
@@ -131,9 +133,15 @@ export default function EditContractForm({
       const previousContract = queryClient.getQueryData(
         contractQueryOptions.queryKey
       );
+      const previousPdfUrls = queryClient.getQueryData(
+        pdfUrlsQueryOptions.queryKey
+      );
+
       if (!contract) throw Error;
 
       const { files, ...rest } = data;
+
+      console.log({ files });
 
       // Set update optimistically the cache. Only problem are files that need further processing.
       // Kind of a hack is to only set the values needed for UI, so that when updating at least the file previwes doesn't go to previous state
@@ -142,7 +150,7 @@ export default function EditContractForm({
           ...previousContract,
           ...rest,
           files:
-            data.files?.map((file) => {
+            data.files.map((file) => {
               if (file instanceof FileDB) {
                 return {
                   contractId: contract.id,
@@ -160,6 +168,33 @@ export default function EditContractForm({
               }
             }) || [],
         });
+
+        if (previousPdfUrls) {
+          queryClient.setQueryData(
+            pdfUrlsQueryOptions.queryKey,
+            data.files.map((file) => {
+              if (file instanceof FileDB) {
+                return {
+                  contractId: contract.id,
+                  id: file.dbId,
+                  name: file.name,
+                  s3Id: file.s3Id,
+                  url: file.url,
+                };
+              } else {
+                return {
+                  contractId: contract.id,
+                  id: '',
+                  name: file.name,
+                  s3Id: '',
+                  url: '',
+                };
+              }
+            }) || []
+          );
+        }
+
+        console.log({ queryData: queryClient.getQueriesData({}) });
       }
 
       return { previousContract };
@@ -182,8 +217,9 @@ export default function EditContractForm({
       await queryClient.invalidateQueries({
         queryKey: ['contracts', contractId],
       });
-
-      queryClient.invalidateQueries({ queryKey: ['pdfUrls', contractId] });
+      await queryClient.invalidateQueries({
+        queryKey: ['pdfUrls', contractId],
+      });
 
       setEditMode(false);
     },
@@ -214,7 +250,7 @@ export default function EditContractForm({
       Promise.all(convertPromises)
         .then((files) => {
           if (files.some((file) => file === undefined)) return;
-
+          console.log('updated editvalues', { files });
           setEditValues({
             ...payloadWithoutFiles,
             files: files as File[], //Checked above. TS can't infer boolean filter
@@ -261,6 +297,8 @@ export default function EditContractForm({
   }
 
   const isDisabled = !isEditMode || isSubmitPending;
+
+  console.log(editValues);
 
   return (
     <div className='relative'>
@@ -462,6 +500,7 @@ export default function EditContractForm({
                       ({field.value.length} selected)
                     </span>
                   </FormLabel>
+
                   <FormControl>
                     <ContractUploader
                       files={field.value}
