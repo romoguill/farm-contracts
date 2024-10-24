@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn, FileDB } from '@/lib/utils';
 import {
   forwardRef,
   RefObject,
@@ -15,7 +15,7 @@ interface ContractUploaderProps {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
-  onRemoveStored: (files: File) => void;
+  onRemoveStored: (file: FileDB) => void;
 }
 
 const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(

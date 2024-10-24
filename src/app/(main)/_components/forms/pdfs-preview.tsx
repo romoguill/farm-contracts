@@ -1,18 +1,18 @@
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, FileDB } from '@/lib/utils';
 import { FileTextIcon, X } from 'lucide-react';
 import { useMemo } from 'react';
 
-interface FileParsed {
+type FileParsed = {
+  file: FileDB | File;
   id: string;
   url: string;
-  file: File;
-}
+};
 
 interface PDFsPreviewProps {
-  files: File[];
-  onRemove: (files: File[]) => void;
-  onRemoveStored: (files: File) => void;
+  files: Array<File | FileDB>;
+  onRemove: (files: Array<File | FileDB>) => void;
+  onRemoveStored: (file: FileDB) => void;
   disabled?: boolean;
 }
 
@@ -23,18 +23,31 @@ function PDFsPreview({
   disabled = false,
 }: PDFsPreviewProps) {
   const filesParsed: FileParsed[] = useMemo(() => {
-    return files.map((file) => ({
-      file,
-      id: crypto.randomUUID(),
-      url: URL.createObjectURL(file),
-    }));
+    return files.map((file) => {
+      if (file instanceof FileDB) {
+        return {
+          file,
+          id: file.dbId,
+          url: file.url,
+        };
+      } else {
+        return {
+          file,
+          id: crypto.randomUUID(),
+          url: URL.createObjectURL(file),
+        };
+      }
+    });
   }, [files]);
 
   const handleOnRemoveClick = (file: FileParsed) => {
     onRemove(
       filesParsed.filter((fp) => fp.id !== file.id).map((fp) => fp.file)
     );
-    onRemoveStored(file.file);
+
+    if (file.file instanceof FileDB) {
+      onRemoveStored(file.file);
+    }
   };
 
   if (window.navigator.pdfViewerEnabled) {

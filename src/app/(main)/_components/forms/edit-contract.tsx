@@ -78,7 +78,7 @@ export default function EditContractForm({
   contractId,
 }: EditContractFormProps) {
   const [editValues, setEditValues] = useState<CreateContract | null>(null);
-  const [storedFilesToRemove, setStoredFilesToRemove] = useState<File[]>([]);
+  const [storedFilesToRemove, setStoredFilesToRemove] = useState<FileDB[]>([]);
   const [isEditMode, setEditMode] = useState(false);
   const uploaderRef = useRef<HTMLInputElement>(null);
 
@@ -231,10 +231,8 @@ export default function EditContractForm({
   });
 
   // REMOVE PREVIOUS UPLOADED FILES
-  const handleStoredFileRemove = (file: File) => {
-    // setStoredFilesToRemove(prevFiles => {
-    //   const newFilesToRemove =
-    // })
+  const handleStoredFileRemove = (file: FileDB) => {
+    setStoredFilesToRemove((prevFiles) => [...prevFiles, file]);
   };
 
   if (isPendingParcels || isPendingTenants) {
