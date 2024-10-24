@@ -9,15 +9,18 @@ import {
 } from '@/db/schema';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
-import { FileDB, Optional } from '@/lib/utils';
+import { Optional } from '@/lib/utils';
 import { contractPDFSchema, CreateContract, Months } from '@/lib/validation';
 import {
+  DeleteObjectsCommand,
+  DeleteObjectsCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
   S3ClientConfig,
+  waitUntilObjectNotExists,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
@@ -96,10 +99,12 @@ export async function editContract({
   id,
   data,
   filesSerialized,
+  s3IdsToDelete,
 }: {
   id: string;
   data: Omit<CreateContract, 'files'>;
   filesSerialized: FormData;
+  s3IdsToDelete: string[];
 }) {
   const { user } = await validateRequest();
 
@@ -156,6 +161,9 @@ export async function editContract({
         deferrable: true,
       }
     );
+
+    // Delete removed files that where already stored
+    await deleteContractPdfs(s3IdsToDelete);
   } catch (error) {
     console.error(error);
     throw error;
@@ -224,6 +232,12 @@ export async function uploadContractPdf(formData: FormData) {
   const files = formData.getAll('files');
 
   try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
     // Validate file (size and type)
     const parsedFiles = contractPDFSchema.parse(files);
 
@@ -276,9 +290,14 @@ export async function getContractPdfUrls(
   files: Optional<UploadedFile, 'id' | 's3Id'>[]
 ) {
   const urls: FileWithUrl[] = [];
-  console.log('refetch');
-  console.log({ files });
+
   try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
     for (const file of files) {
       if (!file.id || !file.s3Id) continue;
       const params: GetObjectCommandInput = {
@@ -296,6 +315,35 @@ export async function getContractPdfUrls(
   } catch (error) {
     console.error(error);
     return [];
+  }
+}
+
+export async function deleteContractPdfs(fileS3Ids: string[]) {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const params: DeleteObjectsCommandInput = {
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Delete: {
+        Objects: fileS3Ids.map((k) => ({ Key: k })),
+      },
+    };
+
+    await s3.send(new DeleteObjectsCommand(params));
+
+    // Not sure if wait for confirmation of delete or just use the promise above to resolve.
+    for (const file in fileS3Ids) {
+      await waitUntilObjectNotExists(
+        { client: s3, maxWaitTime: 2 },
+        { Bucket: process.env.AWS_BUCKET_NAME!, Key: file }
+      );
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
