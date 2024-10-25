@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`flex flex-col ${inter.className}`}>
+      <body className={`flex flex-col bg-[#FFF5E4] ${inter.className}`}>
         <TanstackQueryProvider>
           {children}
           <Toaster richColors />

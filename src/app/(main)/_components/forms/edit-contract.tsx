@@ -93,7 +93,7 @@ export default function EditContractForm({
     queryKey: ['pdfUrls', contractId],
     queryFn: () => getContractPdfUrls(contract!.files), // assert since this query is dependant on the previous result
     enabled: Boolean(contract),
-    staleTime: Infinity,
+    staleTime: 60 * 15 * 1000, // revalidate every 15 min since presigned urls expires.
     // placeholderData: [],
   });
 
