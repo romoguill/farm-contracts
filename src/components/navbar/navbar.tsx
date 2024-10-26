@@ -12,7 +12,7 @@ function Navbar() {
         className='mx-4'
       />
       <nav className='flex-1'>
-        <ul className='flex gap-4'>
+        <ul className='flex gap-4 font-bold'>
           <li>
             <Link href='/dashboard'>Dashboard</Link>
           </li>

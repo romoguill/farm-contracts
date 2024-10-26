@@ -1,10 +1,13 @@
 import { Toaster } from '@/components/ui/sonner';
 import { TanstackQueryProvider } from '@/providers/tanstack-query';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Barlow } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const mainFont = Barlow({
+  subsets: ['latin'],
+  weight: ['400', '500', '700', '800'],
+});
 
 export const metadata: Metadata = {
   title: 'Farm - Contracts',
@@ -18,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`flex flex-col bg-[#FFF5E4] ${inter.className}`}>
+      <body className={`flex flex-col bg-[#FFF5E4] ${mainFont.className}`}>
         <TanstackQueryProvider>
           {children}
           <Toaster richColors />
