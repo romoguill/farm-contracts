@@ -1,10 +1,10 @@
 import { Toaster } from '@/components/ui/sonner';
 import { TanstackQueryProvider } from '@/providers/tanstack-query';
 import type { Metadata } from 'next';
-import { Barlow } from 'next/font/google';
+import { Barlow, Open_Sans } from 'next/font/google';
 import './globals.css';
 
-const mainFont = Barlow({
+const mainFont = Open_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '700', '800'],
 });
