@@ -376,7 +376,7 @@ export default function EditContractForm({
                     <PopoverTrigger
                       asChild
                       disabled={isDisabled}
-                      className='disabled:opacity-80'
+                      className='disabled:opacity-80 hover:bg-background'
                     >
                       <FormControl>
                         <Button
@@ -421,7 +421,7 @@ export default function EditContractForm({
                     <PopoverTrigger
                       asChild
                       disabled={isDisabled}
-                      className='disabled:opacity-80'
+                      className='disabled:opacity-80 hover:bg-background'
                     >
                       <FormControl>
                         <Button

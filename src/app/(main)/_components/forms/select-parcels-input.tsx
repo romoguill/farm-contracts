@@ -46,9 +46,9 @@ function SelectParcelsInput({
               {
                 'bg-slate-400 border-slate-500 hover:bg-slate-400 hover:border-slate-500':
                   values.includes(parcel.id),
-                'border-green-600 hover:border-green-400 cursor-pointer':
+                'border-accent/80 hover:border-accent cursor-pointer':
                   !disabled,
-                'bg-green-600 hover:border-green-400 hover:bg-green-600 cursor-pointer':
+                'bg-accent/80 hover:border-accent hover:bg-accent cursor-pointer':
                   values.includes(parcel.id) && !disabled,
               }
             )}
