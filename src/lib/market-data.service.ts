@@ -7,8 +7,9 @@ interface MatbaTokens {
 }
 
 const MATBA_API_LOGIN = 'https://api.matbarofex.com.ar/v2/token/';
-const MATBA_API_REFRESH = 'https://api.matbarofex.com.ar/v2/token/refresh/';
-const MATBA_API_SOY_PRICE = 'https://api.matbarofex.com.ar/v2/symbol/I.SOJA/';
+// const MATBA_API_REFRESH = 'https://api.matbarofex.com.ar/v2/token/refresh/';
+const MATBA_API_SYMBOL = 'https://api.matbarofex.com.ar/v2/symbol/';
+const SYMBOLS = ['I.SOJA', 'I.MAIZ', 'I.TRIGO'];
 
 const loginSchema = z.object({
   access: z.string(),
@@ -44,31 +45,38 @@ export async function loginMatba() {
   }
 }
 
-const soyResponseSchema = z.object({
-  indexValue: z.number(),
-  maturity: z.number(),
-  mdEntryDateTime: z.string(),
-  unixTimestamp: z.number(),
-  name: z.string(),
-});
+const symbolResponseSchema = z.array(
+  z.object({
+    indexValue: z.number(),
+    maturity: z.number(),
+    mdEntryDateTime: z.string(),
+    unixTimestamp: z.number(),
+    name: z.string(),
+  })
+);
 
 export async function getMarketDataSoyPrice(accessToken: string) {
-  const response = await fetch(MATBA_API_SOY_PRICE, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const responsePromises = SYMBOLS.map((symbol) =>
+    fetch(`${MATBA_API_SYMBOL}/${symbol}/`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }).then((response) => response.json())
+  );
 
-  if (response.ok) {
-    const data = await response.json();
-
-    const { data: soyData, error } = soyResponseSchema.safeParse(data);
+  try {
+    const data = await Promise.all(responsePromises);
+    const { data: soyData, error } = symbolResponseSchema.safeParse(data);
 
     if (error) {
       throw new Error(`API response corrupted. Response: ${soyData}`);
     }
 
     return soyData;
-  } else {
-    throw new Error(`API error: ${JSON.stringify(await response.json())}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error('Something went wrong');
   }
 }
