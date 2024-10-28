@@ -1,3 +1,4 @@
+import { cropsSchema } from '@/lib/validation';
 import {
   BuildQueryResult,
   ExtractTablesWithRelations,
@@ -200,7 +201,7 @@ export const uploadedFileRelations = relations(uploadedFile, ({ one }) => ({
 export type UploadedFile = typeof uploadedFile.$inferSelect;
 
 // --------- MARKET DATA ---------
-export const crop = pgEnum('crop', ['CORN', 'SOY', 'WHEAT']);
+export const crop = pgEnum('crop', cropsSchema.options);
 
 export const marketData = pgTable(
   'market_data',

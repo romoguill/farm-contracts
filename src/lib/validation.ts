@@ -115,3 +115,7 @@ export type Months =
   | 'october'
   | 'november'
   | 'december';
+
+export const cropsSchema = z.enum(['CORN', 'SOY', 'WHEAT']);
+
+export type Crops = z.infer<typeof cropsSchema>;
