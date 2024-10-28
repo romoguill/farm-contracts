@@ -65,13 +65,13 @@ export async function getMarketDataSoyPrice(accessToken: string) {
 
   try {
     const data = await Promise.all(responsePromises);
-    const { data: soyData, error } = symbolResponseSchema.safeParse(data);
+    const { data: symbolData, error } = symbolResponseSchema.safeParse(data);
 
     if (error) {
-      throw new Error(`API response corrupted. Response: ${soyData}`);
+      throw new Error(`API response corrupted. Response: ${symbolData}`);
     }
 
-    return soyData;
+    return;
   } catch (error) {
     if (error instanceof Error) {
       throw error;

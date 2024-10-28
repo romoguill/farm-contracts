@@ -14,6 +14,7 @@ import {
   index,
   integer,
   numeric,
+  pgEnum,
   pgTable,
   primaryKey,
   smallint,
@@ -199,12 +200,15 @@ export const uploadedFileRelations = relations(uploadedFile, ({ one }) => ({
 export type UploadedFile = typeof uploadedFile.$inferSelect;
 
 // --------- MARKET DATA ---------
+export const crop = pgEnum('crop', ['CORN', 'SOY', 'WHEAT']);
+
 export const marketData = pgTable(
   'market_data',
   {
     id: uuid('id')
       .primaryKey()
       .default(sql`gen_random_uuid()`),
+    crop: crop('crop').notNull(),
     date: timestamp('date').defaultNow().unique().notNull(),
     price: doublePrecision('price').notNull(),
   },
