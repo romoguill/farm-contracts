@@ -10,9 +10,12 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     const data = await getMarketDataSoyPrice(accessToken);
 
-    await db.insert(marketData).values({
-      price: data.indexValue,
-    });
+    await db.insert(marketData).values(
+      data.map((item) => ({
+        crop: item.crop,
+        price: item.data.indexValue,
+      }))
+    );
 
     return NextResponse.json('ok', { status: 200 });
   } catch (error) {
