@@ -33,7 +33,7 @@ async function DashboardPage() {
       <MainTitle>Dashboard</MainTitle>
       <section className='flex flex-col gap-5 md:flex-row'>
         <ChartDashboard />
-        <div>
+        <div className='flex flex-col gap-4 sm:flex-row sm:gap-4 md:block md:space-y-4'>
           <CurrencyConverter />
           <MarketTable />
         </div>

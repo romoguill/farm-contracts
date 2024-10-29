@@ -48,24 +48,34 @@ const CurrencyConverter = function CurrencyConverter() {
 
   return (
     <div className='w-full md:min-w-[250px] md:w-2/6'>
-      <Table>
-        <TableHeader>
+      <Table className='bg-secondary/20'>
+        <TableHeader className='bg-secondary/30'>
           <TableRow>
-            <TableHead className='whitespace-nowrap'>Dolar type</TableHead>
-            <TableHead>Buy</TableHead>
-            <TableHead>Sell</TableHead>
+            <TableHead className='whitespace-nowrap w-1/3 sm:w-[120px] py-2 h-10'>
+              Dolar type
+            </TableHead>
+            <TableHead className='py-2 h-10'>Buy</TableHead>
+            <TableHead className='py-2 h-10'>Sell</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell>Official</TableCell>
-            <TableCell>{data.oficial.value_buy}</TableCell>
-            <TableCell>{data.oficial.value_sell}</TableCell>
+            <TableCell className='p-2 px-4 h-10'>Official</TableCell>
+            <TableCell className='p-2 px-4 h-10'>
+              {data.oficial.value_buy}
+            </TableCell>
+            <TableCell className='p-2 px-4 h-10'>
+              {data.oficial.value_sell}
+            </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Blue</TableCell>
-            <TableCell>{data.blue.value_buy}</TableCell>
-            <TableCell>{data.blue.value_sell}</TableCell>
+            <TableCell className='p-2 px-4 h-10'>Blue</TableCell>
+            <TableCell className='p-2 px-4 h-10'>
+              {data.blue.value_buy}
+            </TableCell>
+            <TableCell className='p-2 px-4 h-10'>
+              {data.blue.value_sell}
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

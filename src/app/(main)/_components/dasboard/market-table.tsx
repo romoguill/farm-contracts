@@ -37,20 +37,24 @@ function MarketTable() {
 
   return (
     <div className='w-full md:min-w-[250px] md:w-2/6'>
-      <Table>
-        <TableHeader>
+      <Table className='bg-secondary/20'>
+        <TableHeader className='bg-secondary/30'>
           <TableRow>
-            <TableHead className='whitespace-nowrap'>Crop</TableHead>
-            <TableHead>Price ($USD/t)</TableHead>
+            <TableHead className='whitespace-nowrap w-1/3 sm:w-[120px] py-2 h-10'>
+              Crop
+            </TableHead>
+            <TableHead className='py-2 h-8'>Price ($USD/t)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((item) => (
             <TableRow key={item.crop}>
-              <TableCell className='capitalize'>
+              <TableCell className='capitalize p-2 px-4 h-10'>
                 {item.crop.toLowerCase()}
               </TableCell>
-              <TableCell>{priceFormatter.format(item.price)}</TableCell>
+              <TableCell className='p-2 px-4 h-10'>
+                {priceFormatter.format(item.price)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
