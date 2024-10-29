@@ -11,11 +11,11 @@ interface MatbaTokens {
 const MATBA_API_LOGIN = 'https://api.matbarofex.com.ar/v2/token/';
 // const MATBA_API_REFRESH = 'https://api.matbarofex.com.ar/v2/token/refresh/';
 const MATBA_API_SYMBOL = 'https://api.matbarofex.com.ar/v2/symbol/';
-const CROPS_MATBA: Partial<Record<Crops, string>>[] = [
-  { SOY: 'I.SOJA' },
-  { CORN: 'I.MAIZ' },
-  { WHEAT: 'I.TRIGO' },
-];
+const CROPS_API: Record<Crops, string> = {
+  CORN: 'I.MAIZ',
+  WHEAT: 'I.TRIGO',
+  SOY: 'I.SOJA',
+};
 
 const loginSchema = z.object({
   access: z.string(),
@@ -65,14 +65,18 @@ const symbolResponseSchema = z.array(
 );
 
 export async function getMarketDataSoyPrice(accessToken: string) {
-  const responsePromises = CROPS_MATBA.map(async (crop) => {
-    const response = await fetch(`${MATBA_API_SYMBOL}/${crop}/`, {
+  const responsePromises = cropsSchema.options.map(async (crop) => {
+    const response = await fetch(`${MATBA_API_SYMBOL}${crop}/`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     if (!response.ok) {
-      throw new Error(`API responded with an error: ${response.status}`);
+      throw new Error(
+        `API responded with an error: Status: ${
+          response.status
+        }, Error: ${await response.text()}`
+      );
     }
 
     return {
