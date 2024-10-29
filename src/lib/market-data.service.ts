@@ -1,4 +1,3 @@
-import { crop } from '@/db/schema';
 import 'server-only';
 import { z } from 'zod';
 import { Crops, cropsSchema } from './validation';
@@ -34,10 +33,12 @@ export async function loginMatba() {
     headers: {
       'Content-Type': 'application/json',
     },
+    cache: 'no-store',
   });
 
   if (response.ok) {
     const data = await response.json();
+    console.log({ data });
 
     const { data: tokens, error } = loginSchema.safeParse(data);
 
@@ -66,9 +67,10 @@ const symbolResponseSchema = z.array(
 
 export async function getMarketDataSoyPrice(accessToken: string) {
   const responsePromises = cropsSchema.options.map(async (crop) => {
-    const response = await fetch(`${MATBA_API_SYMBOL}${crop}/`, {
+    const response = await fetch(`${MATBA_API_SYMBOL}${CROPS_API[crop]}/`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${accessToken}` },
+      cache: 'no-store',
     });
 
     if (!response.ok) {

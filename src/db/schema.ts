@@ -215,5 +215,6 @@ export const marketData = pgTable(
   },
   (table) => ({
     dateIdx: index('date_idx').on(table.date),
+    unq: unique('dateAndCropUnique').on(table.date, table.crop),
   })
 );
