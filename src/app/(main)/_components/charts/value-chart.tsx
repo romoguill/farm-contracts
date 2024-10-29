@@ -46,7 +46,7 @@ function ValueChart({ data }: ValueChartProps) {
           tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <YAxis label={{ value: '$K', position: 'insideTopLeft' }} width={80} />
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray='3 2' stroke='#aaa' />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Line
           dataKey='contractsValue'

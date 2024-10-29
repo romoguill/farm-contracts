@@ -36,13 +36,13 @@ function ChartDashboard() {
 
   return (
     <div className='flex-grow'>
-      <div className='relative border border-slate-200 rounded-xl'>
-        <div className='grid grid-cols-[1fr,4fr,1fr] p-2'>
+      <div className='relative border border-slate-200 rounded-xl px-2 bg-secondary/20'>
+        <div className='grid grid-cols-[1fr,4fr,1fr] p-2 rounded-t-xl'>
           <Select
             value={selectedType}
             onValueChange={(value: DataType) => setSelectedType(value)}
           >
-            <SelectTrigger className='w-24 h-fit py-1 text-xs rounded-xl m-0 focus-visible:ring-transparent focus:ring-transparent'>
+            <SelectTrigger className='w-24 h-fit py-1 text-xs rounded-xl m-0 bg-secondary text-secondary-foreground border-secondary focus-visible:ring-transparent focus:ring-transparent focus-visible:ring-offset-transparent'>
               <SelectValue placeholder='Chart data' />
             </SelectTrigger>
             <SelectContent className='min-w-28'>

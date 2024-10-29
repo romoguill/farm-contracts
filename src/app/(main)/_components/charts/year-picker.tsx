@@ -50,9 +50,9 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
   return (
     <div className='mx-auto flex items-center justify-center gap-6'>
       <Button
-        variant='outline'
+        variant='secondary'
         size='icon'
-        className='h-6 w-6'
+        className='h-6 w-6 bg-secondary text-secondary-foreground'
         disabled={
           oldestContract
             ? year <= oldestContract?.startDate.getFullYear()
@@ -66,7 +66,7 @@ function YearPicker({ defaultValue, onChange }: YearPickerProps) {
       <span className='text-base'>{year}</span>
 
       <Button
-        variant='outline'
+        variant='secondary'
         size='icon'
         className='h-6 w-6'
         disabled={

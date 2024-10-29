@@ -36,7 +36,7 @@ function QuantityChart({ data }: QuantityChartProps) {
           tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <YAxis />
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray='3 2' stroke='#aaa' />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
           dataKey='contractsCount'
