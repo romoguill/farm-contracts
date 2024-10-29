@@ -10,6 +10,7 @@ import { getParcels } from '@/actions/parcels.actions';
 import { getActiveContractsAndParcels } from '@/actions/contracts.actions';
 import { Mukta } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import MarketTable from '../_components/dasboard/market-table';
 
 const font = Mukta({ weight: '700', subsets: ['latin'] });
 
@@ -32,7 +33,10 @@ async function DashboardPage() {
       <MainTitle>Dashboard</MainTitle>
       <section className='flex flex-col gap-5 md:flex-row'>
         <ChartDashboard />
-        <CurrencyConverter />
+        <div>
+          <CurrencyConverter />
+          <MarketTable />
+        </div>
       </section>
       <section className='flex flex-col gap-5 md:flex-row'>
         <article>
