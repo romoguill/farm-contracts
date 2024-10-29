@@ -7,7 +7,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
   // Access token only last 24 hours, so it's not usefull to store it, cron will run once a day
   try {
     const { access: accessToken } = await loginMatba();
-    console.log(accessToken);
 
     const data = await getMarketDataSoyPrice(accessToken);
 
