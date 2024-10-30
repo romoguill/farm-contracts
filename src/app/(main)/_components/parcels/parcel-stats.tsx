@@ -1,9 +1,12 @@
 'use client';
 
 import {
+  getAverageValueContract,
   getBestValueContract,
   getLastContractForParcel,
 } from '@/actions/contracts.actions';
+import CustomLoader from '@/components/custom-loader';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Parcel } from '@/db/schema';
 import { useQuery } from '@tanstack/react-query';
 
@@ -12,17 +15,28 @@ interface ParcelStatsProps {
 }
 
 function ParcelStats({ parcel }: ParcelStatsProps) {
-  const { data: lastContract } = useQuery({
+  const { data: lastContract, isPending: isPendingLastContract } = useQuery({
     queryKey: ['lastContractOfParcel', parcel.id],
     queryFn: () => getLastContractForParcel(parcel.id),
   });
 
-  const { data: bestValue } = useQuery({
+  const { data: bestValue, isPending: isPendingBestValue } = useQuery({
     queryKey: ['bestValue', parcel.id],
     queryFn: () => getBestValueContract(parcel.id),
   });
 
-  const kgsFormatter = new Intl.NumberFormat('en-US');
+  const { data: avgValue, isPending: isPendingAvgValue } = useQuery({
+    queryKey: ['avgValue', parcel.id],
+    queryFn: () => getAverageValueContract(parcel.id),
+  });
+
+  const kgsFormatter = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0,
+  });
+
+  if (isPendingLastContract || isPendingBestValue || isPendingAvgValue) {
+    return <CustomLoader className='mt-8' />;
+  }
 
   return (
     <article className='border mt-5 border-slate-300 shadow-md rounded-2xl p-3 w-[350px] col-start-2 justify-self-end'>
@@ -41,6 +55,13 @@ function ParcelStats({ parcel }: ParcelStatsProps) {
           Best value:{' '}
           <span className='text-end'>
             {kgsFormatter.format(bestValue?.contractSoyKgs || 0)} kgs/ha
+          </span>
+        </li>
+        <li className='flex justify-between'>
+          {/* TODO */}
+          Average value:{' '}
+          <span className='text-end'>
+            {kgsFormatter.format(Number(avgValue?.contractSoyKgs) || 0)} kgs/ha
           </span>
         </li>
       </ul>
