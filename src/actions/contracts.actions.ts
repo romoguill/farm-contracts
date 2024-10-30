@@ -594,3 +594,32 @@ export async function getLastContractForParcel(parcelId: string) {
     throw error;
   }
 }
+
+export async function getBestValueContract(parcelId: string) {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const response = await db
+      .select({
+        contractId: contract.id,
+        contractName: contract.title,
+        parcelId: parcel.id,
+        contractSoyKgs: contract.soyKgs,
+      })
+      .from(contract)
+      .leftJoin(contractToParcel, eq(contract.id, contractToParcel.contractId))
+      .leftJoin(parcel, eq(contractToParcel.parcelId, parcel.id))
+      .where(eq(parcel.id, parcelId))
+      .orderBy(desc(contract.soyKgs))
+      .limit(1);
+
+    return response[0] ?? null;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
