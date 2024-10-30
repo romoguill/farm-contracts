@@ -4,6 +4,7 @@ import {
   contract,
   contractToParcel,
   marketData,
+  parcel,
   UploadedFile,
   uploadedFile,
 } from '@/db/schema';
@@ -562,6 +563,34 @@ export async function getActiveContractsAndParcels() {
 
     return contracts;
   } catch (error) {
+    throw error;
+  }
+}
+
+export async function getLastContractForParcel(parcelId: string) {
+  try {
+    const { user } = await validateRequest();
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const response = await db
+      .select({
+        contractId: contract.id,
+        contractName: contract.title,
+        parcelId: parcel.id,
+      })
+      .from(contract)
+      .leftJoin(contractToParcel, eq(contract.id, contractToParcel.contractId))
+      .leftJoin(parcel, eq(contractToParcel.parcelId, parcel.id))
+      .where(eq(parcel.id, parcelId))
+      .orderBy(desc(contract.startDate))
+      .limit(1);
+
+    return response[0];
+  } catch (error) {
+    console.error(error);
     throw error;
   }
 }
