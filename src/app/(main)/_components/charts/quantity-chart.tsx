@@ -29,9 +29,7 @@ function QuantityChart({ data }: QuantityChartProps) {
       <BarChart accessibilityLayer data={data}>
         <XAxis
           dataKey='month'
-          tickLine={false}
           tickMargin={10}
-          axisLine={false}
           className='capitalize'
           tickFormatter={(value: string) => value.slice(0, 3)}
         />

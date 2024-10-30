@@ -141,8 +141,6 @@ export default function EditContractForm({
 
       const { files, ...rest } = data;
 
-      console.log({ files });
-
       // Set update optimistically the cache. Only problem are files that need further processing.
       // Kind of a hack is to only set the values needed for UI, so that when updating at least the file previwes doesn't go to previous state
       if (previousContract) {
@@ -193,8 +191,6 @@ export default function EditContractForm({
             }) || []
           );
         }
-
-        console.log({ queryData: queryClient.getQueriesData({}) });
       }
 
       return { previousContract };
@@ -250,7 +246,6 @@ export default function EditContractForm({
       Promise.all(convertPromises)
         .then((files) => {
           if (files.some((file) => file === undefined)) return;
-          console.log('updated editvalues', { files });
           setEditValues({
             ...payloadWithoutFiles,
             files: files as File[], //Checked above. TS can't infer boolean filter
@@ -297,8 +292,6 @@ export default function EditContractForm({
   }
 
   const isDisabled = !isEditMode || isSubmitPending;
-
-  console.log(editValues);
 
   return (
     <div className='relative'>

@@ -38,7 +38,6 @@ export async function loginMatba() {
 
   if (response.ok) {
     const data = await response.json();
-    console.log({ data });
 
     const { data: tokens, error } = loginSchema.safeParse(data);
 

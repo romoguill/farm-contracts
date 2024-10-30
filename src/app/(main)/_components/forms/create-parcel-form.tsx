@@ -25,9 +25,7 @@ export default function CreateParcelForm() {
   });
 
   const onSubmit: SubmitHandler<CreateParcel> = (data) => {
-    startTransition(async () => {
-      console.log(data);
-    });
+    startTransition(async () => {});
   };
 
   return (
