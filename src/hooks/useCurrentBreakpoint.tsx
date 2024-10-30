@@ -10,7 +10,7 @@ export function useCurrentBreakpoint() {
 
   const [currentScreenWidth, setCurrentScreenWidth] = useState<
     number | undefined
-  >(undefined);
+  >(window.innerWidth);
 
   useEffect(() => {
     const listener = (e: UIEvent) => setCurrentScreenWidth(window.innerWidth);
