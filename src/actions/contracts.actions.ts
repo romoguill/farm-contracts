@@ -588,7 +588,7 @@ export async function getLastContractForParcel(parcelId: string) {
       .orderBy(desc(contract.startDate))
       .limit(1);
 
-    return response[0];
+    return response[0] ?? null;
   } catch (error) {
     console.error(error);
     throw error;

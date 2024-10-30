@@ -72,11 +72,12 @@ function ParcelViewer({
     [calculateMaxYCoordinate, parcels]
   );
 
-  console.log(tw?.twScreen);
-
   // Get the height in px that will keep and aspect ratio of 1:1. Used for styling flex containers correctly
   const viewerHeight =
     (maxYCoordinate * VIEWER_WIDTH_PX[tw?.twScreen ?? 'sm']) / maxXCoordinate;
+
+  // Prevent showing viewer if useEffect hasn't run to avoid server flashing.
+  if (currentScreenWidth === 0) return;
 
   return (
     <div

@@ -8,11 +8,11 @@ export function useCurrentBreakpoint() {
   const twConfig = resolveConfig(customConfig);
   const { screens: breakpoints } = twConfig.theme;
 
-  const [currentScreenWidth, setCurrentScreenWidth] = useState<
-    number | undefined
-  >(window.innerWidth);
+  const [currentScreenWidth, setCurrentScreenWidth] = useState<number>(0);
 
   useEffect(() => {
+    setCurrentScreenWidth(window.innerWidth);
+
     const listener = (e: UIEvent) => setCurrentScreenWidth(window.innerWidth);
 
     window.addEventListener('resize', listener);
