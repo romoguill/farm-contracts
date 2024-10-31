@@ -6,7 +6,16 @@ import {
   getLastContractForParcel,
 } from '@/actions/contracts.actions';
 import CustomLoader from '@/components/custom-loader';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Parcel } from '@/db/schema';
 import { useQuery } from '@tanstack/react-query';
 
@@ -39,33 +48,37 @@ function ParcelStats({ parcel }: ParcelStatsProps) {
   }
 
   return (
-    <article className='border mt-5 border-slate-300 shadow-md rounded-2xl p-3 w-[350px] col-start-2 justify-self-end'>
-      <h3 className='text-lg'>{`Parcel ${parcel.label} Summary`}</h3>
-      <ul>
-        <li className='flex justify-between'>
-          Area: <span>{parcel.area}</span>
-        </li>
-        <li className='flex justify-between'>
-          {/* TODO */}
-          Last contract:{' '}
-          <span className='text-end'>{lastContract?.contractName}</span>
-        </li>
-        <li className='flex justify-between'>
-          {/* TODO */}
-          Best value:{' '}
-          <span className='text-end'>
-            {kgsFormatter.format(bestValue?.contractSoyKgs || 0)} kgs/ha
-          </span>
-        </li>
-        <li className='flex justify-between'>
-          {/* TODO */}
-          Average value:{' '}
-          <span className='text-end'>
-            {kgsFormatter.format(Number(avgValue?.contractSoyKgs) || 0)} kgs/ha
-          </span>
-        </li>
-      </ul>
-    </article>
+    <Card className='border mt-5 border-slate-300 shadow-md rounded-2xl p-3 w-[350px] col-start-2 justify-self-end'>
+      <CardHeader className='text-lg p-4'>
+        <CardTitle>{`Parcel ${parcel.label} Summary`}</CardTitle>
+      </CardHeader>
+      <CardContent className='p-4'>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell className='font-semibold'>Area</TableCell>
+              <TableCell>{kgsFormatter.format(Number(parcel.area))}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className='font-semibold'>Last contract</TableCell>
+              <TableCell>{lastContract?.contractName}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className='font-semibold'>Best value</TableCell>
+              <TableCell>
+                {kgsFormatter.format(bestValue?.contractSoyKgs || 0)} kgs/ha
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className='font-semibold'>Average value</TableCell>
+              <TableCell>
+                {kgsFormatter.format(Number(avgValue?.contractSoyKgs) || 0)}{' '}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 
