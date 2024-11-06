@@ -21,7 +21,7 @@ function AuthFormContainer({ type, children }: AuthFormContainerProps) {
             Don&apos;t have an account?
             <Link
               href='/auth/signup'
-              className='text-blue-500 underline ml-1 hover:text-blue-400'
+              className='text-blue-500 ml-1 hover:text-blue-400 hover:underline'
             >
               Create one
             </Link>
@@ -31,7 +31,7 @@ function AuthFormContainer({ type, children }: AuthFormContainerProps) {
             Already have an account?
             <Link
               href='/auth/login'
-              className='text-blue-500 underline ml-1 hover:text-blue-400'
+              className='text-blue-500 ml-1 hover:text-blue-400 hover:underline'
             >
               Login
             </Link>

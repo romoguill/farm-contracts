@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface LoadingButtonProps extends ButtonProps {
   isLoading: boolean;
-  className: string;
+  className?: string;
 }
 
 function LoadingButton({

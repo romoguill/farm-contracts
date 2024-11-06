@@ -18,6 +18,7 @@ import { useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginWithCredentials } from '../actions';
 import PasswordInput from './password-input';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -78,12 +79,19 @@ export default function LoginForm() {
             )}
           />
 
+          <Link
+            href='/auth/password-reset'
+            className='text-end block text-[13px] text-red-600 hover:text-red-500 hover:underline cursor-pointer'
+          >
+            Forgot password?
+          </Link>
+
           {form.formState.errors.root?.message && (
             <SubmitError message={form.formState.errors.root.message} />
           )}
         </div>
 
-        <LoadingButton isLoading={isPending} className='w-full mt-10'>
+        <LoadingButton isLoading={isPending} className='w-full mt-6'>
           Sign In
         </LoadingButton>
       </form>

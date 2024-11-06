@@ -119,7 +119,7 @@ export default function SignUpForm() {
           )}
         </div>
 
-        <LoadingButton isLoading={isPending} className='w-full mt-6'>
+        <LoadingButton isLoading={isPending} className='w-full mt-8'>
           Sign Up
         </LoadingButton>
       </form>
