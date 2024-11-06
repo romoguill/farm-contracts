@@ -1,6 +1,6 @@
 'use server';
 
-import { user } from '@/db/schema';
+import { passwordResetSession, user } from '@/db/schema';
 import {
   generateEmailVerificationCode,
   HASHING_OPTIONS,
@@ -171,11 +171,16 @@ export async function forgotPassword(formData: FormData) {
     return { error: 'Invalid email' };
   }
 
-  const existingUser = db.query.user.findFirst({
+  const existingUser = await db.query.user.findFirst({
     where: eq(user.email, emailValidated),
   });
 
   if (!existingUser) {
     return { error: 'Email not found' };
   }
+
+  // Delete previous recovery sessions
+  await db
+    .delete(passwordResetSession)
+    .where(eq(passwordResetSession.userId, existingUser.id));
 }

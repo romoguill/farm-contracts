@@ -1,13 +1,19 @@
 import { Lucia, Session, User } from 'lucia';
 import { db } from './dbClient';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { emailVerificationCode, session, user } from '@/db/schema';
+import {
+  emailVerificationCode,
+  passwordResetSession,
+  session,
+  user,
+} from '@/db/schema';
 import { Google } from 'arctic';
 import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
 import { TimeSpan, createDate } from 'oslo';
-import { generateRandomString, alphabet } from 'oslo/crypto';
+import { generateRandomString, alphabet, sha256 } from 'oslo/crypto';
+import { encodeHex, Base32Encoding } from 'oslo/encoding';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, session, user);
 
@@ -122,4 +128,34 @@ export async function generateEmailVerificationCode(
   });
 
   return code;
+}
+
+export function generateSessionToken(): string {
+  const tokenBytes = new Uint8Array(20);
+  crypto.getRandomValues(tokenBytes);
+  const encoding32 = new Base32Encoding('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567');
+  const token = encoding32.encode(tokenBytes);
+  return token;
+}
+
+export async function createPasswordResetSession(
+  token: string,
+  userId: string,
+  email: string
+) {
+  const sessionId = encodeHex(await sha256(new TextEncoder().encode(token)));
+
+  const [session] = await db
+    .insert(passwordResetSession)
+    .values({
+      id: sessionId,
+      userId,
+      email,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 10),
+      code: generateRandomString(8, alphabet('0-9')),
+      emailVerified: false,
+    })
+    .returning();
+
+  return session;
 }
