@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { forgotPassword } from '../actions';
+import { forgotPassword } from '../password-reset/actions';
 
 function PasswordResetForm() {
   return (

@@ -1,4 +1,3 @@
-import PasswordResetForm from '../../_components/password-reset-form';
 import ResetCodeVerificationForm from '../../_components/reset-code-verification-form';
 
 function PasswordResetPage() {
@@ -6,10 +5,10 @@ function PasswordResetPage() {
     <div className='bg-background flex flex-col justify-center h-full'>
       <div className='w-[300px] mx-auto space-y-4'>
         <h1 className='font-semibold text-secondary text-xl'>
-          Password Recovery: Step 2/2
+          Password Recovery: Step 2/3
         </h1>
         <h2 className='font-semibold text-secondary/80 text-sm'>
-          Check your email and paste the code sent below
+          Check your email and paste the code here.
         </h2>
         <ResetCodeVerificationForm />
       </div>

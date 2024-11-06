@@ -161,37 +161,3 @@ export async function logout() {
 
   return redirect('/auth/login');
 }
-
-export async function forgotPassword(formData: FormData) {
-  const validator = z.string().email();
-  const email = formData.get('email');
-
-  const { data: emailValidated, error: validationError } =
-    validator.safeParse(email);
-
-  if (validationError) {
-    return { error: 'Invalid email' };
-  }
-
-  const existingUser = await db.query.user.findFirst({
-    where: eq(user.email, emailValidated),
-  });
-
-  if (!existingUser) {
-    return { error: 'Email not found' };
-  }
-
-  // Delete previous recovery sessions
-  await db
-    .delete(passwordResetSession)
-    .where(eq(passwordResetSession.userId, existingUser.id));
-
-  const sessionToken = generateSessionToken();
-  const session = createPasswordResetSession(
-    sessionToken,
-    existingUser.id,
-    existingUser.email
-  );
-
-  return redirect('/auth/password-reset/verify-email');
-}

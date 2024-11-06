@@ -159,3 +159,16 @@ export async function createPasswordResetSession(
 
   return session;
 }
+
+export function setPasswordResetSessionTokenCookie(
+  token: string,
+  expiresAt: Date
+): void {
+  cookies().set('password_reset_session', token, {
+    expires: expiresAt,
+    sameSite: 'lax',
+    httpOnly: true,
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+  });
+}
