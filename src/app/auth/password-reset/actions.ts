@@ -8,6 +8,7 @@ import {
   createPasswordResetSession,
   generateEmailVerificationCode,
   generateSessionToken,
+  getCurrentPasswordResetSession,
   setPasswordResetSessionTokenCookie,
 } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
@@ -62,4 +63,28 @@ export async function forgotPassword(formData: FormData) {
   setPasswordResetSessionTokenCookie(sessionToken, session.expiresAt);
 
   return redirect('/auth/password-reset/verify-email');
+}
+
+export async function verifyPasswordResetEmail(formData: FormData) {
+  const validator = z.string();
+  const code = formData.get('code');
+
+  const { data: codeValidated, error: validationError } =
+    validator.safeParse(code);
+
+  if (validationError) {
+    return { error: 'Corrupted code' };
+  }
+
+  const session = await getCurrentPasswordResetSession();
+
+  if (!session) {
+    return { error: 'Unauthenticated' };
+  }
+
+  if (session.code !== codeValidated) {
+    return { error: 'Invalid code' };
+  }
+
+  redirect('/auth/new-password');
 }

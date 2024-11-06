@@ -1,10 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { forgotPassword } from '../password-reset/actions';
+import {
+  forgotPassword,
+  verifyPasswordResetEmail,
+} from '../password-reset/actions';
 
 function ResetCodeVerificationForm() {
   return (
-    <form className='flex gap-2' action={forgotPassword}>
+    <form className='flex gap-2' action={verifyPasswordResetEmail}>
       <Input
         type='text'
         name='code'

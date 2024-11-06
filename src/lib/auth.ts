@@ -172,3 +172,28 @@ export function setPasswordResetSessionTokenCookie(
     secure: process.env.NODE_ENV === 'production',
   });
 }
+
+export function deletePasswordResetSessionTokenCookie(): void {
+  cookies().set('password_reset_session', '', {
+    maxAge: 0,
+    sameSite: 'lax',
+    httpOnly: true,
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+  });
+}
+
+export const getCurrentPasswordResetSession = cache(async () => {
+  const token = cookies().get('password_reset_session')?.value ?? null;
+  if (token === null) {
+    return null;
+  }
+
+  const sessionId = encodeHex(await sha256(new TextEncoder().encode(token)));
+
+  const session = await db.query.passwordResetSession.findFirst({
+    where: eq(passwordResetSession.id, sessionId),
+  });
+
+  return session;
+});
