@@ -57,6 +57,21 @@ export const session = pgTable('session', {
   }).notNull(),
 });
 
+// Since lucia needs a session active when providing the otp code, create separate session
+export const passwordResetSession = pgTable('password_reset_session', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  email: text('email').notNull(),
+  code: text('code').notNull(),
+  emailVerified: boolean('email_verified').default(false),
+  expiresAt: timestamp('expires_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
+});
+
 export const emailVerificationCode = pgTable('email_verification_code', {
   id: uuid('id')
     .primaryKey()

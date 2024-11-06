@@ -6,6 +6,7 @@ function PasswordResetForm() {
     <form className='flex gap-2'>
       <Input
         type='email'
+        name='email'
         placeholder='Enter your email...'
         className='w-3/4'
         required

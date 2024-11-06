@@ -21,6 +21,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { sendEmail } from '../emails/actions';
 import CodeVerification from '../emails/_templates/code-verification';
+import { z } from 'zod';
 
 export async function sendVerificationEmail(
   userId: string,
@@ -157,4 +158,24 @@ export async function logout() {
   );
 
   return redirect('/auth/login');
+}
+
+export async function forgotPassword(formData: FormData) {
+  const validator = z.string().email();
+  const email = formData.get('email');
+
+  const { data: emailValidated, error: validationError } =
+    validator.safeParse(email);
+
+  if (validationError) {
+    return { error: 'Invalid email' };
+  }
+
+  const existingUser = db.query.user.findFirst({
+    where: eq(user.email, emailValidated),
+  });
+
+  if (!existingUser) {
+    return { error: 'Email not found' };
+  }
 }
