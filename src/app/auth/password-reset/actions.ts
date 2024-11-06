@@ -86,5 +86,10 @@ export async function verifyPasswordResetEmail(formData: FormData) {
     return { error: 'Invalid code' };
   }
 
+  // Modify session recovery emailVerified to assert that user completed all steps
+  await db.update(passwordResetSession).set({
+    emailVerified: true,
+  });
+
   redirect('/auth/new-password');
 }
