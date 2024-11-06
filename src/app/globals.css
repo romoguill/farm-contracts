@@ -19,7 +19,7 @@ input[type='number'] {
 
 @layer base {
   :root {
-    --background: 120 20% 98%;
+    --background: 38 100% 95%;
     --foreground: 120 20% 20%;
 
     --card: 120 30% 95%;
@@ -44,7 +44,7 @@ input[type='number'] {
     --destructive-foreground: 0 100% 98%;
 
     --border: 120 10% 85%;
-    --input: 120 20% 95%;
+    --input: 35 37% 81%;
 
     --ring: 120 50% 45%;
     --radius: 0.5rem;

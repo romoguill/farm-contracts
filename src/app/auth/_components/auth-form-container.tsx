@@ -8,12 +8,12 @@ interface AuthFormContainerProps extends PropsWithChildren {
 function AuthFormContainer({ type, children }: AuthFormContainerProps) {
   return (
     <div className='grid place-items-center h-3/4 w-full'>
-      <div className='w-full max-w-[350px] px-2'>
+      <div className='w-full max-w-[350px] p-4 bg-background rounded-lg shadow-md'>
         <h1 className='font-bold text-xl mb-3 bg-gradient-to-r from-sky-300 to-sky-50 w-fit ml-auto p-2 rounded-s-2xl'>
           Farm Contracts
         </h1>
         <h2 className='text-2xl mb-2'>
-          {type === 'signup' ? 'Register' : 'Login'}
+          {type === 'signup' ? 'Create user' : 'Welcome back!'}
         </h2>
         {children}
         <div className='border-t border-gray-300 w-full my-4 relative'>
