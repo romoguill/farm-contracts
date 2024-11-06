@@ -39,7 +39,7 @@ function CodeVerificationForm() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-        <LoadingButton size='icon' isLoading={isPending}>
+        <LoadingButton size='icon' isLoading={isPending} variant='secondary'>
           <ArrowRight />
         </LoadingButton>
       </div>
