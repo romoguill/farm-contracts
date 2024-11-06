@@ -2,20 +2,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { forgotPassword } from '../actions';
 
-function PasswordResetForm() {
+function ResetCodeVerificationForm() {
   return (
     <form className='flex gap-2' action={forgotPassword}>
       <Input
-        type='email'
-        name='email'
-        placeholder='Enter your email...'
+        type='text'
+        name='code'
+        placeholder='Enter code...'
         className='w-3/4'
         required
       />
       <Button type='submit' variant='secondary' className='flex-shrink'>
-        Reset
+        Confirm
       </Button>
     </form>
   );
 }
-export default PasswordResetForm;
+export default ResetCodeVerificationForm;

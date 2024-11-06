@@ -2,7 +2,9 @@
 
 import { passwordResetSession, user } from '@/db/schema';
 import {
+  createPasswordResetSession,
   generateEmailVerificationCode,
+  generateSessionToken,
   HASHING_OPTIONS,
   lucia,
   validateRequest,
@@ -183,4 +185,13 @@ export async function forgotPassword(formData: FormData) {
   await db
     .delete(passwordResetSession)
     .where(eq(passwordResetSession.userId, existingUser.id));
+
+  const sessionToken = generateSessionToken();
+  const session = createPasswordResetSession(
+    sessionToken,
+    existingUser.id,
+    existingUser.email
+  );
+
+  return redirect('/auth/password-reset/verify-email');
 }
