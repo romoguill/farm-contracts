@@ -1,5 +1,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { NavbarLink } from './navbar-link';
+
+const routes = [
+  {
+    label: 'Dashboard',
+    href: '/dashboard',
+  },
+  {
+    label: 'Contracts',
+    href: '/contracts',
+  },
+  {
+    label: 'Parcels',
+    href: '/parcels',
+  },
+];
 
 function Navbar() {
   return (
@@ -13,15 +29,11 @@ function Navbar() {
       />
       <nav className='flex-1'>
         <ul className='flex gap-4 font-bold'>
-          <li>
-            <Link href='/dashboard'>Dashboard</Link>
-          </li>
-          <li>
-            <Link href='/contracts'>Contracts</Link>
-          </li>
-          <li>
-            <Link href='/parcels'>Parcels</Link>
-          </li>
+          {routes.map((route) => (
+            <li key={route.href}>
+              <NavbarLink route={route} />
+            </li>
+          ))}
         </ul>
       </nav>
     </header>
