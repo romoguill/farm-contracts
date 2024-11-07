@@ -38,14 +38,14 @@ async function DashboardPage() {
           <MarketTable />
         </div>
       </section>
-      <section className='flex flex-col gap-5 md:flex-row'>
-        <article>
+      <section className='flex flex-col gap-5 mt-4 md:flex-row'>
+        <article className='mt-2'>
           <h3 className={cn('font-bold text-xl text-center', font.className)}>
             Active Contracts
           </h3>
           <CurrentContracts />
         </article>
-        <article>
+        <article className='mt-2'>
           <h3 className={cn('font-bold text-xl text-center', font.className)}>
             Active Parcels
           </h3>
