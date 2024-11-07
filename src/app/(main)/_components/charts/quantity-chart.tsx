@@ -33,12 +33,12 @@ function QuantityChart({ data }: QuantityChartProps) {
           className='capitalize'
           tickFormatter={(value: string) => value.slice(0, 3)}
         />
-        <YAxis />
+        <YAxis allowDecimals={false} />
         <CartesianGrid vertical={false} strokeDasharray='3 2' stroke='#aaa' />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
           dataKey='contractsCount'
-          fill='var(--color-desktop)'
+          fill='rgba(41,61,41,1)'
           radius={4}
           isAnimationActive={false}
         />

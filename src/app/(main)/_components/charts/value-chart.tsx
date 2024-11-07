@@ -48,7 +48,8 @@ function ValueChart({ data }: ValueChartProps) {
         <ChartTooltip content={<ChartTooltipContent />} />
         <Line
           dataKey='contractsValue'
-          fill='var(--color-desktop)'
+          dot={{ stroke: 'rgba(41, 61, 41, 1)', fill: 'rgba(41, 61, 41, 1)' }}
+          stroke='rgba(41, 61, 41, 1)'
           type='monotone'
           isAnimationActive={false}
         />
