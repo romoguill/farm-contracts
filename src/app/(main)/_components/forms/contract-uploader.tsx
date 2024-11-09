@@ -15,7 +15,7 @@ interface ContractUploaderProps {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
-  onRemoveStored: (file: FileDB) => void;
+  onRemoveStored?: (file: FileDB) => void;
 }
 
 const ContractUploader = forwardRef<HTMLInputElement, ContractUploaderProps>(

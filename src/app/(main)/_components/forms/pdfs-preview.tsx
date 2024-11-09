@@ -12,7 +12,7 @@ type FileParsed = {
 interface PDFsPreviewProps {
   files: Array<File | FileDB>;
   onRemove: (files: Array<File | FileDB>) => void;
-  onRemoveStored: (file: FileDB) => void;
+  onRemoveStored?: (file: FileDB) => void;
   disabled?: boolean;
 }
 
@@ -46,7 +46,7 @@ function PDFsPreview({
     );
 
     if (file.file instanceof FileDB) {
-      onRemoveStored(file.file);
+      onRemoveStored?.(file.file);
     }
   };
 

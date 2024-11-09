@@ -36,7 +36,7 @@ export async function forgotPassword(formData: FormData) {
     validator.safeParse(email);
 
   if (validationError) {
-    return { error: 'Invalid email' };
+    return;
   }
 
   const existingUser = await db.query.user.findFirst({
@@ -44,7 +44,7 @@ export async function forgotPassword(formData: FormData) {
   });
 
   if (!existingUser) {
-    return { error: 'Email not found' };
+    return;
   }
 
   // Delete previous recovery sessions
@@ -73,17 +73,17 @@ export async function verifyPasswordResetEmail(formData: FormData) {
     validator.safeParse(code);
 
   if (validationError) {
-    return { error: 'Corrupted code' };
+    return;
   }
 
   const session = await getCurrentPasswordResetSession();
 
   if (!session) {
-    return { error: 'Unauthenticated' };
+    return;
   }
 
   if (session.code !== codeValidated) {
-    return { error: 'Invalid code' };
+    return;
   }
 
   // Modify session recovery emailVerified to assert that user completed all steps
