@@ -16,6 +16,7 @@ const nextConfig = {
       '@aws-sdk/s3-request-presigner',
     ],
   },
+  output: 'standalone',
 };
 
 export default nextConfig;
