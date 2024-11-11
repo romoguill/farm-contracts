@@ -21,3 +21,11 @@ AWS_SECRET_KEY=""
 ## Run docker for development
 
 docker-compose --env-file .env.local up -d
+
+## Build image
+
+docker buildx build -t farm-contracts-image .
+
+## Run container
+
+docker run -p 3000:3000 farm-contracts-image
