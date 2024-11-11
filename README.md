@@ -22,9 +22,13 @@ AWS_SECRET_KEY=""
 
 docker-compose --env-file .env.local up -d
 
-## Build image
+## Build image prod
 
-docker buildx build -t farm-contracts-image .
+docker buildx build -t farm-contracts-prod .
+
+## Build image dev
+
+docker buildx build -t farm-contracts-dev -f Dockerfile.dev .
 
 ## Run container
 
