@@ -2,15 +2,23 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
-
-  build:
-
+  build-docker:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile -t farm-contracts-prod
+      - name: GitHub checkout
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build image
+        run: |
+          docker buildx build -f Dockerfile -t ghcr.io/romoguill/farm-contracts
+          docker push ghcr.io/romoguill/farm-contracts:latest
