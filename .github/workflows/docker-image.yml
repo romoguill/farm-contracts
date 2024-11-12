@@ -32,6 +32,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/app/farm-contracts
             docker login ghcr.io -u romoguill -p ${{ secrets.REGISTRY_TOKEN }}
