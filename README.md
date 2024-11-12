@@ -20,11 +20,11 @@ AWS_SECRET_KEY=""
 
 ## Run docker dev
 
-docker-compose -f docker-compose.dev.yml --env-file .env.local up -d
+docker compose -f docker-compose.dev.yml --env-file .env.local up -d
 
 ## Run docker prod
 
-docker-compose -f docker.compose.prod.yml --env-file .env.local up -d
+docker compose -f docker.compose.prod.yml --env-file .env.local up -d
 
 ## Build image prod
 
