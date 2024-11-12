@@ -18,9 +18,13 @@ AWS_BUCKET_REGION=""
 AWS_ACCESS_KEY=""
 AWS_SECRET_KEY=""
 
-## Run docker for development
+## Run docker dev
 
-docker-compose --env-file .env.local up -d
+docker-compose -f docker-compose.dev.yml --env-file .env.local up -d
+
+## Run docker prod
+
+docker-compose -f docker.compose.prod.yml --env-file .env.local up -d
 
 ## Build image prod
 
@@ -29,7 +33,3 @@ docker buildx build -t farm-contracts-prod .
 ## Build image dev
 
 docker buildx build -t farm-contracts-dev -f Dockerfile.dev .
-
-## Run container
-
-docker run -p 3000:3000 farm-contracts-image
