@@ -20,5 +20,5 @@ jobs:
 
       - name: Build image
         run: |
-          docker buildx build -f Dockerfile -t ghcr.io/romoguill/farm-contracts
+          docker buildx build -f Dockerfile -t ghcr.io/romoguill/farm-contracts .
           docker push ghcr.io/romoguill/farm-contracts:latest
