@@ -23,10 +23,6 @@ jobs:
           docker buildx build -f Dockerfile -t ghcr.io/romoguill/farm-contracts .
           docker push ghcr.io/romoguill/farm-contracts:latest
 
-  deploy:
-    needs: build-docker
-    runs-on: ubuntu-latest
-    steps:
       - name: Copy docker-compose configuration to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -35,6 +31,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: 'docker-compose.prod.yml'
           target: /home/romoguill/apps/farm-contracts
+
+  deploy:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    steps:
       - name: SSH into server
         uses: appleboy/ssh-action@master
         with:
