@@ -44,6 +44,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/apps/farm-contracts
+            echo "${{ secrets.ENV_VARS }}" > .env.local
             docker login ghcr.io -u romoguill -p ${{ secrets.REGISTRY_TOKEN }}
             docker pull ghcr.io/romoguill/farm-contracts:latest
             docker compose -f docker-compose.prod.yml --env-file=.env.local up -d
