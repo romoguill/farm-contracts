@@ -27,6 +27,14 @@ jobs:
     needs: build-docker
     runs-on: ubuntu-latest
     steps:
+      - name: Copy docker-compose configuration to VPS
+        uses: actions/scp-actions@v0.1.7
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: 'docker-compose.prod.yml'
+          target: /home/romoguill/apps/farm-contracts
       - name: SSH into server
         uses: appleboy/ssh-action@master
         with:
