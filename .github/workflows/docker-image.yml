@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/apps/${{ env.PROJECT_NAME }}
-            echo "${{ secrets.ENV_VARS }}" > .env.production.local
+            echo ${{ secrets.ENV_VARS }} > .env.production.local
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.REGISTRY_TOKEN }}
             docker pull ghcr.io/${{ github.actor }}/${{ env.NEXT_IMAGE_NAME }}:latest
             docker compose -f docker-compose.prod.yml up -d
