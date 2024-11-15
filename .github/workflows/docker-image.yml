@@ -48,7 +48,23 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/apps/${{ env.PROJECT_NAME }}
-            echo ${{ secrets.ENV_VARS }} > .env.production.local
+            echo "${{ secrets.APP_URL }}" >> .env.production.local
+            echo "${{ secrets.AWS_ACCESS_KEY }}" >> .env.production.local
+            echo "${{ secrets.AWS_BUCKET_NAME }}" >> .env.production.local
+            echo "${{ secrets.AWS_BUCKET_REGION }}" >> .env.production.local
+            echo "${{ secrets.AWS_SECRET_KEY }}" >> .env.production.local
+            echo "${{ secrets.DOMAIN_SENDER }}" >> .env.production.local
+            echo "${{ secrets.GOOGLE_CLIENT_ID }}" >> .env.production.local
+            echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env.production.local
+            echo "${{ secrets.GOOGLE_REDIRECT_URL }}" >> .env.production.local
+            echo "${{ secrets.MATBA_API_PASSWORD }}" >> .env.production.local
+            echo "${{ secrets.MATBA_API_USER }}" >> .env.production.local
+            echo "${{ secrets.POSTGRES_DB }}" >> .env.production.local
+            echo "${{ secrets.POSTGRES_HOSTADDR }}" >> .env.production.local
+            echo "${{ secrets.POSTGRES_PASSWORD }}" >> .env.production.local
+            echo "${{ secrets.POSTGRES_PORT }}" >> .env.production.local
+            echo "${{ secrets.POSTGRES_USER }}" >> .env.production.local
+            echo "${{ secrets.RESEND_API_KEY }}" >> .env.production.local
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.REGISTRY_TOKEN }}
             docker pull ghcr.io/${{ github.actor }}/${{ env.NEXT_IMAGE_NAME }}:latest
             docker compose -f docker-compose.prod.yml up -d
