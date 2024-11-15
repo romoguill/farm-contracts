@@ -1,11 +1,10 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { Client, Pool } from 'pg';
+import { Pool } from 'pg';
 import * as schema from '../db/schema';
-import { BuildQueryResult, ExtractTablesWithRelations } from 'drizzle-orm';
 
 // or
 const pool = new Pool({
-  host: process.env.POSTGRES_HOST,
+  host: process.env.POSTGRES_HOSTADDR,
   port: Number(process.env.POSTGRES_PORT),
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
