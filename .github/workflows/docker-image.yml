@@ -4,6 +4,10 @@ on:
   push:
     branches: ['main']
 
+env:
+  NEXT_IMAGE_NAME: farm-contracts-nextjs
+  PROJECT_NAME: farm-contracts
+
 jobs:
   build-docker:
     runs-on: ubuntu-latest
