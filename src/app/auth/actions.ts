@@ -24,6 +24,7 @@ import { redirect } from 'next/navigation';
 import { sendEmail } from '../emails/actions';
 import CodeVerification from '../emails/_templates/code-verification';
 import { z } from 'zod';
+import { EMAIL_FROM } from '@/lib/utils';
 
 export async function sendVerificationEmail(
   userId: string,
@@ -32,7 +33,7 @@ export async function sendVerificationEmail(
 ) {
   const verificationCode = await generateEmailVerificationCode(userId, email);
   const { error } = await sendEmail(
-    process.env.DOMAIN_SENDER!,
+    EMAIL_FROM,
     [email],
     'Verification Code',
     CodeVerification({ name, code: verificationCode })

@@ -12,6 +12,7 @@ import {
   setPasswordResetSessionTokenCookie,
 } from '@/lib/auth';
 import { db } from '@/lib/dbClient';
+import { EMAIL_FROM } from '@/lib/utils';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -19,7 +20,7 @@ import { z } from 'zod';
 
 export async function sendPasswordResetEmail(email: string, code: string) {
   const { error } = await sendEmail(
-    process.env.DOMAIN_SENDER!,
+    EMAIL_FROM,
     [email],
     'Password Reset',
     PasswordResetEmail({ code })

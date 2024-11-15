@@ -145,3 +145,5 @@ export class FileDB extends File {
 
 // Util for making optional only some properties
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+
+export const EMAIL_FROM = `FARM <${process.env.DOMAIN_SENDER}>`;
