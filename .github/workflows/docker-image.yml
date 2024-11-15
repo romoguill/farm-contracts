@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: 'docker-compose.prod.yml'
-          target: /home/${{ github.actor }}/apps/${{ env.NEXT_IMAGE_NAME }}
+          target: /home/${{ github.actor }}/apps/${{ env.PROJECT_NAME }}
 
   deploy:
     needs: build-docker
