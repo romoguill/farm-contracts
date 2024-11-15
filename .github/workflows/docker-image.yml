@@ -4,6 +4,10 @@ on:
   push:
     branches: ['main']
 
+env:
+  NEXT_IMAGE_NAME: farm-contracts-nextjs
+  PROJECT_NAME: farm-contracts
+
 jobs:
   build-docker:
     runs-on: ubuntu-latest
@@ -20,8 +24,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker buildx build -f Dockerfile -t ghcr.io/romoguill/farm-contracts .
-          docker push ghcr.io/romoguill/farm-contracts:latest
+          docker buildx build -f Dockerfile.prod -t ghcr.io/${{ github.actor }}/$NEXT_IMAGE_NAME .
+          docker push ghcr.io/${{ github.actor }}/$NEXT_IMAGE_NAME:latest
 
       - name: Copy docker-compose configuration to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -30,7 +34,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: 'docker-compose.prod.yml'
-          target: /home/romoguill/apps/farm-contracts
+          target: /home/${{ github.actor }}/apps/$NEXT_IMAGE_NAME
 
   deploy:
     needs: build-docker
@@ -43,8 +47,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/apps/farm-contracts
-            echo "${{ secrets.ENV_VARS }}" > .env.local
-            docker login ghcr.io -u romoguill -p ${{ secrets.REGISTRY_TOKEN }}
-            docker pull ghcr.io/romoguill/farm-contracts:latest
-            docker compose -f docker-compose.prod.yml --env-file=.env.local up -d
+            cd ~/apps/$PROJECT_NAME
+            echo "${{ secrets.ENV_VARS }}" > .env.production.local
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.REGISTRY_TOKEN }}
+            docker pull ghcr.io/${{ github.actor }}/$NEXT_IMAGE_NAME:latest
+            docker compose -f docker-compose.prod.yml up -d

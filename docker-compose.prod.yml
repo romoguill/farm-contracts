@@ -5,24 +5,7 @@ services:
       - 3001:3000
     env_file:
       - .env.production.local
-    # environment:
-    #   APP_URL: ${APP_URL}
-    #   POSTGRES_DB: ${POSTGRES_DB}
-    #   POSTGRES_USER: ${POSTGRES_USER}
-    #   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    #   POSTGRES_HOST: ${POSTGRES_HOST}
-    #   POSTGRES_PORT: ${POSTGRES_PORT}
-    #   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-    #   GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-    #   GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
-    #   RESEND_API_KEY: ${RESEND_API_KEY}
-    #   DOMAIN_SENDER: ${DOMAIN_SENDER}
-    #   AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-    #   AWS_BUCKET_REGION: ${AWS_BUCKET_REGION}
-    #   AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-    #   AWS_SECRET_KEY: ${AWS_SECRET_KEY}
-    #   MATBA_API_USER: ${MATBA_API_USER}
-    #   MATBA_API_PASSWORD: ${MATBA_API_PASSWORD}
+    restart: unless-stopped
     networks:
       - internal_net
     depends_on:
@@ -35,10 +18,7 @@ services:
       - 5432:5432
     env_file:
       - .env.production.local
-    # environment:
-    # POSTGRES_USER: ${POSTGRES_USER}
-    # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    # POSTGRES_DB: ${POSTGRES_DB}
+    restart: unless-stopped
     healthcheck:
       test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
       interval: 5s
